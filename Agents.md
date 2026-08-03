@@ -44,17 +44,19 @@ Có thể:
 - Tự mượn sách
 - Theo dõi lịch sử mượn
 
----
+### Giảng viên
+
+- Tìm tài liệu chuyên ngành và sách tham khảo
+- Hỗ trợ sinh viên xác định vị trí kệ sách
+- Kiểm tra tình trạng sách còn sẵn
 
 ### Thủ thư
-
-Có thể:
 
 - Quản lý dữ liệu sách
 - Theo dõi lượt mượn
 - Kiểm soát tình trạng sách
 - Hỗ trợ người dùng khi cần
-
+- Giám sát hoạt động kiosk và đảm bảo hệ thống vận hành ổn định
 ---
 
 ## Mục tiêu
