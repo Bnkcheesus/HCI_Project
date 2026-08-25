@@ -1,9 +1,3 @@
-# Xây dựng Kịch bản Sử dụng (Scenarios) — Hệ thống LibAssist
-
-Tài liệu này xây dựng **02 Kịch bản Sử dụng (Scenarios)** nhằm mô tả trải nghiệm người dùng trong bài toán tìm kiếm và mượn sách thư viện. Các kịch bản được phát triển dựa trên hồ sơ Persona đại diện duy nhất **Nguyễn Minh Hoàng** trong [personacreation.md](file:///d:/KHTN_Nam_3/HK3_HCI/Project/HCI_Project/persona/personacreation.md), tuân thủ định hướng quy trình trong [plan.md](file:///d:/KHTN_Nam_3/HK3_HCI/Project/HCI_Project/scenario/plan.md) và các quy tắc trong [skill.md](file:///d:/KHTN_Nam_3/HK3_HCI/Project/HCI_Project/scenario/skill.md).
-
----
-
 ## I. Bối cảnh & Nhân vật (Context & Persona)
 
 * **Nhân vật chính:** Nguyễn Minh Hoàng (22 tuổi, Sinh viên năm cuối ngành Công nghệ Thông tin, đang làm đồ án tốt nghiệp).
