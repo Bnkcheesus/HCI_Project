@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Persona — Nguyễn Minh Hoàng | LibAssist Canvas Style</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   CANVAS / DISCOVERY SYSTEM PALETTE (LIGHT FRAME & CYAN NEON)
+   ============================================================ */
+:root {
+  --page-bg: #E5E5E5;         /* Outer Stage Background */
+  --frame: #000000;           /* Solid Black Framing */
+  
+  --card-bg: #12151C;         /* Dark Base Card */
+  --card-subtle: #171B24;     /* Sub-card Slate */
+  
+  --cyan: #22D3EE;            /* Neon Cyan Accent */
+  --cyan-dim: rgba(34, 211, 238, 0.25);
+  
+  --white: #F5F7FA;
+  --text-muted: #93A0B4;
+  --text-dark: #000000;
+
+  --danger-bg: rgba(255, 107, 107, 0.12);
+  --danger-border: #FF6B6B;
+  --danger-text: #FF8E8E;
+
+  --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+/* Base Reset: Triệt tiêu hoàn toàn border-radius */
+*, *::before, *::after { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  border-radius: 0 !important; 
+}
+
+html, body {
+  width: 100%;
+  height: auto !important;
+  overflow: visible !important;
+  background-color: var(--page-bg);
+  color: var(--white);
+  font-family: var(--font-main);
+  font-size: 13.5px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  padding: 40px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* System Header Bar */
+.system-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid var(--frame);
+}
+
+.system-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--frame);
+  text-transform: uppercase;
+}
+
+.badge-phase {
+  background: var(--frame);
+  color: var(--cyan);
+  padding: 3px 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* HERO BANNER */
+.profile-hero-card {
+  background: var(--card-bg);
+  border: 4px solid var(--frame);
+  padding: 24px;
+  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  align-items: center;
+  position: relative;
+}
+
+.profile-hero-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 6px;
+  background: var(--cyan);
+}
+
+/* Avatar Anonymous */
+.avatar-anonymous {
+  width: 105px;
+  height: 105px;
+  background: var(--card-subtle);
+  border: 2px solid var(--cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatar-anonymous svg {
+  width: 64px;
+  height: 64px;
+  fill: var(--cyan);
+}
+
+.profile-main-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-header-row h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -0.01em;
+}
+
+.profile-sub {
+  font-size: 13px;
+  color: var(--cyan);
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.quote-text {
+  font-style: italic;
+  color: var(--white);
+  background: var(--card-subtle);
+  padding: 12px 16px;
+  border-left: 3px solid var(--cyan);
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.meta-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.pill-item {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  background: var(--card-subtle);
+  color: var(--cyan);
+  padding: 3px 10px;
+  border: 1px solid var(--cyan-dim);
+  font-weight: 700;
+}
+
+/* EQUAL 50/50 TWO-COLUMN GRID */
+.equal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.column-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 4px solid var(--frame);
+  padding: 22px;
+}
+
+.card-header {
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid var(--cyan-dim);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h2 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+}
+
+.data-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.data-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--white);
+  line-height: 1.45;
+}
+
+.bullet-square {
+  width: 16px;
+  height: 16px;
+  background: var(--cyan);
+  color: #05070A;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* Pain Points Component */
+.card-pain {
+  border-left: 6px solid var(--danger-border);
+}
+
+.pain-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pain-item {
+  background: var(--danger-bg);
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.pain-content h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--danger-text);
+  margin-bottom: 2px;
+}
+
+.pain-content p {
+  font-size: 12px;
+  color: #FFD2D2;
+  opacity: 0.95;
+}
+
+.severity-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(255, 107, 107, 0.25);
+  color: var(--danger-text);
+  padding: 2px 8px;
+  white-space: nowrap;
+  border: 1px solid var(--danger-border);
+}
+
+/* Touchpoints Component */
+.touchpoint-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.touchpoint-card {
+  border: 1px solid var(--cyan-dim);
+  padding: 12px 14px;
+  background: var(--card-subtle);
+  border-left: 3px solid var(--cyan);
+}
+
+.touchpoint-card h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cyan);
+  margin-bottom: 2px;
+}
+
+.touchpoint-card p {
+  font-size: 12.5px;
+  color: var(--white);
+}
+
+/* Tags Cloud */
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-item {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--card-subtle);
+  color: var(--cyan);
+  padding: 5px 10px;
+  border: 1px solid var(--cyan-dim);
+}
+
+/* Dashboard Footer */
+.dashboard-footer {
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 2px solid var(--frame);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: #6B7480;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header Bar -->
+  <header class="system-header">
+    <div class="system-title">
+      <span>LibAssist System</span>
+      <span>/</span>
+      <span class="badge-phase">USER DISCOVERY</span>
+    </div>
+    <div style="font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--frame);">
+      USER PERSONA
+    </div>
+  </header>
+
+  <!-- Hero Card -->
+  <section class="profile-hero-card">
+    <div class="avatar-anonymous">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      </svg>
+    </div>
+    
+    <div class="profile-main-info">
+      <div class="profile-header-row">
+        <div>
+          <h1>Nguyễn Minh Hoàng</h1>
+          <p class="profile-sub">Sinh viên năm cuối · Công nghệ Thông tin (22 tuổi)</p>
+        </div>
+      </div>
+
+      <div class="meta-pills">
+        <span class="pill-item">Đồ án tốt nghiệp</span>
+        <span class="pill-item">Trưởng nhóm Academic CLB</span>
+        <span class="pill-item">Thói quen: Tra cứu nhanh giữa các ca học</span>
+      </div>
+
+      <p class="quote-text">
+        “Tôi cần tìm và mượn đúng tài liệu chuyên ngành thật nhanh giữa các ca học, biết rõ vị trí kệ sách để đi thẳng tới lấy mà không cần xếp hàng chờ đợi quầy thủ thư.”
+      </p>
+    </div>
+  </section>
+
+  <!-- Bố cục 2 cột bằng nhau (50 / 50 Grid) -->
+  <div class="equal-grid">
+
+    <!-- Cột TRÁI -->
+    <div class="column-stack">
+
+      <!-- 01. Bối cảnh & Hành vi -->
+      <section class="card">
+        <div class="card-header">
+          <h2>01. Bối cảnh &amp; Hành vi sử dụng</h2>
+        </div>
+        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">
+          Lịch trình dày đặc giữa ca học và giờ làm đồ án. Vừa cần tra cứu tài liệu nhanh cho bản thân, vừa chuẩn bị danh mục chia sẻ cho sinh viên khóa dưới.
+        </p>
+        
+        <h3 style="font-size: 11px; font-weight: 700; color: var(--cyan); text-transform: uppercase; margin-bottom: 10px; font-family: var(--font-mono);">Nhiệm vụ thường nhật (Tasks)</h3>
+        <ul class="data-list">
+          <li class="data-item">
+            <span class="bullet-square">1</span>
+            <span>Ghé thư viện giữa các tiết học hoặc giờ giải lao ngắn để tra cứu sách đồ án.</span>
+          </li>
+          <li class="data-item">
+            <span class="bullet-square">2</span>
+            <span>Kiểm tra số lượng khả dụng của đầu sách (còn trên kệ hay đã có người mượn).</span>
+          </li>
+          <li class="data-item">
+            <span class="bullet-square">3</span>
+            <span>Nhập từ khóa hoặc khảo sát trên Kiosk AI để nhận gợi ý sách chuyên sâu.</span>
+          </li>
+          <li class="data-item">
+            <span class="bullet-square">4</span>
+            <span>Tự quét sách + thẻ sinh viên tại Kiosk, nhận phiếu in &amp; kiểm tra app.</span>
+          </li>
+          <li class="data-item">
+            <span class="bullet-square">5</span>
+            <span>Định vị vị trí kệ sách qua bản đồ trên Kiosk hoặc quét QR xem trên điện thoại.</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 02. Mục tiêu -->
+      <section class="card">
+        <div class="card-header">
+          <h2>02. Mục tiêu cốt lõi (Goals)</h2>
+        </div>
+        <ul class="data-list">
+          <li class="data-item">
+            <span class="bullet-square">1</span>
+            <span><strong style="color: var(--cyan);">Tìm kiếm chính xác &amp; nhanh chóng:</strong> Tìm đúng giáo trình chuyên ngành không tốn thời gian tra thủ công.</span>
+          </li>
+          <li class="data-item">
+            <span class="bullet-square">2</span>
+            <span><strong style="color: var(--cyan);">Định vị không gian rõ ràng:</strong> Xác định chính xác vị trí kệ sách để đến lấy sách ngay lập tức.</span>
+          </li>
+          <li class="data-item">
+            <span class="bullet-square">3</span>
+            <span><strong style="color: var(--cyan);">Tự phục vụ tối ưu thời gian:</strong> Quét mượn tự động tại Kiosk trong 1-2 phút, bỏ qua xếp hàng thủ thư.</span>
+          </li>
+          <li class="data-item">
+            <span class="bullet-square">4</span>
+            <span><strong style="color: var(--cyan);">Quản lý lịch mượn hiệu quả:</strong> Theo dõi thời hạn trả và lịch sử mượn thông qua app LibAssist.</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Tags Phân loại -->
+      <section class="card">
+        <div class="card-header">
+          <h2>Phân loại &amp; Tags</h2>
+        </div>
+        <div class="tag-cloud">
+          <span class="tag-item">#SinhVienNamCuoi</span>
+          <span class="tag-item">#NghiênCứuChuyênNgành</span>
+          <span class="tag-item">#TựPhụcVụNhanh</span>
+          <span class="tag-item">#ĐịnhVịKệSách</span>
+          <span class="tag-item">#TốiƯuThờiGian</span>
+          <span class="tag-item">#GiaoDiệnTrợNăng</span>
+          <span class="tag-item">#LibAssistKiosk</span>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Cột PHẢI -->
+    <div class="column-stack">
+
+      <!-- 03. Điểm đau -->
+      <section class="card card-pain">
+        <div class="card-header" style="border-bottom-color: rgba(255, 107, 107, 0.3);">
+          <h2 style="color: var(--danger-border);">03. Điểm đau hiện tại (Pain Points)</h2>
+        </div>
+        <div class="pain-list">
+          <div class="pain-item">
+            <div class="pain-content">
+              <h3>Áp lực thời gian</h3>
+              <p>Thời gian rảnh giữa các ca học rất ngắn, phiền phức khi xếp hàng chờ thủ thư.</p>
+            </div>
+            <span class="severity-pill">Nghiêm trọng</span>
+          </div>
+
+          <div class="pain-item">
+            <div class="pain-content">
+              <h3>Khó khăn định vị</h3>
+              <p>Kho sách quá lớn, sơ đồ kệ phân loại phức tạp tốn thời gian tìm kiếm.</p>
+            </div>
+            <span class="severity-pill">Nghiêm trọng</span>
+          </div>
+
+          <div class="pain-item">
+            <div class="pain-content">
+              <h3>Dữ liệu không cập nhật Real-time</h3>
+              <p>Mất công đến tận kệ mới biết sách đã bị mượn do hệ thống cũ đồng bộ chậm.</p>
+            </div>
+            <span class="severity-pill">Nghiêm trọng</span>
+          </div>
+
+          <div class="pain-item">
+            <div class="pain-content">
+              <h3>Rào cản giao diện hệ thống cũ</h3>
+              <p>Chữ nhỏ, tương phản kém, nhiều thông tin rối mắt khi thao tác nhanh.</p>
+            </div>
+            <span class="severity-pill" style="background: rgba(251, 191, 36, 0.2); color: #FBBF24; border-color: #FBBF24;">Trung bình</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04. Mong muốn -->
+      <section class="card">
+        <div class="card-header">
+          <h2>04. Mong muốn giải pháp (Wishes)</h2>
+        </div>
+        <ul class="data-list">
+          <li class="data-item">
+            <span class="bullet-square">1</span>
+            <span><strong style="color: var(--cyan);">Tìm kiếm thông minh:</strong> Chatbot AI gợi ý sách theo chủ đề/từ khóa linh hoạt.</span>
+          </li>
+          <li class="data-item">
+            <span class="bullet-square">2</span>
+            <span><strong style="color: var(--cyan);">Bản đồ kệ trực quan:</strong> Bản đồ số quét mã QR chuyển sang mobile hoặc in giấy.</span>
+          </li>
+          <li class="data-item">
+            <span class="bullet-square">3</span>
+            <span><strong style="color: var(--cyan);">Mượn sách 1-chạm:</strong> Máy quét nhạy, tự động đồng bộ phiếu về ứng dụng.</span>
+          </li>
+          <li class="data-item">
+            <span class="bullet-square">4</span>
+            <span><strong style="color: var(--cyan);">Giao diện Trợ năng:</strong> Tùy chỉnh chữ lớn, tương phản cao, phản hồi rõ ràng.</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 05. Điểm chạm -->
+      <section class="card">
+        <div class="card-header">
+          <h2>05. Điểm chạm hệ thống (Touch Points)</h2>
+        </div>
+        <div class="touchpoint-list">
+          <div class="touchpoint-card">
+            <h3>Máy Kiosk AI sảnh thư viện</h3>
+            <p>Màn hình cảm ứng lớn, Chatbot gợi ý sách &amp; Chế độ Trợ năng (Accessibility).</p>
+          </div>
+          <div class="touchpoint-card">
+            <h3>Hệ thống phần cứng Kiosk</h3>
+            <p>Máy quét mã vạch sách, đầu đọc thẻ sinh viên và máy in phiếu mượn tự động.</p>
+          </div>
+          <div class="touchpoint-card">
+            <h3>App di động LibAssist</h3>
+            <p>Nhận bản đồ qua QR, theo dõi phiếu mượn và thông báo nhắc hạn trả sách.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+  </div>
+
+  <!-- Dashboard Footer -->
+  <footer class="dashboard-footer">
+    <span>LibAssist • Unified User Persona</span>
+    <span>Nguyễn Minh Hoàng — 22 tuổi — Sinh viên năm cuối CNTT</span>
+  </footer>
+
+</div>
+
+</body>
+</html>

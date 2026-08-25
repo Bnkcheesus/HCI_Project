@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Value Proposition Canvas — LibAssist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   TOKENS & BASE SETUP
+   ========================================================== */
+:root {
+  --page-bg: #E5E5E5;
+  --frame: #000000;
+
+  --card-1: #12151C;   /* Base Dark */
+  --card-2: #171B24;   
+  --card-3: #1D2230;   
+
+  --cyan: #22D3EE;
+  --cyan-dim: rgba(34,211,238,0.4);
+
+  --white: #F5F7FA;
+  --dim: #93A0B4;
+
+  --font-head: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+
+  --shape: 800px;   /* Master Canvas Size */
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+/* PNG EXPORT OPTIMIZATION */
+html, body {
+  height: auto !important;
+  overflow: visible !important;
+  width: fit-content;
+  min-width: 100%;
+}
+
+body {
+  background: var(--page-bg);
+  font-family: var(--font-head);
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+}
+
+img, svg { display:block; }
+
+.stage {
+  width: fit-content;
+  height: auto !important;
+  overflow: visible !important;
+  padding: 48px 56px 64px;
+  background: var(--page-bg);
+}
+
+/* ==========================================================
+   DOC HEADER
+   ========================================================== */
+.doc-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.doc-header .eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: #6B7480;
+  text-transform: uppercase;
+}
+.doc-header h1 {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: 0.02em;
+  color: var(--frame);
+  margin-top: 6px;
+}
+
+.system-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--frame);
+  text-transform: uppercase;
+}
+
+.badge-phase {
+  background: var(--frame);
+  color: var(--cyan);
+  padding: 3px 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.subtitle-row {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  margin-top: 20px;
+}
+.subtitle-card {
+  width: var(--shape);
+  border: 3px solid var(--frame);
+  background: #FFFFFF;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.subtitle-card .tag {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 4px 8px;
+  background: var(--frame);
+  color: var(--cyan);
+  flex-shrink: 0;
+}
+.subtitle-card p {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--frame);
+  line-height: 1.4;
+}
+
+/* ==========================================================
+   CANVAS ROW
+   ========================================================== */
+.canvas-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+/* CONNECTOR: MŨI TÊN CHÌA VÀO NHAU -> <- */
+.connector {
+  width: 80px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.connector svg {
+  width: 28px;
+  height: 28px;
+  color: var(--frame);
+}
+
+/* ==========================================================
+   SHARED SHAPE FRAME
+   ========================================================== */
+.shape {
+  width: var(--shape);
+  height: var(--shape);
+  position: relative;
+  background: var(--card-1);
+  border: 5px solid var(--frame);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.shape-label {
+  position: absolute;
+  top: -32px;
+  left: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--frame);
+}
+
+/* ĐƯỜNG CHIA TẠO NÉT MẢNH VÀ SẮC HƠN */
+.overlay-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+.overlay-lines line {
+  stroke: var(--cyan);
+  stroke-width: 1.2px; /* Đã hạ độ dày xuống mảnh hơn */
+  filter: drop-shadow(0 0 1.5px rgba(34, 211, 238, 0.4));
+}
+
+/* ITEM TYPOGRAPHY & SPACING */
+.items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.items li {
+  display: flex;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--white);
+}
+.items .idx {
+  flex-shrink: 0;
+  width: 17px;
+  height: 17px;
+  background: var(--cyan);
+  color: #05070A;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--cyan-dim); /* Hạ đường gạch chân tiêu đề xuống 1px */
+}
+.panel-head .ic {
+  width: 19px;
+  height: 19px;
+  color: var(--cyan);
+  flex-shrink: 0;
+}
+.panel-head h3 {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--cyan);
+  text-transform: uppercase;
+}
+
+/* ==========================================================
+   1. VALUE MAP (SQUARE) — CHIA KIỂU >–
+   ========================================================== */
+.square .panel {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.square .panel.ps {
+  left: 28px; top: 50%;
+  transform: translateY(-50%);
+  width: 290px;
+}
+
+/* Gain Creators */
+.square .panel.gc {
+  bottom: 426px; right: 40px;
+  width: 335px;
+}
+
+/* Pain Relievers */
+.square .panel.pr {
+  top: 426px; right: 40px;
+  width: 335px;
+}
+
+.center-badge-square {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px; height: 60px;
+  background: var(--frame);
+  border: 2px solid var(--cyan);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10;
+}
+.center-badge-square svg { width: 28px; height: 28px; color: var(--cyan); }
+
+/* ==========================================================
+   2. CUSTOMER PROFILE (CIRCLE) — CHIA KIỂU –|
+   ========================================================== */
+.shape.circle {
+  border-radius: 50%;
+  background: var(--card-1);
+}
+
+.circle .panel {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Gains */
+.circle .panel.gains {
+  bottom: 426px; left: 75px;
+  width: 290px;
+}
+
+/* Pains */
+.circle .panel.pains {
+  top: 426px; left: 75px;
+  width: 290px;
+}
+
+/* Customer Jobs */
+.circle .panel.jobs {
+  right: 50px; top: 50%;
+  transform: translateY(-50%);
+  width: 295px;
+}
+
+.center-head-circle {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--frame);
+  border: 2px solid var(--cyan);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10;
+}
+.center-head-circle svg { width: 30px; height: 30px; color: var(--cyan); }
+
+/* ==========================================================
+   FOOTNOTE
+   ========================================================== */
+.footnote {
+  margin-top: 28px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #6B7480;
+  letter-spacing: 0.04em;
+}
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <!-- ================= DOC HEADER ================= -->
+  <div class="doc-header">
+    <div class="system-title">
+      <span>LibAssist System</span>
+      <span>/</span>
+      <span class="badge-phase">USER DISCOVERY</span>
+    </div>
+    <h1>THE VALUE PROPOSITION CANVAS</h1>
+
+    <div class="subtitle-row">
+      <div class="subtitle-card">
+        <span class="tag">VALUE</span>
+        <p>Hệ thống Kiosk AI &amp; Ứng dụng Quản lý Thư viện Thông minh LibAssist</p>
+      </div>
+      <div class="subtitle-card">
+        <span class="tag">SEGMENT</span>
+        <p>Sinh viên &amp; Độc giả Thư viện (Nguyễn Minh Hoàng — Persona)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CANVAS ROW ================= -->
+  <div class="canvas-row">
+
+    <!-- ---------------- VALUE MAP (SQUARE - KIỂU >–) ---------------- -->
+    <div class="shape square">
+      <span class="shape-label">VALUE MAP</span>
+
+      <svg class="overlay-lines" viewBox="0 0 800 800" preserveAspectRatio="none">
+        <line x1="0" y1="0" x2="400" y2="400" />
+        <line x1="0" y1="800" x2="400" y2="400" />
+        <line x1="400" y1="400" x2="800" y2="400" />
+      </svg>
+
+      <!-- Products & Services -->
+      <div class="panel ps">
+        <div class="panel-head">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M3 8V5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v3"/><path d="M12 4v17"/></svg>
+          <h3>Products &amp; Services</h3>
+        </div>
+        <ul class="items">
+          <li><span class="idx">1</span>Hệ thống tra cứu tài liệu và gợi ý thông minh.</li>
+          <li><span class="idx">2</span>Bản đồ số vị trí kệ sách (Kiosk, QR mobile, in giấy).</li>
+          <li><span class="idx">3</span>Trạm mượn sách tự phục vụ (quét mã, thẻ SV &amp; in phiếu).</li>
+          <li><span class="idx">4</span>Ứng dụng quản lý mượn trả và thông báo di động.</li>
+        </ul>
+      </div>
+
+      <!-- Gain Creators -->
+      <div class="panel gc">
+        <div class="panel-head">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+          <h3>Gain Creators</h3>
+        </div>
+        <ul class="items">
+          <li><span class="idx">1</span>Tìm đúng tài liệu cần thiết nhanh chóng qua gợi ý phù hợp.</li>
+          <li><span class="idx">2</span>Xem bản đồ vị trí kệ sách linh hoạt trên mọi hình thức.</li>
+          <li><span class="idx">3</span>Tự động hóa mượn sách và tự động nhắc hạn trả.</li>
+          <li><span class="idx">4</span>Trải nghiệm tương tác trực quan, thân thiện cho mọi độc giả.</li>
+        </ul>
+      </div>
+
+      <!-- Pain Relievers -->
+      <div class="panel pr">
+        <div class="panel-head">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m5 12 7 7 7-7"/></svg>
+          <h3>Pain Relievers</h3>
+        </div>
+        <ul class="items">
+          <li><span class="idx">1</span>Tự phục vụ mượn sách tức thì, loại bỏ xếp hàng.</li>
+          <li><span class="idx">2</span>Bản đồ chỉ đường chính xác, giảm thời gian di chuyển.</li>
+          <li><span class="idx">3</span>Hiển thị trạng thái khả dụng của sách theo real-time.</li>
+          <li><span class="idx">4</span>Giao diện trợ năng (chữ phóng to, tương phản cao).</li>
+        </ul>
+      </div>
+
+      <!-- Center Badge -->
+      <div class="center-badge-square">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M3 8V5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v3"/><path d="M12 4v17"/><path d="M7.5 4a2.5 2.5 0 0 1 0-5C9 -1 12 4 12 4"/><path d="M16.5 4a2.5 2.5 0 0 0 0-5C15 -1 12 4 12 4"/></svg>
+      </div>
+    </div>
+
+    <!-- ---------------- CONNECTOR (MŨI TÊN -> <-) ---------------- -->
+    <div class="connector">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
+    </div>
+
+    <!-- ---------------- CUSTOMER PROFILE (CIRCLE - KIỂU –|) ---------------- -->
+    <div class="shape circle">
+      <span class="shape-label">CUSTOMER PROFILE</span>
+
+      <svg class="overlay-lines" viewBox="0 0 800 800">
+        <line x1="0" y1="400" x2="400" y2="400" />
+        <line x1="400" y1="0" x2="400" y2="800" />
+      </svg>
+
+      <!-- Gains -->
+      <div class="panel gains">
+        <div class="panel-head">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 14.4 8.6 21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4Z"/></svg>
+          <h3>Gains</h3>
+        </div>
+        <ul class="items">
+          <li><span class="idx">1</span>Tra cứu, nhận gợi ý tài liệu phù hợp nhanh chóng.</li>
+          <li><span class="idx">2</span>Bản đồ chỉ đường đến kệ sách (xem mobile/in giấy).</li>
+          <li><span class="idx">3</span>Mượn sách tự phục vụ nhanh, tự động nhắc hạn.</li>
+          <li><span class="idx">4</span>Giao diện rõ ràng, có hỗ trợ trợ năng chữ lớn.</li>
+        </ul>
+      </div>
+
+      <!-- Pains -->
+      <div class="panel pains">
+        <div class="panel-head">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <h3>Pains</h3>
+        </div>
+        <ul class="items">
+          <li><span class="idx">1</span>Xếp hàng chờ đợi lâu tại quầy thủ thư.</li>
+          <li><span class="idx">2</span>Tốn thời gian tìm kệ sách trong không gian rộng.</li>
+          <li><span class="idx">3</span>Thông tin vị trí/sách khả dụng không chính xác.</li>
+          <li><span class="idx">4</span>Giao diện tra cứu chữ nhỏ, dễ gây mỏi mắt.</li>
+        </ul>
+      </div>
+
+      <!-- Customer Jobs -->
+      <div class="panel jobs">
+        <div class="panel-head">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          <h3>Customer Jobs</h3>
+        </div>
+        <ul class="items">
+          <li><span class="idx">1</span>Tìm kiếm tài liệu chuyên ngành &amp; giáo trình nghiên cứu.</li>
+          <li><span class="idx">2</span>Xác định vị trí không gian của kệ sách trong thư viện.</li>
+          <li><span class="idx">3</span>Thực hiện thủ tục mượn sách.</li>
+          <li><span class="idx">4</span>Theo dõi thời hạn trả sách và quản lý lịch sử mượn.</li>
+        </ul>
+      </div>
+
+      <!-- Center Head -->
+      <div class="center-head-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.2 4.9-6 8-6s6.5 1.8 8 6"/></svg>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="footnote">LibAssist · Value Proposition Canvas</p>
+
+</div>
+
+</body>
+</html>
