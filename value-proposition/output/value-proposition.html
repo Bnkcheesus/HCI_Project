@@ -17,8 +17,8 @@
   --frame: #000000;
 
   --card-1: #12151C;   /* Base Dark */
-  --card-2: #171B24;   
-  --card-3: #1D2230;   
+  --card-2: #171B24;
+  --card-3: #1D2230;
 
   --cyan: #22D3EE;
   --cyan-dim: rgba(34,211,238,0.4);
@@ -32,7 +32,7 @@
   --shape: 800px;   /* Master Canvas Size */
 }
 
-* { margin:0; padding:0; box-sizing:border-box; }
+* { margin:0; padding:0; box-sizing:border-box; border-radius: 0 !important; }
 
 /* PNG EXPORT OPTIMIZATION */
 html, body {
@@ -85,6 +85,7 @@ img, svg { display:block; }
 .system-title {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   font-family: var(--font-mono);
   font-size: 13px;
@@ -193,7 +194,7 @@ img, svg { display:block; }
 }
 .overlay-lines line {
   stroke: var(--cyan);
-  stroke-width: 1.2px; /* Đã hạ độ dày xuống mảnh hơn */
+  stroke-width: 1.2px;
   filter: drop-shadow(0 0 1.5px rgba(34, 211, 238, 0.4));
 }
 
@@ -207,8 +208,8 @@ img, svg { display:block; }
 .items li {
   display: flex;
   gap: 8px;
-  font-size: 12.5px;
-  line-height: 1.4;
+  font-size: 12px;
+  line-height: 1.35;
   color: var(--white);
 }
 .items .idx {
@@ -232,7 +233,7 @@ img, svg { display:block; }
   gap: 8px;
   margin-bottom: 10px;
   padding-bottom: 6px;
-  border-bottom: 1px solid var(--cyan-dim); /* Hạ đường gạch chân tiêu đề xuống 1px */
+  border-bottom: 1px solid var(--cyan-dim);
 }
 .panel-head .ic {
   width: 19px;
@@ -267,7 +268,7 @@ img, svg { display:block; }
 
 /* Gain Creators */
 .square .panel.gc {
-  bottom: 426px; right: 40px;
+  bottom: 400px; right: 40px;
   width: 335px;
 }
 
@@ -293,7 +294,7 @@ img, svg { display:block; }
    2. CUSTOMER PROFILE (CIRCLE) — CHIA KIỂU –|
    ========================================================== */
 .shape.circle {
-  border-radius: 50%;
+  border-radius: 50% !important;
   background: var(--card-1);
 }
 
@@ -306,7 +307,7 @@ img, svg { display:block; }
 
 /* Gains */
 .circle .panel.gains {
-  bottom: 426px; left: 75px;
+  bottom: 400px; left: 75px;
   width: 290px;
 }
 
@@ -328,7 +329,7 @@ img, svg { display:block; }
   left: 50%; top: 50%;
   transform: translate(-50%, -50%);
   width: 64px; height: 64px;
-  border-radius: 50%;
+  border-radius: 50% !important;
   background: var(--frame);
   border: 2px solid var(--cyan);
   display: flex; align-items: center; justify-content: center;
@@ -358,7 +359,7 @@ img, svg { display:block; }
     <div class="system-title">
       <span>LibAssist System</span>
       <span>/</span>
-      <span class="badge-phase">USER DISCOVERY</span>
+      <span class="badge-phase">VALUE PROPOSITION</span>
     </div>
     <h1>THE VALUE PROPOSITION CANVAS</h1>
 
@@ -369,7 +370,7 @@ img, svg { display:block; }
       </div>
       <div class="subtitle-card">
         <span class="tag">SEGMENT</span>
-        <p>Sinh viên &amp; Độc giả Thư viện (Nguyễn Minh Hoàng — Persona)</p>
+        <p>Nguyễn Minh Khang — Sinh viên năm 3, 21 tuổi, thị lực kém (Persona)</p>
       </div>
     </div>
   </div>
@@ -394,10 +395,11 @@ img, svg { display:block; }
           <h3>Products &amp; Services</h3>
         </div>
         <ul class="items">
-          <li><span class="idx">1</span>Hệ thống tra cứu tài liệu và gợi ý thông minh.</li>
-          <li><span class="idx">2</span>Bản đồ số vị trí kệ sách (Kiosk, QR mobile, in giấy).</li>
-          <li><span class="idx">3</span>Trạm mượn sách tự phục vụ (quét mã, thẻ SV &amp; in phiếu).</li>
-          <li><span class="idx">4</span>Ứng dụng quản lý mượn trả và thông báo di động.</li>
+          <li><span class="idx">1</span>Hệ thống tìm kiếm từ khóa và gợi ý AI theo môn học/sở thích.</li>
+          <li><span class="idx">2</span>Bản đồ định vị kệ sách trên kiosk, xuất QR sang di động.</li>
+          <li><span class="idx">3</span>Trạm tự mượn sách tại kiosk (quét sách + thẻ sinh viên, in phiếu).</li>
+          <li><span class="idx">4</span>Ứng dụng di động đồng bộ tình trạng sách và lịch sử mượn/hạn trả.</li>
+          <li><span class="idx">5</span>Chế độ trợ năng tích hợp trên kiosk.</li>
         </ul>
       </div>
 
@@ -408,10 +410,12 @@ img, svg { display:block; }
           <h3>Gain Creators</h3>
         </div>
         <ul class="items">
-          <li><span class="idx">1</span>Tìm đúng tài liệu cần thiết nhanh chóng qua gợi ý phù hợp.</li>
-          <li><span class="idx">2</span>Xem bản đồ vị trí kệ sách linh hoạt trên mọi hình thức.</li>
-          <li><span class="idx">3</span>Tự động hóa mượn sách và tự động nhắc hạn trả.</li>
-          <li><span class="idx">4</span>Trải nghiệm tương tác trực quan, thân thiện cho mọi độc giả.</li>
+          <li><span class="idx">1</span>Bộ gợi ý sách theo từ khóa/môn học/sở thích.</li>
+          <li><span class="idx">2</span>Bản đồ chỉ đường trực quan trên kiosk, có thể xuất QR.</li>
+          <li><span class="idx">3</span>Luồng tự mượn một chạm (quét sách + thẻ, in phiếu/đồng bộ app).</li>
+          <li><span class="idx">4</span>Cập nhật tình trạng sách theo thời gian thực.</li>
+          <li><span class="idx">5</span>Tìm kiếm nâng cao theo chủ đề, hiển thị tài liệu liên quan.</li>
+          <li><span class="idx">6</span>Chế độ trợ năng toàn diện (chữ lớn, tương phản cao, giọng nói, âm thanh, chỉ dẫn văn bản).</li>
         </ul>
       </div>
 
@@ -422,10 +426,11 @@ img, svg { display:block; }
           <h3>Pain Relievers</h3>
         </div>
         <ul class="items">
-          <li><span class="idx">1</span>Tự phục vụ mượn sách tức thì, loại bỏ xếp hàng.</li>
-          <li><span class="idx">2</span>Bản đồ chỉ đường chính xác, giảm thời gian di chuyển.</li>
-          <li><span class="idx">3</span>Hiển thị trạng thái khả dụng của sách theo real-time.</li>
-          <li><span class="idx">4</span>Giao diện trợ năng (chữ phóng to, tương phản cao).</li>
+          <li><span class="idx">1</span>Tìm kiếm bằng từ khóa/gợi ý AI thay cho việc phải tự hiểu hệ thống phân loại.</li>
+          <li><span class="idx">2</span>Hiển thị tình trạng khả dụng của sách theo thời gian thực ngay trên kết quả tìm kiếm.</li>
+          <li><span class="idx">3</span>Quy trình tự mượn tại kiosk (quét mã, không cần chờ thủ thư).</li>
+          <li><span class="idx">4</span>Ứng dụng di động lưu và nhắc lịch sử mượn/hạn trả tự động.</li>
+          <li><span class="idx">5</span>Chế độ trợ năng (chữ lớn, tương phản cao, phản hồi âm thanh, chỉ dẫn văn bản).</li>
         </ul>
       </div>
 
@@ -457,10 +462,12 @@ img, svg { display:block; }
           <h3>Gains</h3>
         </div>
         <ul class="items">
-          <li><span class="idx">1</span>Tra cứu, nhận gợi ý tài liệu phù hợp nhanh chóng.</li>
-          <li><span class="idx">2</span>Bản đồ chỉ đường đến kệ sách (xem mobile/in giấy).</li>
-          <li><span class="idx">3</span>Mượn sách tự phục vụ nhanh, tự động nhắc hạn.</li>
-          <li><span class="idx">4</span>Giao diện rõ ràng, có hỗ trợ trợ năng chữ lớn.</li>
+          <li><span class="idx">1</span>Tìm kiếm bằng từ khóa đơn giản kèm gợi ý sách phù hợp môn học/sở thích.</li>
+          <li><span class="idx">2</span>Bản đồ chỉ đường trực quan, hiển thị chính xác vị trí kệ sách.</li>
+          <li><span class="idx">3</span>Quy trình tự mượn rõ ràng, nhanh; in phiếu hoặc đồng bộ app.</li>
+          <li><span class="idx">4</span>Biết ngay số lượng sách còn khả dụng theo thời gian thực.</li>
+          <li><span class="idx">5</span>Tìm kiếm nâng cao theo chủ đề chuyên sâu, xem tài liệu liên quan.</li>
+          <li><span class="idx">6</span>Chế độ trợ năng: chữ lớn, tương phản cao, giọng nói, âm thanh, chỉ dẫn văn bản rõ ràng.</li>
         </ul>
       </div>
 
@@ -471,10 +478,11 @@ img, svg { display:block; }
           <h3>Pains</h3>
         </div>
         <ul class="items">
-          <li><span class="idx">1</span>Xếp hàng chờ đợi lâu tại quầy thủ thư.</li>
-          <li><span class="idx">2</span>Tốn thời gian tìm kệ sách trong không gian rộng.</li>
-          <li><span class="idx">3</span>Thông tin vị trí/sách khả dụng không chính xác.</li>
-          <li><span class="idx">4</span>Giao diện tra cứu chữ nhỏ, dễ gây mỏi mắt.</li>
+          <li><span class="idx">1</span>Chưa hiểu cách phân loại/sắp xếp sách trong thư viện lớn, dễ lúng túng.</li>
+          <li><span class="idx">2</span>Không chắc sách còn khả dụng, phải đến tận kệ mới biết.</li>
+          <li><span class="idx">3</span>Không muốn xếp hàng chờ quầy thủ thư giữa các tiết học.</li>
+          <li><span class="idx">4</span>Khó nhớ lịch sử mượn và hạn trả của nhiều đầu sách.</li>
+          <li><span class="idx">5</span>Giao diện chữ nhỏ, tương phản thấp, bản đồ khó dùng, thao tác chạm thiếu phản hồi.</li>
         </ul>
       </div>
 
@@ -485,10 +493,11 @@ img, svg { display:block; }
           <h3>Customer Jobs</h3>
         </div>
         <ul class="items">
-          <li><span class="idx">1</span>Tìm kiếm tài liệu chuyên ngành &amp; giáo trình nghiên cứu.</li>
-          <li><span class="idx">2</span>Xác định vị trí không gian của kệ sách trong thư viện.</li>
-          <li><span class="idx">3</span>Thực hiện thủ tục mượn sách.</li>
-          <li><span class="idx">4</span>Theo dõi thời hạn trả sách và quản lý lịch sử mượn.</li>
+          <li><span class="idx">1</span>Tìm đúng sách/tài liệu nhanh bằng từ khóa đơn giản.</li>
+          <li><span class="idx">2</span>Xác định chính xác vị trí kệ sách để đi thẳng tới lấy.</li>
+          <li><span class="idx">3</span>Tự mượn sách nhanh gọn, không cần xếp hàng.</li>
+          <li><span class="idx">4</span>Theo dõi tình trạng khả dụng của sách và lịch sử mượn/hạn trả.</li>
+          <li><span class="idx">5</span>Thao tác kiosk độc lập dù gặp khó khăn về thị lực.</li>
         </ul>
       </div>
 
@@ -500,7 +509,7 @@ img, svg { display:block; }
 
   </div>
 
-  <p class="footnote">LibAssist · Value Proposition Canvas</p>
+  <p class="footnote">LibAssist · Value Proposition Canvas — Nguồn: persona/output/persona.md</p>
 
 </div>
 
