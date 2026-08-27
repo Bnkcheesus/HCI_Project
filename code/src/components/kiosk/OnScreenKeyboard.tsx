@@ -20,6 +20,13 @@ interface OnScreenKeyboardProps {
   onKey: (key: string) => void
   onBackspace: () => void
   onSubmit: () => void
+  /**
+   * Wording on the enter key. Defaults to the search screen's "Tìm kiếm"; the AI chat
+   * passes "Gửi", because a key labelled "Tìm kiếm" that actually sends a chat message
+   * tells the reader the wrong thing about what is going to happen.
+   */
+  submitLabel?: string
+  submitIcon?: typeof Search
 }
 
 const LAYOUT_CLASS: Record<KeyboardLayout, string> = {
@@ -28,7 +35,13 @@ const LAYOUT_CLASS: Record<KeyboardLayout, string> = {
   right: 'max-w-[64%] ml-auto',
 }
 
-export function OnScreenKeyboard({ onKey, onBackspace, onSubmit }: OnScreenKeyboardProps) {
+export function OnScreenKeyboard({
+  onKey,
+  onBackspace,
+  onSubmit,
+  submitLabel = 'Tìm kiếm',
+  submitIcon: SubmitIcon = Search,
+}: OnScreenKeyboardProps) {
   const [shift, setShift] = useState(false)
   const [numeric, setNumeric] = useState(false)
   const layout = useKeyboardStore((s) => s.layout)
@@ -97,11 +110,11 @@ export function OnScreenKeyboard({ onKey, onBackspace, onSubmit }: OnScreenKeybo
           <Key
             label={
               <span className="inline-flex items-center gap-2">
-                <Search className="size-5" aria-hidden />
-                Tìm kiếm
+                <SubmitIcon className="size-5" aria-hidden />
+                {submitLabel}
               </span>
             }
-            ariaLabel="Tìm kiếm"
+            ariaLabel={submitLabel}
             variant="submit"
             onPress={onSubmit}
             className="basis-[15%]"
@@ -174,7 +187,8 @@ function Key({ label, ariaLabel, variant = 'default', onPress, className }: KeyP
       className={cn(
         'flex min-h-[var(--touch-min)] flex-1 items-center justify-center rounded-xl font-heading font-semibold transition-all active:scale-95',
         variant === 'default' && 'bg-secondary text-foreground hover:bg-[var(--rule)]',
-        variant === 'modifier' && 'bg-[var(--rule)] text-foreground hover:bg-[var(--ink-faint)]/30',
+        variant === 'modifier' &&
+          'bg-[var(--key-modifier-bg)] text-[var(--key-modifier-ink)] hover:brightness-125',
         variant === 'active' && 'bg-primary text-primary-foreground',
         variant === 'space' &&
           'border border-[var(--rule)] bg-card text-muted-foreground hover:bg-secondary',

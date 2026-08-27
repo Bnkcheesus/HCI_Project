@@ -1,6 +1,7 @@
-import { Mic, Search } from 'lucide-react'
+import { Mic, MicOff, Search } from 'lucide-react'
 import type { FormEvent, KeyboardEvent } from 'react'
 import { applyTelexKey } from '@/lib/telex'
+import { cn } from '@/lib/utils'
 
 // Search entry point — Job 1 / Pain Reliever 1 / Product-Service 1.
 // From the SearchRow frame in Figma (10:38). The voice button is the prototype's
@@ -25,6 +26,10 @@ interface SearchFieldProps {
   onActivate?: () => void
   /** Focus the field on mount so the caret is already blinking when the screen lands. */
   autoFocus?: boolean
+  /** False hides the mic entirely — a dead button is worse than no button. */
+  voiceSupported?: boolean
+  voiceListening?: boolean
+  onVoiceToggle?: () => void
 }
 
 export function SearchField({
@@ -33,8 +38,12 @@ export function SearchField({
   onSubmit,
   onActivate,
   autoFocus = false,
+  voiceSupported = false,
+  voiceListening = false,
+  onVoiceToggle,
 }: SearchFieldProps) {
   const isLauncher = onActivate !== undefined
+  const showVoice = voiceSupported && onVoiceToggle !== undefined
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -98,15 +107,31 @@ export function SearchField({
         />
       </div>
 
-      <button
-        type="button"
-        onClick={isLauncher ? onActivate : undefined}
-        aria-label="Tìm bằng giọng nói"
-        title="Tìm bằng giọng nói"
-        className="grid size-16 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground shadow-[0_6px_20px_-6px_rgb(29_78_216/55%)] transition-transform hover:scale-105 active:scale-95"
-      >
-        <Mic className="size-6" aria-hidden />
-      </button>
+      {/* The mic is its own action: on the home screen it must hand off *and* start
+          listening, so it never routes through onActivate like the field does. */}
+      {showVoice && (
+        <button
+          type="button"
+          // Keep the caret in the field while toggling, same trick as the on-screen keys.
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={onVoiceToggle}
+          aria-pressed={voiceListening}
+          aria-label={voiceListening ? 'Dừng nghe' : 'Tìm bằng giọng nói'}
+          title={voiceListening ? 'Dừng nghe' : 'Tìm bằng giọng nói'}
+          className={cn(
+            'grid size-16 shrink-0 place-items-center rounded-full text-white transition-transform hover:scale-105 active:scale-95',
+            voiceListening
+              ? 'bg-[var(--destructive)] shadow-[0_6px_20px_-6px_rgb(194_65_12/60%)]'
+              : 'bg-primary shadow-[0_6px_20px_-6px_rgb(29_78_216/55%)]',
+          )}
+        >
+          {voiceListening ? (
+            <MicOff className="kiosk-pulse size-6" aria-hidden />
+          ) : (
+            <Mic className="size-6" aria-hidden />
+          )}
+        </button>
+      )}
     </form>
   )
 }

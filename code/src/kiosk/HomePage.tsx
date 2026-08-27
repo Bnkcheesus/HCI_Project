@@ -8,6 +8,7 @@ import { KioskFooter } from '@/components/kiosk/KioskFooter'
 import { ModeTabs, type KioskMode } from '@/components/kiosk/ModeTabs'
 import { SearchField } from '@/components/kiosk/SearchField'
 import { SubjectChips } from '@/components/kiosk/SubjectChips'
+import { useSpeechSearch } from '@/lib/useSpeechSearch'
 import { suggestedBooks } from '@/mocks'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 
@@ -16,6 +17,9 @@ export function HomePage() {
   const searchQuery = useBorrowSessionStore((s) => s.searchQuery)
   const setSearchQuery = useBorrowSessionStore((s) => s.setSearchQuery)
   const selectBook = useBorrowSessionStore((s) => s.selectBook)
+  // Only used to decide whether the mic is worth showing; the listening itself happens
+  // on the search screen, where the transcript has somewhere to go.
+  const { isSupported: speechSupported } = useSpeechSearch({ onFinal: setSearchQuery })
 
   function handleModeChange(mode: KioskMode) {
     navigate(mode === 'search' ? '/kiosk/search' : '/kiosk/scan')
@@ -25,6 +29,14 @@ export function HomePage() {
   // down into its docked position above the keyboard instead of cutting between routes.
   function openSearch() {
     navigate('/kiosk/search', { viewTransition: true })
+  }
+
+  // The mic does the same hand-off, but asks the search screen to start listening on
+  // arrival — the user tapped a microphone, so they expect to be able to just talk.
+  // Carried in navigation state rather than a global store: it is a one-shot instruction
+  // about this navigation, not app state.
+  function openSearchListening() {
+    navigate('/kiosk/search', { viewTransition: true, state: { autoListen: true } })
   }
 
   function handleSelectBook(bookId: string) {
@@ -52,6 +64,8 @@ export function HomePage() {
             onChange={setSearchQuery}
             onSubmit={openSearch}
             onActivate={openSearch}
+            voiceSupported={speechSupported}
+            onVoiceToggle={openSearchListening}
           />
         </div>
 

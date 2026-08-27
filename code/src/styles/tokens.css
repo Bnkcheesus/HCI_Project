@@ -20,6 +20,12 @@
   --touch-min: 48px;
 
   --a11y-text-scale: 1;
+
+  /* On-screen keyboard modifier keys (Shift, Backspace, 123). Their own tokens because
+     accessibility mode collapses --rule and --foreground to the same black, which would
+     otherwise paint these keys black-on-black and hide their icons entirely. */
+  --key-modifier-bg: var(--rule);
+  --key-modifier-ink: var(--ink);
 }
 
 /* Paper ground: a faint warm grain so large empty areas read as paper, not flat #fff. */
@@ -53,6 +59,10 @@ html[data-a11y='true'] {
   --muted-foreground: #2b2b2b;
   --border: #000000;
   --input: #000000;
+
+  /* Inverted rather than filled with --rule: solid black on black is invisible. */
+  --key-modifier-bg: #000000;
+  --key-modifier-ink: #ffffff;
 }
 
 html[data-a11y='true'] body {

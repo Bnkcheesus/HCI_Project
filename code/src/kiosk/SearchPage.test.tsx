@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -18,6 +18,14 @@ describe('Kiosk SearchPage', () => {
   beforeEach(() => {
     useBorrowSessionStore.getState().reset()
     useKeyboardStore.getState().setLayout('full')
+  })
+
+  // The keyboard's enter key is configurable so the AI chat can label it "Gửi"; this
+  // screen must keep its own default.
+  it('keeps "Tìm kiếm" on the on-screen keyboard enter key', () => {
+    renderSearch()
+    const keyboard = within(screen.getByRole('group', { name: 'Bàn phím ảo' }))
+    expect(keyboard.getByRole('button', { name: 'Tìm kiếm' })).toBeInTheDocument()
   })
 
   // The caret must already be in the field on arrival — the on-screen keyboard is
