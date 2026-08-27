@@ -69,6 +69,26 @@ html[data-a11y='true'] body {
   background-image: none;
 }
 
+/* Scanner viewport sweep — the only motion that says the reader is looking for a code. */
+@keyframes kiosk-scan-sweep {
+  0% {
+    top: 12%;
+    opacity: 0;
+  }
+  15%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 88%;
+    opacity: 0;
+  }
+}
+
+.kiosk-scanline {
+  animation: kiosk-scan-sweep 2.4s ease-in-out infinite;
+}
+
 /* Thicker, unmistakable borders and focus rings in accessibility mode. */
 html[data-a11y='true'] [data-kiosk-surface] {
   border-width: 2px;
@@ -165,7 +185,8 @@ html[data-a11y='true'] [data-kiosk-surface] {
 
 @media (prefers-reduced-motion: reduce) {
   .kiosk-rise,
-  .kiosk-pulse {
+  .kiosk-pulse,
+  .kiosk-scanline {
     animation: none;
   }
 }

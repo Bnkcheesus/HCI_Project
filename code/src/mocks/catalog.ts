@@ -23,6 +23,8 @@ export const DOCUMENT_TYPE_LABEL: Record<DocumentType, string> = {
 export interface Book {
   id: string
   title: string
+  /** ISBN-13, the code the self-checkout scanner reads off the back cover. */
+  isbn: string
   author: string
   subject: string
   type: DocumentType
@@ -42,6 +44,7 @@ export const books: Book[] = [
   {
     id: 'giai-tich-1',
     title: 'Giải tích 1',
+    isbn: '9786040123456',
     author: 'Tác giả A',
     subject: 'Toán học',
     type: 'book',
@@ -56,6 +59,7 @@ export const books: Book[] = [
   {
     id: 'vat-ly-dai-cuong',
     title: 'Vật lý đại cương',
+    isbn: '9786040234567',
     author: 'Tác giả B',
     subject: 'Vật lý',
     type: 'book',
@@ -70,6 +74,7 @@ export const books: Book[] = [
   {
     id: 'lap-trinh-cpp',
     title: 'Lập trình C++',
+    isbn: '9786040345678',
     author: 'Tác giả C',
     subject: 'Công nghệ thông tin',
     type: 'book',
@@ -84,6 +89,7 @@ export const books: Book[] = [
   {
     id: 'dai-so-tuyen-tinh',
     title: 'Đại số tuyến tính',
+    isbn: '9786040456789',
     author: 'Tác giả D',
     subject: 'Toán học',
     type: 'book',
@@ -100,6 +106,7 @@ export const books: Book[] = [
   {
     id: 'statistical-learning',
     title: 'An Introduction to Statistical Learning',
+    isbn: '9781461471379',
     author: 'Gareth James',
     subject: 'Machine Learning',
     type: 'book',
@@ -115,6 +122,7 @@ export const books: Book[] = [
   {
     id: 'pattern-recognition',
     title: 'Pattern Recognition and Machine Learning',
+    isbn: '9780387310732',
     author: 'Christopher Bishop',
     subject: 'Machine Learning',
     type: 'book',
@@ -129,6 +137,7 @@ export const books: Book[] = [
   {
     id: 'hands-on-ml',
     title: 'Hands-On Machine Learning',
+    isbn: '9781492032649',
     author: 'Aurélien Géron',
     subject: 'Machine Learning',
     type: 'book',
@@ -143,6 +152,7 @@ export const books: Book[] = [
   {
     id: 'mathematics-for-ml',
     title: 'Mathematics for Machine Learning',
+    isbn: '9781108455145',
     author: 'Marc Peter Deisenroth',
     subject: 'Machine Learning',
     type: 'book',
@@ -157,6 +167,7 @@ export const books: Book[] = [
   {
     id: 'jmlr-deep-learning',
     title: 'Deep Learning Advances (JMLR tuyển tập)',
+    isbn: '9772153001007',
     author: 'Journal of Machine Learning Research',
     subject: 'Machine Learning',
     type: 'journal',
@@ -170,6 +181,7 @@ export const books: Book[] = [
   {
     id: 'nature-machine-intelligence',
     title: 'Nature Machine Intelligence (số mới nhất)',
+    isbn: '9772522583003',
     author: 'Nature Publishing Group',
     subject: 'Machine Learning',
     type: 'journal',
@@ -183,6 +195,7 @@ export const books: Book[] = [
   {
     id: 'tia-sang-ai',
     title: 'Tia Sáng — chuyên đề Trí tuệ nhân tạo',
+    isbn: '9771859123004',
     author: 'Tạp chí Tia Sáng',
     subject: 'Machine Learning',
     type: 'magazine',
