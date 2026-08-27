@@ -21,9 +21,9 @@ export function ChatBubble({ message }: ChatBubbleProps) {
 
       <div
         className={cn(
-          'max-w-[78%] rounded-2xl px-6 py-4',
+          'max-w-[78%] rounded-[8px] px-6 py-4',
           isUser
-            ? 'bg-primary text-primary-foreground shadow-[0_6px_20px_-8px_rgb(29_78_216/45%)]'
+            ? 'bg-primary text-primary-foreground shadow-[var(--lift)]'
             : 'border border-[var(--rule)] bg-card text-foreground',
         )}
         style={{ fontSize: 'var(--text-body)' }}
@@ -43,7 +43,7 @@ export function ThinkingBubble() {
     <div className="flex items-start gap-4">
       <AssistantAvatar />
       <div
-        className="flex items-center gap-2 rounded-2xl border border-[var(--rule)] bg-card px-6 py-5"
+        className="flex items-center gap-2 rounded-[8px] border border-[var(--rule)] bg-card px-6 py-5"
         aria-label="Trợ lý đang soạn câu trả lời"
       >
         {[0, 1, 2].map((i) => (
@@ -62,7 +62,7 @@ export function ThinkingBubble() {
 function AssistantAvatar() {
   return (
     <div
-      className="grid size-11 shrink-0 place-items-center rounded-xl bg-[color-mix(in_srgb,var(--live)_16%,transparent)] text-[var(--live-ink)]"
+      className="grid size-11 shrink-0 place-items-center rounded-[8px] bg-[color-mix(in_srgb,var(--live)_16%,transparent)] text-[var(--live-ink)]"
       aria-hidden
     >
       <Sparkles className="size-5" strokeWidth={2.25} />

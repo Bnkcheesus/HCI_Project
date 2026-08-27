@@ -42,7 +42,7 @@ export function KioskQr({ target, alt, caption, size = 'sm' }: KioskQrProps) {
       <div
         data-kiosk-surface
         className={cn(
-          'grid place-items-center overflow-hidden rounded-xl border border-[var(--rule)] bg-white p-1.5',
+          'grid place-items-center overflow-hidden rounded-[8px] border border-[var(--rule)] bg-white p-1.5',
           size === 'lg' ? 'size-40' : 'size-28',
         )}
       >

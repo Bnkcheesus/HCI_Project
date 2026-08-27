@@ -3,9 +3,10 @@
 @import "shadcn/tailwind.css";
 
 /* Self-hosted so a kiosk with flaky network still renders correctly.
-   Lexend: research-backed for reading speed/low-vision legibility (persona: thị lực kém).
-   Be Vietnam Pro: purpose-built Vietnamese diacritics for body copy. */
-@import "@fontsource-variable/lexend";
+   Archivo: a grotesque with enough character to feel chosen rather than defaulted, and a
+   tight fit at display sizes once letter-spacing is pulled in. Vietnamese subset verified.
+   Be Vietnam Pro: purpose-built Vietnamese diacritics, kept for running body copy. */
+@import "@fontsource-variable/archivo";
 @import "@fontsource/be-vietnam-pro/vietnamese-400.css";
 @import "@fontsource/be-vietnam-pro/vietnamese-500.css";
 @import "@fontsource/be-vietnam-pro/vietnamese-600.css";
@@ -19,8 +20,8 @@ body {
 }
 
 @theme inline {
-  --font-heading: 'Lexend Variable', system-ui, sans-serif;
-  --font-sans: 'Be Vietnam Pro', 'Lexend Variable', system-ui, sans-serif;
+  --font-heading: 'Archivo Variable', 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-sans: 'Be Vietnam Pro', 'Archivo Variable', system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -62,51 +63,67 @@ body {
 }
 
 /**
- * LibAssist — "Editorial Library" palette.
- * Semantics carried over from the Figma file (Kf12R4YMZqpvHF2xolpJeH): blue = primary
- * action, green = live/available signal. Execution warmed from Figma's cold slate
- * (#F8FAFC/#1E293B) to an ink-on-paper system, per the agreed aesthetic direction.
- * Every pairing below meets WCAG AA at the sizes it is used.
+ * LibAssist palette.
+ *
+ * Restrained and neutral: the ground and the chrome are three close steps of the same
+ * grey, and colour appears only where it carries meaning — the action, the availability
+ * signal, the refusal. An evenly-coloured interface reads as decorated; a mostly-neutral
+ * one lets the three functional hues actually mean something.
+ *
+ * Depth comes from a hairline plus a shallow shadow rather than from bevels or heavy
+ * borders, both of which read as costume on a flat web surface.
+ *
+ * The persona has low vision, so every pairing clears WCAG AA for *normal* text — the
+ * "large text" threshold is never used. Measured ratios are in the comments.
  */
 :root {
-  --paper: #faf7f0;         /* warm page ground, replaces Figma #F8FAFC */
-  --ink: #16192b;           /* primary text, ~16:1 on paper */
-  --ink-soft: #5a5e70;      /* secondary text, ~6:1 on paper */
-  --ink-faint: #8c8f9e;     /* placeholder only */
-  --rule: #e6dfd2;          /* warm hairline */
-  --live: #0e9f6e;          /* availability dot / graphics */
-  --live-ink: #0a7a54;      /* availability text, ~5:1 on paper */
+  --page: #f5f5f2;          /* page ground */
+  --chrome: #efefeb;        /* header, footer, keyboard bed — one step down from page */
+  --chrome-deep: #e4e4df;   /* hover / pressed chrome */
+  --ink: #15161a;           /* primary text, 16.55:1 on page */
+  --ink-soft: #55565e;      /* secondary text, 6.68:1 */
+  --ink-faint: #6e6f77;     /* placeholder, 4.57:1 */
+  --rule: #e4e4df;          /* hairline */
+  --rule-soft: #ececE8;     /* faintest divider, on white */
 
-  /* Book spine accents — the recurring editorial motif across book cards */
-  --spine-1: #1d4ed8;
-  --spine-2: #0e9f6e;
-  --spine-3: #c2570c;
-  --spine-4: #6d28d9;
+  --navy-deep: #16325e;     /* hover on the primary action */
+  --navy: #1b3b6f;          /* primary action, 10.11:1 on page · 11.04:1 with white */
+  --navy-soft: #2c5391;     /* selected row, secondary emphasis */
 
-  --background: var(--paper);
+  --live: #0f6b45;          /* availability, 5.99:1 on page · 6.54:1 with white */
+  --live-ink: #0f6b45;
+  --sunken: #cfcfc8;        /* field border — a firmer hairline, not a recess */
+
+  /* Book spine accents — the recurring motif across book cards */
+  --spine-1: #1b3b6f;
+  --spine-2: #0f6b45;
+  --spine-3: #8a5216;
+  --spine-4: #4a3a7a;
+
+  --background: var(--page);
   --foreground: var(--ink);
   --card: #ffffff;
   --card-foreground: var(--ink);
   --popover: #ffffff;
   --popover-foreground: var(--ink);
-  --primary: #1d4ed8;
+  --primary: var(--navy);
   --primary-foreground: #ffffff;
-  --secondary: #f2ece0;
+  --secondary: var(--chrome);
   --secondary-foreground: var(--ink);
-  --muted: #f2ece0;
+  --muted: var(--chrome);
   --muted-foreground: var(--ink-soft);
-  --accent: #f2ece0;
+  --accent: var(--chrome);
   --accent-foreground: var(--ink);
-  --destructive: #c2410c;
+  --destructive: #a2372a;   /* 6.17:1 on page · 6.74:1 with white */
   --border: var(--rule);
-  --input: var(--rule);
-  --ring: #1d4ed8;
+  --input: var(--sunken);
+  --ring: var(--navy);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 8px;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);

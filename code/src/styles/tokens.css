@@ -5,16 +5,32 @@
 
 :root {
   /* Kiosk type scale — sized for a user standing ~60cm from a 1280px touchscreen.
-     Figma's 12–13px body was set for a desktop viewing distance; these are the
-     agreed kiosk-ergonomic sizes. Everything scales with --a11y-text-scale. */
-  --text-brand: calc(1.5rem * var(--a11y-text-scale)); /* 24px */
+     The old scale ran 24→13px with no display size, so every heading sat at roughly the
+     same weight and nothing led the eye. --text-display opens a real top end.
+     Everything scales with --a11y-text-scale. */
+  --text-display: calc(2.25rem * var(--a11y-text-scale)); /* 36px — page titles */
+  --text-brand: calc(1.75rem * var(--a11y-text-scale)); /* 28px */
   --text-tab: calc(1.375rem * var(--a11y-text-scale)); /* 22px */
-  --text-field: calc(1.25rem * var(--a11y-text-scale)); /* 20px */
-  --text-section: calc(1.25rem * var(--a11y-text-scale)); /* 20px */
-  --text-title: calc(1.125rem * var(--a11y-text-scale)); /* 18px */
+  --text-field: calc(1.1875rem * var(--a11y-text-scale)); /* 19px */
+  --text-section: calc(1.1875rem * var(--a11y-text-scale)); /* 19px */
+  --text-title: calc(1.0625rem * var(--a11y-text-scale)); /* 17px */
   --text-body: calc(1rem * var(--a11y-text-scale)); /* 16px */
   --text-meta: calc(0.9375rem * var(--a11y-text-scale)); /* 15px */
   --text-eyebrow: calc(0.8125rem * var(--a11y-text-scale)); /* 13px, letterspaced caps */
+
+  /* Elevation. Two levels, both shallow: a control is separated from the page by its
+     hairline border, and the shadow only confirms it. Deep or blurred shadows read as
+     decoration rather than structure. */
+  --lift: 0 1px 2px rgb(21 22 26 / 5%), 0 1px 3px rgb(21 22 26 / 4%);
+  --lift-2: 0 2px 4px rgb(21 22 26 / 6%), 0 8px 16px -8px rgb(21 22 26 / 10%);
+
+  /* Composites the components reference, so a control's intent is named once here rather
+     than spelled out as a different shadow stack in every file. Swapping the definitions
+     below re-skins every screen at once. */
+  --btn-shadow: var(--lift);
+  --btn-shadow-pressed: none;
+  --field-shadow: none;
+  --card-shadow: var(--lift);
 
   /* Minimum touch target on a kiosk — WCAG 2.2 AAA is 44px; 48px is the comfortable floor. */
   --touch-min: 48px;
@@ -28,13 +44,11 @@
   --key-modifier-ink: var(--ink);
 }
 
-/* Paper ground: a faint warm grain so large empty areas read as paper, not flat #fff. */
+/* Flat warm ground. The two radial gradient washes that used to sit here were the single
+   clearest "generated interface" tell in the old design, and a flat ground with a real
+   three-step surface hierarchy above it reads as considered instead. */
 body {
-  background-color: var(--paper);
-  background-image:
-    radial-gradient(circle at 18% 12%, rgb(29 78 216 / 4%) 0%, transparent 42%),
-    radial-gradient(circle at 88% 8%, rgb(14 159 110 / 4%) 0%, transparent 38%);
-  background-attachment: fixed;
+  background-color: var(--page);
 }
 
 /**
@@ -44,29 +58,42 @@ body {
  */
 html[data-a11y='true'] {
   --a11y-text-scale: 1.25;
-  --paper: #ffffff;
+  --page: #ffffff;
+  --chrome: #ffffff;
+  --chrome-deep: #e8e8e8;
   --ink: #000000;
   --ink-soft: #2b2b2b;
   --ink-faint: #4a4a4a;
   --rule: #000000;
-  --live-ink: #005c3d;
+  --rule-soft: #000000;
+  --sunken: #000000;
+
+  --navy-deep: #002a6b;
+  --navy: #0b3fb5;
+  --navy-soft: #0b3fb5;
+  --live: #00522c;
+  --live-ink: #00522c;
 
   --background: #ffffff;
   --foreground: #000000;
   --card: #ffffff;
   --card-foreground: #000000;
   --primary: #0b3fb5;
+  --secondary: #ffffff;
+  --muted: #ffffff;
   --muted-foreground: #2b2b2b;
+  --destructive: #8a0000;
   --border: #000000;
   --input: #000000;
+
+  /* Shadow is a low-contrast cue, so accessibility mode drops it entirely and lets the
+     solid black borders carry the structure — shading must never be the only signal. */
+  --lift: none;
+  --lift-2: none;
 
   /* Inverted rather than filled with --rule: solid black on black is invisible. */
   --key-modifier-bg: #000000;
   --key-modifier-ink: #ffffff;
-}
-
-html[data-a11y='true'] body {
-  background-image: none;
 }
 
 /* Scanner viewport sweep — the only motion that says the reader is looking for a code. */

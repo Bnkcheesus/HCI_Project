@@ -20,6 +20,17 @@ describe('Kiosk SearchPage', () => {
     useKeyboardStore.getState().setLayout('full')
   })
 
+  /**
+   * The home screen clears the query on arrival; this screen must not. Going search →
+   * results → back is a normal loop, and losing the query there would mean retyping it
+   * on an on-screen keyboard.
+   */
+  it('keeps the query when the search screen is re-entered', () => {
+    useBorrowSessionStore.getState().setSearchQuery('giải tích')
+    renderSearch()
+    expect(screen.getByRole('searchbox')).toHaveValue('giải tích')
+  })
+
   // The keyboard's enter key is configurable so the AI chat can label it "Gửi"; this
   // screen must keep its own default.
   it('keeps "Tìm kiếm" on the on-screen keyboard enter key', () => {

@@ -54,7 +54,7 @@ export function SearchSuggestions({ query, onSelect }: SearchSuggestionsProps) {
               type="button"
               onClick={() => onSelect(book.id)}
               data-kiosk-surface
-              className="group flex w-full items-center gap-5 overflow-hidden rounded-2xl border border-[var(--rule)] bg-card py-4 pr-5 text-left transition-colors hover:border-primary/50 hover:bg-secondary"
+              className="group flex w-full items-center gap-5 overflow-hidden rounded-[8px] border border-[var(--rule)] bg-card py-4 pr-5 text-left transition-colors hover:border-primary/50 hover:bg-secondary"
             >
               <span
                 aria-hidden

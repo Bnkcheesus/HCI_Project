@@ -65,7 +65,7 @@ export function BorrowCompletePage() {
           {/* The slip itself */}
           <section
             data-kiosk-surface
-            className="flex min-h-0 flex-col gap-4 overflow-y-auto rounded-2xl border-2 border-[var(--rule)] bg-card p-6"
+            className="flex min-h-0 flex-col gap-4 overflow-y-auto rounded-[8px] border border-[var(--rule)] bg-card shadow-[var(--btn-shadow)] p-6"
             aria-label="Phiếu mượn sách"
           >
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-dashed border-[var(--rule)] pb-3">
@@ -138,7 +138,7 @@ export function BorrowCompletePage() {
               <button
                 type="button"
                 onClick={() => setPrinted(true)}
-                className="inline-flex min-h-16 items-center justify-center gap-3 rounded-full border-2 border-[var(--rule)] bg-card px-6 font-heading font-bold text-foreground transition-colors hover:bg-secondary"
+                className="inline-flex min-h-16 items-center justify-center gap-3 rounded-[6px] border border-[var(--rule)] bg-card shadow-[var(--btn-shadow)] px-6 font-heading font-bold text-foreground transition-colors hover:bg-secondary"
                 style={{ fontSize: 'var(--text-tab)' }}
               >
                 <Printer className="size-6" aria-hidden />
@@ -156,7 +156,7 @@ export function BorrowCompletePage() {
               <button
                 type="button"
                 onClick={goHome}
-                className="inline-flex min-h-16 items-center justify-center gap-3 rounded-full bg-primary px-6 font-heading font-bold text-primary-foreground shadow-[0_6px_20px_-6px_rgb(29_78_216/55%)] transition-transform hover:scale-[1.01] active:scale-95"
+                className="inline-flex min-h-16 items-center justify-center gap-3 rounded-[6px] bg-primary px-6 font-heading font-bold text-primary-foreground shadow-[var(--btn-shadow)] transition-[background,box-shadow] duration-150 active:brightness-95"
                 style={{ fontSize: 'var(--text-tab)' }}
               >
                 <House className="size-6" aria-hidden />

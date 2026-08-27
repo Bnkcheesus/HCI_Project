@@ -130,7 +130,7 @@ export function ScanStep2Page() {
             {/* Only shown before the borrow is committed — the review the prototype skipped. */}
             {student && canConfirm && (
               <p
-                className="flex items-start gap-3 rounded-2xl border-2 border-[var(--live-ink)] bg-[color-mix(in_srgb,var(--live)_8%,transparent)] px-5 py-4 text-foreground"
+                className="flex items-start gap-3 rounded-[8px] border-2 border-[var(--live-ink)] bg-[color-mix(in_srgb,var(--live)_8%,transparent)] px-5 py-4 text-foreground"
                 style={{ fontSize: 'var(--text-body)' }}
               >
                 <CalendarClock className="mt-0.5 size-6 shrink-0 text-[var(--live-ink)]" aria-hidden />
@@ -181,7 +181,7 @@ export function ScanStep2Page() {
         <button
           type="button"
           onClick={() => navigate('/kiosk/scan/step-1', { replace: true })}
-          className="inline-flex min-h-16 items-center justify-center gap-3 rounded-full border-2 border-[var(--rule)] bg-card px-10 font-heading font-bold text-foreground transition-colors hover:bg-secondary"
+          className="inline-flex min-h-16 items-center justify-center gap-3 rounded-[6px] border border-[var(--rule)] bg-card shadow-[var(--btn-shadow)] px-10 font-heading font-bold text-foreground transition-colors hover:bg-secondary"
           style={{ fontSize: 'var(--text-tab)' }}
         >
           <ArrowLeft className="size-6" aria-hidden />
@@ -192,7 +192,7 @@ export function ScanStep2Page() {
           type="button"
           onClick={confirm}
           disabled={!canConfirm}
-          className="inline-flex min-h-16 flex-1 items-center justify-center gap-3 rounded-full bg-primary px-8 font-heading font-bold text-primary-foreground shadow-[0_6px_20px_-6px_rgb(29_78_216/55%)] transition-transform hover:scale-[1.01] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:scale-100"
+          className="inline-flex min-h-16 flex-1 items-center justify-center gap-3 rounded-[6px] bg-primary px-8 font-heading font-bold text-primary-foreground shadow-[var(--btn-shadow)] transition-[background,box-shadow] duration-150 active:brightness-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:scale-100"
           style={{ fontSize: 'var(--text-tab)' }}
         >
           <Check className="size-6" aria-hidden />
@@ -224,7 +224,7 @@ function StudentPanel({
     <section className="flex flex-col gap-4">
       <div
         data-kiosk-surface
-        className="flex items-center gap-4 rounded-2xl border-2 border-[var(--rule)] bg-card p-5"
+        className="flex items-center gap-4 rounded-[8px] border border-[var(--rule)] bg-card shadow-[var(--btn-shadow)] p-5"
       >
         <span
           className={
@@ -266,7 +266,7 @@ function StudentPanel({
           {blocks.map((block) => (
             <li
               key={block.code}
-              className="rounded-2xl border-2 border-[var(--destructive)] bg-[color-mix(in_srgb,var(--destructive)_7%,transparent)] px-5 py-4"
+              className="rounded-[8px] border-2 border-[var(--destructive)] bg-[color-mix(in_srgb,var(--destructive)_7%,transparent)] px-5 py-4"
             >
               <p
                 className="font-heading font-bold text-[var(--destructive)]"

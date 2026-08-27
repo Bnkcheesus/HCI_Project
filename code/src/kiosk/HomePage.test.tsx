@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { useAccessibilityStore } from '@/state/useAccessibilityStore'
+import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 import { HomePage } from './HomePage'
 
 function renderHome() {
@@ -16,6 +17,20 @@ function renderHome() {
 describe('Kiosk HomePage', () => {
   beforeEach(() => {
     useAccessibilityStore.getState().setEnabled(false)
+    useBorrowSessionStore.getState().reset()
+  })
+
+  /**
+   * Reaching home ends the previous session. On a kiosk in a public hallway the next
+   * person must not walk up to whatever a stranger was searching for.
+   */
+  it('clears a leftover search when the home screen is reached', () => {
+    useBorrowSessionStore.getState().setSearchQuery('giải tích')
+
+    renderHome()
+
+    expect(screen.getByRole('searchbox')).toHaveValue('')
+    expect(useBorrowSessionStore.getState().searchQuery).toBe('')
   })
 
   it('lists the four suggested books', () => {

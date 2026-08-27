@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LibAssist — Mẫu thiết kế v2</title>
+
+<!--
+  TRANG XEM MẪU v2 — độc lập, không đụng vào code app.
+  v1 dùng bóng đổ cứng 3px + viền đen 2px (hướng in ty-pô) → đọc ra "hoạt hình / arcade".
+  v2 đổi hướng: nâng khối bằng SẮC ĐỘ và HAIRLINE thay vì viền dày và bóng cứng.
+  Font nạp từ Google Fonts để trang chạy độc lập; bản chính thức sẽ self-host qua fontsource.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  /* ---- nền & bề mặt: ba bậc sắc độ, đó là cách nâng khối thay cho bóng đổ ---- */
+  --paper:#F5F5F2;
+  --surface:#FFFFFF;
+  --sunken:#EFEFEB;
+
+  /* ---- chữ ---- */
+  --ink:#15161A;      /* 16.55:1  AAA */
+  --ink-2:#55565E;    /*  6.68:1  AA  */
+  --ink-3:#6E6F77;    /*  4.57:1  AA  — placeholder */
+
+  /* ---- đường kẻ: hairline 1px, không phải viền 2px ---- */
+  --line:#E4E4DF;
+  --line-2:#CFCFC8;
+
+  /* ---- màu chức năng: trầm, dùng tiết chế ---- */
+  --navy:#1B3B6F;     /* 10.11:1 — nút chính */
+  --navy-h:#16325E;
+  --live:#0F6B45;     /*  5.99:1 — còn sách */
+  --alert:#A2372A;    /*  6.17:1 — lỗi */
+  --brass:#8A6220;    /*  5.00:1 — dấu nhấn, dùng rất ít */
+
+  --r:8px;
+  --r-sm:6px;
+  /* bóng gần như không thấy — chỉ đủ tách khối khỏi nền */
+  --shadow:0 1px 2px rgb(21 22 26/.05), 0 1px 3px rgb(21 22 26/.04);
+  --shadow-lift:0 2px 4px rgb(21 22 26/.06), 0 8px 16px -8px rgb(21 22 26/.10);
+
+  --display:2.5rem;
+  --brand:1.875rem;
+  --tab:1.375rem;
+  --section:1.1875rem;
+  --title:1.0625rem;
+  --body:1rem;
+  --meta:.9375rem;
+  --eyebrow:.75rem;
+
+  --head:'Archivo',system-ui,sans-serif;
+  --sans:'Be Vietnam Pro',system-ui,sans-serif;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:var(--body);line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.h{font-family:var(--head);margin:0;letter-spacing:-.021em;font-weight:600}
+.display{font-size:var(--display);line-height:1.06;letter-spacing:-.028em;font-weight:600}
+.brand{font-size:var(--brand);line-height:1.15;letter-spacing:-.024em;font-weight:600}
+.eyebrow{
+  font-family:var(--head);font-size:var(--eyebrow);font-weight:600;
+  text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);
+}
+.num{font-variant-numeric:tabular-nums}
+
+.wrap{max-width:1120px;margin:0 auto;padding:0 40px 120px}
+
+/* ---------- đầu trang ---------- */
+.top{background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{padding-top:44px;padding-bottom:40px}
+.top .row{display:flex;align-items:flex-end;justify-content:space-between;gap:40px;flex-wrap:wrap}
+.badge{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--head);font-size:var(--eyebrow);font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-2);background:var(--sunken);
+  border:1px solid var(--line);border-radius:100px;padding:5px 12px;
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--live)}
+
+section{margin-top:72px}
+.sec{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+.sec .n{font-family:var(--head);font-size:var(--eyebrow);font-weight:600;color:var(--ink-3);letter-spacing:.08em}
+.sec h2{font-size:var(--section)}
+.rule{height:1px;background:var(--line);margin:14px 0 28px}
+.note{color:var(--ink-2);font-size:var(--meta);max-width:64ch;margin:0 0 28px}
+
+/* ---------- màu ---------- */
+.sw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.sw{background:var(--surface);padding:0}
+.sw .c{height:64px}
+.sw .m{padding:12px 14px 14px}
+.sw .n2{font-family:var(--head);font-weight:600;font-size:var(--meta)}
+.sw .hx{font-size:var(--eyebrow);color:var(--ink-3);letter-spacing:.03em;margin-top:1px}
+.sw .r{font-size:var(--eyebrow);color:var(--ink-2);margin-top:6px}
+.ok{color:var(--live);font-weight:600}
+
+/* ---------- chữ ---------- */
+.sr{display:flex;align-items:baseline;gap:24px;padding:14px 0;border-bottom:1px solid var(--line)}
+.sr:last-child{border-bottom:0}
+.sr .l{font-size:var(--eyebrow);color:var(--ink-3);width:132px;flex:none;letter-spacing:.05em;font-family:var(--head)}
+
+/* ---------- component ---------- */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:44px}
+@media(max-width:920px){.g2{grid-template-columns:1fr}}
+
+.btn{
+  font-family:var(--head);font-weight:600;font-size:var(--tab);
+  border-radius:var(--r);padding:0 26px;min-height:52px;
+  display:inline-flex;align-items:center;gap:9px;cursor:pointer;
+  border:1px solid transparent;transition:background .15s ease,border-color .15s ease;
+}
+.btn-p{background:var(--navy);color:#fff;box-shadow:var(--shadow)}
+.btn-p:hover{background:var(--navy-h)}
+.btn-s{background:var(--surface);color:var(--ink);border-color:var(--line-2);box-shadow:var(--shadow)}
+.btn-s:hover{background:var(--sunken)}
+.btn-q{background:transparent;color:var(--navy);padding:0 10px}
+.btn-q:hover{background:var(--sunken)}
+
+.field{
+  display:flex;align-items:center;gap:12px;background:var(--surface);
+  border:1px solid var(--line-2);border-radius:var(--r);
+  padding:0 18px;min-height:56px;box-shadow:var(--shadow);
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.field:focus-within{border-color:var(--navy);box-shadow:0 0 0 3px rgb(27 59 111/.12)}
+.field input{border:0;outline:0;background:transparent;font-family:var(--sans);font-size:1.0625rem;width:100%;color:var(--ink)}
+.field input::placeholder{color:var(--ink-3)}
+.icon-btn{
+  width:44px;height:44px;flex:none;border-radius:50%;border:1px solid var(--line-2);
+  background:var(--surface);color:var(--ink-2);display:grid;place-items:center;cursor:pointer;
+  transition:all .15s ease;
+}
+.icon-btn:hover{border-color:var(--navy);color:var(--navy)}
+.icon-btn.on{background:var(--alert);border-color:var(--alert);color:#fff}
+
+/* thẻ sách */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);transition:box-shadow .18s ease,transform .18s ease}
+.card:hover{box-shadow:var(--shadow-lift);transform:translateY(-1px)}
+.card .cv{height:132px;background:var(--sunken);border-bottom:1px solid var(--line);display:grid;place-items:center;position:relative}
+.card .bd{padding:14px 16px 16px}
+.card .t{font-family:var(--head);font-weight:600;font-size:var(--title);letter-spacing:-.015em;line-height:1.3}
+.card .a{color:var(--ink-2);font-size:var(--meta);margin-top:2px}
+.tag{
+  display:inline-flex;align-items:center;gap:6px;font-size:var(--eyebrow);font-weight:600;
+  border-radius:100px;padding:4px 10px;font-family:var(--head);letter-spacing:.01em;
+}
+.tag-in{background:rgb(15 107 69/.10);color:var(--live)}
+.tag-out{background:var(--sunken);color:var(--ink-2)}
+.tag-sh{background:var(--sunken);color:var(--ink-2)}
+
+/* lỗi — nền nhạt + hairline cùng sắc, không phải khung dày */
+.alert{
+  display:flex;gap:13px;background:rgb(162 55 42/.055);
+  border:1px solid rgb(162 55 42/.22);border-radius:var(--r);padding:15px 17px;
+}
+.alert .h3{font-family:var(--head);font-weight:600;font-size:var(--title);color:var(--alert)}
+.alert .p{color:var(--ink-2);font-size:var(--meta);margin-top:4px}
+
+/* bàn phím */
+.keys{display:flex;gap:7px;flex-wrap:wrap}
+.key{
+  font-family:var(--head);font-weight:500;font-size:1rem;
+  min-width:52px;min-height:48px;display:grid;place-items:center;
+  background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-sm);
+  box-shadow:0 1px 0 rgb(21 22 26/.05);
+}
+.key.mod{background:var(--sunken);color:var(--ink-2)}
+.key.go{background:var(--navy);color:#fff;border-color:var(--navy);padding:0 20px;font-weight:600}
+
+/* tiến trình */
+.steps{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.st{display:flex;align-items:center;gap:9px}
+.st .d{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:var(--head);font-size:var(--eyebrow);font-weight:600;border:1px solid var(--line-2);color:var(--ink-3);background:var(--surface)}
+.st.done .d{background:var(--live);border-color:var(--live);color:#fff}
+.st.now .d{background:var(--navy);border-color:var(--navy);color:#fff}
+.st .l2{font-family:var(--head);font-weight:500;font-size:var(--meta);color:var(--ink-3)}
+.st.now .l2,.st.done .l2{color:var(--ink)}
+.cnt{height:1px;width:36px;background:var(--line-2)}
+
+/* trước / sau */
+.ba{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+@media(max-width:820px){.ba{grid-template-columns:1fr}}
+.ba>div{padding:30px}
+.ba .v1{background:#FBF9F3;border-right:1px solid var(--line)}
+.ba .v2{background:var(--surface)}
+.ba .tg{display:block;font-family:var(--head);font-size:var(--eyebrow);text-transform:uppercase;letter-spacing:.09em;font-weight:600;margin-bottom:20px;color:var(--ink-3)}
+/* v1 dựng lại đúng bản in ty-pô đã bị chê arcade */
+.v1btn{font-family:'Archivo';font-weight:700;font-size:1.375rem;color:#fff;background:#C63518;border:2px solid #12100C;border-radius:4px;padding:13px 24px;box-shadow:3px 3px 0 #12100C}
+.v1card{background:#fff;border:2px solid #12100C;box-shadow:3px 3px 0 #12100C;padding:14px 16px;margin-bottom:20px}
+.v1tag{background:#1B6B3A;color:#fff;border:2px solid #12100C;border-radius:2px;padding:3px 9px;font-size:.75rem;font-weight:700;font-family:'Archivo';display:inline-block;margin-top:9px}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="wrap">
+    <div class="row">
+      <div>
+        <p class="eyebrow" style="margin:0 0 14px">Mẫu thiết kế v2 · chưa áp vào app</p>
+        <h1 class="display">Thư viện thông minh</h1>
+        <p style="color:var(--ink-2);margin:14px 0 0;max-width:46ch">
+          Nâng khối bằng sắc độ và đường kẻ mảnh, không bằng viền dày và bóng đổ cứng.
+        </p>
+      </div>
+      <span class="badge"><span class="dot"></span>LibAssist Kiosk</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- 01 vì sao đổi -->
+  <section>
+    <div class="sec"><span class="n">01</span><h2>Đổi gì so với v2 trước</h2></div>
+    <div class="rule"></div>
+    <div class="sw-grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+      <div class="sw"><div class="m">
+        <div class="n2">Viền 2px đen → hairline 1px</div>
+        <div class="r">Viền dày là thứ khiến giao diện đọc ra như hoạt hình. Hairline <span class="num">#E4E4DF</span> giữ ranh giới mà không gào lên.</div>
+      </div></div>
+      <div class="sw"><div class="m">
+        <div class="n2">Bóng cứng 3px → sắc độ</div>
+        <div class="r">Khối nổi lên nhờ ba bậc nền (chìm · giấy · trắng), bóng chỉ còn 1–2px gần như không thấy.</div>
+      </div></div>
+      <div class="sw"><div class="m">
+        <div class="n2">Son rực → xanh navy trầm</div>
+        <div class="r">Đỏ cam bão hoà trên nút lớn là tín hiệu arcade. Navy <span class="num">#1B3B6F</span> điềm đạm và chuyên nghiệp hơn.</div>
+      </div></div>
+      <div class="sw"><div class="m">
+        <div class="n2">Bricolage → Archivo</div>
+        <div class="r">Bricolage có nét "thủ công" hơi nghịch. Archivo là grotesque chững chạc, vẫn có cá tính riêng.</div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- 02 màu -->
+  <section>
+    <div class="sec"><span class="n">02</span><h2>Bảng màu</h2></div>
+    <div class="rule"></div>
+    <p class="note">
+      Chủ đạo là trung tính; màu chức năng chỉ xuất hiện đúng chỗ cần. Mọi cặp đều đạt WCAG AA
+      cho chữ thường — persona thị lực kém nên không dùng ngưỡng "chữ lớn".
+    </p>
+    <div class="sw-grid">
+      <div class="sw"><div class="c" style="background:#F5F5F2"></div><div class="m"><div class="n2">Giấy</div><div class="hx num">#F5F5F2</div><div class="r">nền chính</div></div></div>
+      <div class="sw"><div class="c" style="background:#FFFFFF"></div><div class="m"><div class="n2">Bề mặt</div><div class="hx num">#FFFFFF</div><div class="r">thẻ, ô nhập</div></div></div>
+      <div class="sw"><div class="c" style="background:#EFEFEB"></div><div class="m"><div class="n2">Chìm</div><div class="hx num">#EFEFEB</div><div class="r">bệ bàn phím</div></div></div>
+      <div class="sw"><div class="c" style="background:#15161A"></div><div class="m"><div class="n2">Mực</div><div class="hx num">#15161A</div><div class="r"><span class="ok">16.55:1 · AAA</span></div></div></div>
+      <div class="sw"><div class="c" style="background:#55565E"></div><div class="m"><div class="n2">Mực phụ</div><div class="hx num">#55565E</div><div class="r"><span class="ok">6.68:1 · AA</span></div></div></div>
+      <div class="sw"><div class="c" style="background:#1B3B6F"></div><div class="m"><div class="n2">Navy — nút chính</div><div class="hx num">#1B3B6F</div><div class="r"><span class="ok">11.04:1 chữ trắng · AAA</span></div></div></div>
+      <div class="sw"><div class="c" style="background:#0F6B45"></div><div class="m"><div class="n2">Lục — còn sách</div><div class="hx num">#0F6B45</div><div class="r"><span class="ok">6.54:1 · AA</span></div></div></div>
+      <div class="sw"><div class="c" style="background:#A2372A"></div><div class="m"><div class="n2">Đỏ — lỗi</div><div class="hx num">#A2372A</div><div class="r"><span class="ok">6.74:1 · AA</span></div></div></div>
+    </div>
+  </section>
+
+  <!-- 03 chữ -->
+  <section>
+    <div class="sec"><span class="n">03</span><h2>Chữ</h2></div>
+    <div class="rule"></div>
+    <p class="note">
+      <strong>Archivo</strong> cho tiêu đề và nhãn giao diện — grotesque chững chạc, siết letter-spacing
+      âm ở cỡ lớn cho gọn. <strong>Be Vietnam Pro</strong> giữ thân bài, vốn thiết kế riêng cho dấu tiếng Việt.
+    </p>
+    <div class="sr"><span class="l">display · 40</span><span class="h display">Thư viện thông minh</span></div>
+    <div class="sr"><span class="l">brand · 30</span><span class="h brand">Tự mượn sách tại kiosk</span></div>
+    <div class="sr"><span class="l">tab · 22</span><span class="h" style="font-size:var(--tab)">Xác nhận mượn 3 cuốn</span></div>
+    <div class="sr"><span class="l">section · 19</span><span class="h" style="font-size:var(--section)">Bản đồ chỉ dẫn 3D</span></div>
+    <div class="sr"><span class="l">title · 17</span><span class="h" style="font-size:var(--title)">An Introduction to Statistical Learning</span></div>
+    <div class="sr"><span class="l">body · 16</span><span>Giáo trình giải tích một biến dành cho sinh viên năm nhất khối kỹ thuật.</span></div>
+    <div class="sr"><span class="l">meta · 15</span><span style="color:var(--ink-2)" class="num">Gareth James · ISBN 9781461471379 · Kệ A3, tầng 2</span></div>
+    <div class="sr"><span class="l">eyebrow · 12</span><span class="eyebrow">Phiếu mượn của bạn</span></div>
+  </section>
+
+  <!-- 04 component -->
+  <section>
+    <div class="sec"><span class="n">04</span><h2>Các khối dựng lại</h2></div>
+    <div class="rule"></div>
+    <div class="g2">
+      <div>
+        <p class="eyebrow" style="margin:0 0 14px">Ô tìm kiếm</p>
+        <div class="field">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--ink-3)" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input placeholder="Nhập tên sách, tác giả hoặc mã ISBN…" aria-label="mẫu">
+          <button class="icon-btn" title="mic nghỉ"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></button>
+        </div>
+        <div style="display:flex;gap:11px;margin-top:14px;align-items:center">
+          <button class="icon-btn on" title="đang nghe"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></button>
+          <span style="font-size:var(--meta);color:var(--ink-2)">Mic nằm trong ô. Đang nghe mới đổi sang đỏ.</span>
+        </div>
+
+        <p class="eyebrow" style="margin:34px 0 14px">Nút</p>
+        <div style="display:flex;gap:11px;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-p">Mượn sách</button>
+          <button class="btn btn-s">Quay về</button>
+          <button class="btn btn-q">Hỏi trợ lý AI</button>
+        </div>
+
+        <p class="eyebrow" style="margin:34px 0 14px">Bàn phím</p>
+        <div class="keys">
+          <span class="key">q</span><span class="key">w</span><span class="key">e</span>
+          <span class="key mod">⇧</span><span class="key mod">⌫</span><span class="key go">Tìm kiếm</span>
+        </div>
+
+        <p class="eyebrow" style="margin:34px 0 14px">Tiến trình mượn</p>
+        <div class="steps">
+          <div class="st done"><span class="d">✓</span><span class="l2">Quét sách</span></div><span class="cnt"></span>
+          <div class="st now"><span class="d">2</span><span class="l2">Quét thẻ</span></div><span class="cnt"></span>
+          <div class="st"><span class="d">3</span><span class="l2">Xong</span></div>
+        </div>
+      </div>
+
+      <div>
+        <p class="eyebrow" style="margin:0 0 14px">Thẻ sách</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="card">
+            <div class="cv"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--line-2)" stroke-width="1.5"><path d="M2 4h8a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2zM22 4h-8a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h9z"/></svg></div>
+            <div class="bd"><div class="t">Giải tích 1</div><div class="a">Tác giả A</div>
+              <div style="margin-top:11px;display:flex;gap:6px;flex-wrap:wrap">
+                <span class="tag tag-in"><span class="dot"></span>Còn 3 cuốn</span>
+              </div></div>
+          </div>
+          <div class="card">
+            <div class="cv"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--line-2)" stroke-width="1.5"><path d="M2 4h8a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2zM22 4h-8a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h9z"/></svg></div>
+            <div class="bd"><div class="t">Lập trình C++</div><div class="a">Tác giả C</div>
+              <div style="margin-top:11px;display:flex;gap:6px;flex-wrap:wrap">
+                <span class="tag tag-out">Đã mượn hết</span>
+              </div></div>
+          </div>
+        </div>
+
+        <p class="eyebrow" style="margin:34px 0 14px">Dòng trong phiếu mượn</p>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)">
+          <div style="display:flex;align-items:center;gap:13px;padding:13px 15px;border-bottom:1px solid var(--line)">
+            <span style="width:34px;height:46px;background:var(--sunken);border:1px solid var(--line);border-radius:3px;flex:none"></span>
+            <span style="flex:1;min-width:0">
+              <span class="h" style="display:block;font-size:var(--meta);font-weight:600">Giải tích 1</span>
+              <span class="num" style="display:block;font-size:var(--eyebrow);color:var(--ink-3);margin-top:1px">ISBN 9786040123456</span>
+            </span>
+            <span class="tag tag-sh num">Kệ MA-101</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:13px;padding:13px 15px">
+            <span style="width:34px;height:46px;background:var(--sunken);border:1px solid var(--line);border-radius:3px;flex:none"></span>
+            <span style="flex:1;min-width:0">
+              <span class="h" style="display:block;font-size:var(--meta);font-weight:600">Vật lý đại cương</span>
+              <span class="num" style="display:block;font-size:var(--eyebrow);color:var(--ink-3);margin-top:1px">ISBN 9786040234567</span>
+            </span>
+            <span class="tag tag-sh num">Kệ PH-204</span>
+          </div>
+        </div>
+
+        <p class="eyebrow" style="margin:34px 0 14px">Thẻ bị chặn</p>
+        <div class="alert">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--alert)" stroke-width="2" style="flex:none;margin-top:2px"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+          <div>
+            <div class="h3">Thẻ chưa đủ điều kiện mượn</div>
+            <div class="p">Bạn đang có 2 cuốn quá hạn trả: Vật lý đại cương, Giải tích 1. Vui lòng trả những cuốn này trước khi mượn thêm.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 trước sau -->
+  <section>
+    <div class="sec"><span class="n">05</span><h2>v1 &amp; v2</h2></div>
+    <div class="rule"></div>
+    <p class="note">Cùng một khối, dựng bằng hệ in ty-pô cũ và hệ mới.</p>
+    <div class="ba">
+      <div class="v1">
+        <span class="tg">v1 — in ty-pô</span>
+        <div class="v1card">
+          <div style="font-family:'Archivo';font-weight:700;font-size:1.0625rem">Giải tích 1</div>
+          <div style="color:#4A463C;font-size:.9375rem">Tác giả A</div>
+          <span class="v1tag">Còn 3 cuốn</span>
+        </div>
+        <button class="v1btn">Mượn sách</button>
+        <p style="color:#4A463C;font-size:.75rem;margin-top:20px;line-height:1.6">
+          Viền đen 2px · bóng cứng 3px · đỏ cam bão hoà<br>→ đọc ra hoạt hình / arcade
+        </p>
+      </div>
+      <div class="v2">
+        <span class="tg" style="color:var(--navy)">v2 — hiện tại đề xuất</span>
+        <div class="card" style="margin-bottom:20px">
+          <div class="bd">
+            <div class="t">Giải tích 1</div>
+            <div class="a">Tác giả A</div>
+            <span class="tag tag-in" style="margin-top:11px"><span class="dot"></span>Còn 3 cuốn</span>
+          </div>
+        </div>
+        <button class="btn btn-p">Mượn sách</button>
+        <p style="color:var(--ink-2);font-size:.75rem;margin-top:20px;line-height:1.6">
+          Hairline 1px · bóng 1–2px · navy trầm<br>→ điềm đạm, chuyên nghiệp
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 trợ năng -->
+  <section>
+    <div class="sec"><span class="n">06</span><h2>Chế độ trợ năng</h2></div>
+    <div class="rule"></div>
+    <p class="note">Bật trợ năng vẫn ép về đen tuyệt đối trên trắng và phóng chữ 125%, giữ nguyên như hiện tại.</p>
+    <div style="border:2px solid #000;background:#fff;padding:26px;display:flex;gap:18px;flex-wrap:wrap;align-items:center;border-radius:var(--r)">
+      <button class="btn" style="background:#12305C;color:#fff;font-size:1.72rem;min-height:64px">Mượn sách</button>
+      <span class="key" style="background:#000;color:#fff;border-color:#000;min-width:64px;min-height:60px;font-size:1.25rem">⇧</span>
+      <span style="font-size:1.25rem;color:#000">Chữ thân bài phóng 125%</span>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

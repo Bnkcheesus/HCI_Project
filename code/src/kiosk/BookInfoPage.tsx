@@ -51,7 +51,7 @@ export function BookInfoPage() {
           <div className="flex gap-5">
             <div
               data-kiosk-surface
-              className="relative aspect-[3/4] w-40 shrink-0 overflow-hidden rounded-2xl border border-[var(--rule)] bg-secondary"
+              className="relative aspect-[3/4] w-40 shrink-0 overflow-hidden rounded-[8px] border border-[var(--rule)] bg-secondary"
             >
               {book.coverUrl && (
                 <img src={book.coverUrl} alt="" className="size-full object-cover" />
@@ -75,7 +75,7 @@ export function BookInfoPage() {
           {/* Metadata: lets the reader confirm this is the right edition before walking. */}
           <dl
             data-kiosk-surface
-            className="grid grid-cols-2 gap-x-6 gap-y-3 rounded-2xl border border-[var(--rule)] bg-card p-5"
+            className="grid grid-cols-2 gap-x-6 gap-y-3 rounded-[8px] border border-[var(--rule)] bg-card p-5"
             style={{ fontSize: 'var(--text-meta)' }}
           >
             <Field label="Năm xuất bản" value={String(book.year)} />
@@ -117,7 +117,7 @@ export function BookInfoPage() {
               <img
                 src="/maps/floor-3d.jpg"
                 alt="Sơ đồ tổng quan không gian thư viện dạng 3D"
-                className="max-h-56 w-full rounded-2xl border border-[var(--rule)] bg-card object-contain"
+                className="max-h-56 w-full rounded-[8px] border border-[var(--rule)] bg-card object-contain"
               />
             </div>
 
@@ -139,7 +139,7 @@ export function BookInfoPage() {
                   </p>
                 </div>
                 <span
-                  className="rounded-full bg-[var(--live-ink)] px-4 py-2 font-heading font-semibold text-white"
+                  className="rounded-[6px] bg-[var(--live-ink)] px-4 py-2 font-heading font-semibold text-white"
                   style={{ fontSize: 'var(--text-meta)' }}
                 >
                   Kệ {location.shelfCode} • Tầng {location.floor}
@@ -151,9 +151,9 @@ export function BookInfoPage() {
               {/* The route in words — the picture alone is not enough for this persona. */}
               <div
                 data-kiosk-surface
-                className="flex items-start gap-4 rounded-2xl border border-[var(--rule)] bg-card p-5"
+                className="flex items-start gap-4 rounded-[8px] border border-[var(--rule)] bg-card p-5"
               >
-                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground">
+                <span className="grid size-11 shrink-0 place-items-center rounded-[8px] bg-primary text-primary-foreground">
                   <Navigation className="size-5" aria-hidden />
                 </span>
                 <ol className="flex flex-col gap-1">
@@ -185,7 +185,7 @@ export function BookInfoPage() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex min-h-16 items-center justify-center gap-3 rounded-full border-2 border-[var(--rule)] bg-card px-10 font-heading font-bold text-foreground transition-colors hover:bg-secondary"
+            className="inline-flex min-h-16 items-center justify-center gap-3 rounded-[6px] border border-[var(--rule)] bg-card shadow-[var(--btn-shadow)] px-10 font-heading font-bold text-foreground transition-colors hover:bg-secondary"
             style={{ fontSize: 'var(--text-tab)' }}
           >
             <ArrowLeft className="size-6" aria-hidden />
@@ -196,7 +196,7 @@ export function BookInfoPage() {
             type="button"
             onClick={startBorrow}
             disabled={!isAvailable}
-            className="inline-flex min-h-16 flex-1 items-center justify-center gap-3 rounded-full bg-primary px-8 font-heading font-bold text-primary-foreground shadow-[0_6px_20px_-6px_rgb(29_78_216/55%)] transition-transform hover:scale-[1.01] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:scale-100"
+            className="inline-flex min-h-16 flex-1 items-center justify-center gap-3 rounded-[6px] bg-primary px-8 font-heading font-bold text-primary-foreground shadow-[var(--btn-shadow)] transition-[background,box-shadow] duration-150 active:brightness-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:scale-100"
             style={{ fontSize: 'var(--text-tab)' }}
           >
             <ScanLine className="size-6" aria-hidden />
@@ -233,7 +233,7 @@ function NotFound({ onBack }: { onBack: () => void }) {
         <button
           type="button"
           onClick={onBack}
-          className="min-h-[var(--touch-min)] rounded-full bg-primary px-8 font-heading font-bold text-primary-foreground"
+          className="min-h-[var(--touch-min)] rounded-[6px] bg-primary px-8 font-heading font-bold text-primary-foreground"
           style={{ fontSize: 'var(--text-body)' }}
         >
           Quay về kết quả tìm kiếm

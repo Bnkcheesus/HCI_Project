@@ -37,7 +37,7 @@ export function ResultCard({ book, onSelect }: ResultCardProps) {
       type="button"
       onClick={() => onSelect(book.id)}
       data-kiosk-surface
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--rule)] bg-card text-left transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_16px_32px_-16px_rgb(22_25_43/28%)]"
+      className="group flex h-full flex-col overflow-hidden rounded-[8px] border border-[var(--rule)] bg-card text-left transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--lift-2)]"
     >
       <div className="relative aspect-[16/9] shrink-0 overflow-hidden bg-secondary">
         <span

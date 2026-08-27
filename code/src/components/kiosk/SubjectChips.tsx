@@ -27,7 +27,7 @@ export function SubjectChips({ onSelect }: SubjectChipsProps) {
               type="button"
               onClick={() => onSelect(subject)}
               data-kiosk-surface
-              className="min-h-[var(--touch-min)] rounded-full border border-[var(--rule)] bg-card px-6 font-medium text-foreground transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground"
+              className="min-h-[var(--touch-min)] rounded-[6px] border border-[var(--rule)] bg-card px-6 font-medium text-foreground transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground"
               style={{ fontSize: 'var(--text-body)' }}
             >
               {subject}

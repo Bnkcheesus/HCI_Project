@@ -50,7 +50,7 @@ export function ResultToolbar({
               aria-selected={active}
               onClick={() => onTypeChange(t)}
               className={cn(
-                'min-h-[var(--touch-min)] rounded-full px-5 font-medium transition-colors',
+                'min-h-[var(--touch-min)] rounded-[6px] px-5 font-medium transition-colors',
                 active
                   ? 'bg-primary text-primary-foreground'
                   : 'border border-[var(--rule)] bg-card text-foreground hover:border-primary/40 hover:text-primary',
@@ -72,7 +72,7 @@ export function ResultToolbar({
           <select
             value={sort}
             onChange={(e) => onSortChange(e.target.value as SortMode)}
-            className="min-h-[var(--touch-min)] rounded-xl border border-[var(--rule)] bg-card px-4 font-medium text-foreground"
+            className="min-h-[var(--touch-min)] rounded-[8px] border border-[var(--rule)] bg-card px-4 font-medium text-foreground"
             style={{ fontSize: 'var(--text-meta)' }}
           >
             {SORT_ORDER.map((mode) => (
@@ -89,7 +89,7 @@ export function ResultToolbar({
             onClick={onToggleAdvanced}
             aria-expanded={advancedOpen}
             className={cn(
-              'inline-flex min-h-[var(--touch-min)] items-center gap-2 rounded-xl border px-5 font-heading font-semibold transition-colors',
+              'inline-flex min-h-[var(--touch-min)] items-center gap-2 rounded-[8px] border px-5 font-heading font-semibold transition-colors',
               advancedOpen || advancedCount > 0
                 ? 'border-primary bg-primary text-primary-foreground'
                 : 'border-[var(--rule)] bg-card text-primary hover:bg-secondary',

@@ -81,7 +81,7 @@ export function SearchField({
     >
       <div
         data-kiosk-surface
-        className="flex flex-1 items-center gap-4 rounded-2xl border-2 border-[var(--rule)] bg-card px-6 shadow-[0_1px_2px_rgb(22_25_43/4%)] transition-shadow focus-within:border-primary focus-within:shadow-[0_0_0_4px_rgb(29_78_216/18%)]"
+        className="flex flex-1 items-center gap-4 rounded-[6px] border border-[var(--sunken)] bg-card px-6 shadow-[var(--field-shadow)] transition-shadow focus-within:border-primary focus-within:shadow-[var(--field-shadow),0_0_0_3px_rgb(27_95_191/28%)]"
       >
         <Search className="size-6 shrink-0 text-muted-foreground" aria-hidden />
         <input
@@ -119,10 +119,10 @@ export function SearchField({
           aria-label={voiceListening ? 'Dừng nghe' : 'Tìm bằng giọng nói'}
           title={voiceListening ? 'Dừng nghe' : 'Tìm bằng giọng nói'}
           className={cn(
-            'grid size-16 shrink-0 place-items-center rounded-full text-white transition-transform hover:scale-105 active:scale-95',
+            'grid size-16 shrink-0 place-items-center rounded-full text-white transition-[background,box-shadow] duration-150 active:brightness-95',
             voiceListening
-              ? 'bg-[var(--destructive)] shadow-[0_6px_20px_-6px_rgb(194_65_12/60%)]'
-              : 'bg-primary shadow-[0_6px_20px_-6px_rgb(29_78_216/55%)]',
+              ? 'bg-[var(--destructive)] shadow-[var(--btn-shadow)]'
+              : 'bg-primary shadow-[var(--btn-shadow)]',
           )}
         >
           {voiceListening ? (

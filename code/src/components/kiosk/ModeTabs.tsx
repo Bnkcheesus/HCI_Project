@@ -28,10 +28,10 @@ export function ModeTabs({ value, onChange }: ModeTabsProps) {
             aria-selected={active}
             onClick={() => onChange(mode.id)}
             className={cn(
-              'rounded-full px-8 font-heading font-bold transition-all duration-200',
+              'rounded-[6px] px-8 font-heading font-bold transition-all duration-200',
               'min-h-14',
               active
-                ? 'bg-primary text-primary-foreground shadow-[0_6px_20px_-6px_rgb(29_78_216/55%)]'
+                ? 'bg-primary text-primary-foreground shadow-[var(--btn-shadow)]'
                 : 'border border-[var(--rule)] bg-card text-foreground hover:border-primary/40 hover:text-primary',
             )}
             style={{ fontSize: 'var(--text-tab)' }}

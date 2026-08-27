@@ -153,7 +153,7 @@ export function ScanStep1Page() {
           // replace, not push: stepping back and forth through the checkout must not
           // pile up duplicate entries that later turn "Quay về" into "go forward".
           onClick={() => navigate('/kiosk/scan', { replace: true })}
-          className="inline-flex min-h-16 items-center justify-center gap-3 rounded-full border-2 border-[var(--rule)] bg-card px-10 font-heading font-bold text-foreground transition-colors hover:bg-secondary"
+          className="inline-flex min-h-16 items-center justify-center gap-3 rounded-[6px] border border-[var(--rule)] bg-card shadow-[var(--btn-shadow)] px-10 font-heading font-bold text-foreground transition-colors hover:bg-secondary"
           style={{ fontSize: 'var(--text-tab)' }}
         >
           <ArrowLeft className="size-6" aria-hidden />
@@ -164,7 +164,7 @@ export function ScanStep1Page() {
           type="button"
           onClick={() => navigate('/kiosk/scan/step-2')}
           disabled={scannedBookIds.length === 0}
-          className="inline-flex min-h-16 flex-1 items-center justify-center gap-3 rounded-full bg-primary px-8 font-heading font-bold text-primary-foreground shadow-[0_6px_20px_-6px_rgb(29_78_216/55%)] transition-transform hover:scale-[1.01] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:scale-100"
+          className="inline-flex min-h-16 flex-1 items-center justify-center gap-3 rounded-[6px] bg-primary px-8 font-heading font-bold text-primary-foreground shadow-[var(--btn-shadow)] transition-[background,box-shadow] duration-150 active:brightness-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:scale-100"
           style={{ fontSize: 'var(--text-tab)' }}
         >
           Tiếp tục — Bước 2: quét thẻ

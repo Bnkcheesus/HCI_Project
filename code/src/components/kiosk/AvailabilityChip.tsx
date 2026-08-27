@@ -22,7 +22,7 @@ export function AvailabilityChip({ bookId, className }: AvailabilityChipProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-semibold text-white',
+        'inline-flex items-center gap-2 rounded-[6px] px-3 py-1.5 font-semibold text-white',
         isAvailable ? 'bg-[var(--live-ink)]' : 'bg-[var(--ink)]',
         className,
       )}

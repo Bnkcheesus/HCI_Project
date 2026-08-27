@@ -37,7 +37,7 @@ export function ShelfRouteMap({ location }: ShelfRouteMapProps) {
   return (
     <div
       data-kiosk-surface
-      className="relative aspect-[100/38] w-full overflow-hidden rounded-2xl border border-[var(--rule)] bg-secondary"
+      className="relative aspect-[100/38] w-full overflow-hidden rounded-[8px] border border-[var(--rule)] bg-secondary"
     >
       <svg
         viewBox="0 0 100 38"
@@ -120,13 +120,13 @@ function Marker({
       style={{ left: `${x}%`, top: `${y}%` }}
     >
       <span
-        className="grid size-9 place-items-center rounded-full text-white shadow-[0_2px_8px_rgb(22_25_43/28%)]"
+        className="grid size-9 place-items-center rounded-full text-white shadow-[var(--lift-2)]"
         style={{ backgroundColor: bg }}
       >
         <Icon className="size-4.5" strokeWidth={2.5} aria-hidden />
       </span>
       <span
-        className="whitespace-nowrap rounded-md px-2 py-0.5 font-heading font-bold text-white"
+        className="whitespace-nowrap rounded-[6px] px-2 py-0.5 font-heading font-bold text-white"
         style={{ backgroundColor: bg, fontSize: 'var(--text-eyebrow)' }}
       >
         {label}

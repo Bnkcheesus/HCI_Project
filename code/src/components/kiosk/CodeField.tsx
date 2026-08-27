@@ -44,7 +44,7 @@ export function CodeField({
 
       <div
         data-kiosk-surface
-        className="flex items-center rounded-2xl border-2 border-[var(--rule)] bg-card px-6 transition-shadow focus-within:border-primary focus-within:shadow-[0_0_0_4px_rgb(29_78_216/18%)]"
+        className="flex items-center rounded-[6px] border border-[var(--sunken)] bg-card px-6 shadow-[var(--field-shadow)] transition-shadow focus-within:border-primary focus-within:shadow-[var(--field-shadow),0_0_0_3px_rgb(27_95_191/28%)]"
       >
         <input
           id="kiosk-code-field"

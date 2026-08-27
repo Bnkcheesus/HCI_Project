@@ -20,11 +20,13 @@ export function KioskHeader({ statusLabel }: KioskHeaderProps) {
   return (
     <header
       data-kiosk-surface
-      className="flex items-center justify-between gap-6 border-b border-[var(--rule)] bg-card px-10 py-4"
+      // Chrome, not content: a step down from the page ground marks the parts that belong
+      // to the machine, leaving white for the library's own material.
+      className="flex shrink-0 items-center justify-between gap-6 border-b border-[var(--rule)] bg-[var(--chrome)] px-10 py-4"
     >
       {/* Brand */}
       <div className="flex items-center gap-4">
-        <div className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground">
+        <div className="grid size-12 shrink-0 place-items-center rounded-[8px] bg-primary text-primary-foreground">
           <BookOpen className="size-6" strokeWidth={2.25} aria-hidden />
         </div>
         <div className="leading-tight">
@@ -67,7 +69,7 @@ export function KioskHeader({ statusLabel }: KioskHeaderProps) {
           aria-pressed={a11yEnabled}
           title="Chế độ trợ năng: chữ lớn, tương phản cao"
           className={cn(
-            'inline-flex items-center gap-2 rounded-xl border px-4 font-semibold transition-colors',
+            'inline-flex items-center gap-2 rounded-[8px] border px-4 font-semibold transition-colors',
             'min-h-[var(--touch-min)]',
             a11yEnabled
               ? 'border-primary bg-primary text-primary-foreground'
@@ -83,7 +85,7 @@ export function KioskHeader({ statusLabel }: KioskHeaderProps) {
           type="button"
           onClick={() => navigate('/kiosk', { viewTransition: true })}
           aria-label="Về trang chủ"
-          className="grid size-[var(--touch-min)] place-items-center rounded-xl border border-[var(--rule)] bg-secondary text-foreground transition-colors hover:bg-[var(--rule)]"
+          className="grid size-[var(--touch-min)] place-items-center rounded-[8px] border border-[var(--rule)] bg-secondary text-foreground transition-colors hover:bg-[var(--rule)]"
         >
           <House className="size-5" aria-hidden />
         </button>
@@ -96,7 +98,7 @@ function LanguageSwitch() {
   // Visual-only for now — i18n is not in scope of the value proposition.
   return (
     <div
-      className="flex items-center rounded-xl bg-secondary p-1"
+      className="flex items-center rounded-[8px] bg-secondary p-1"
       role="group"
       aria-label="Ngôn ngữ"
     >
@@ -106,7 +108,7 @@ function LanguageSwitch() {
           type="button"
           aria-pressed={i === 0}
           className={cn(
-            'min-h-10 rounded-lg px-4 font-semibold transition-colors',
+            'min-h-10 rounded-[6px] px-4 font-semibold transition-colors',
             i === 0 ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground',
           )}
           style={{ fontSize: 'var(--text-meta)' }}

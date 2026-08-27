@@ -58,7 +58,7 @@ export function OnScreenKeyboard({
   return (
     <div
       data-kiosk-surface
-      className="border-t border-[var(--rule)] bg-card px-10 py-5"
+      className="border-t border-[var(--rule)] bg-[var(--chrome)] px-10 py-5"
       role="group"
       aria-label="Bàn phím ảo"
       // Slides up as the search bar docks — see the View Transition rules in tokens.css.
@@ -141,7 +141,7 @@ function LayoutControls() {
       <span className="text-muted-foreground" style={{ fontSize: 'var(--text-eyebrow)' }}>
         Vị trí bàn phím
       </span>
-      <div className="flex items-center gap-1 rounded-xl bg-secondary p-1" role="group">
+      <div className="flex items-center gap-1 rounded-[8px] bg-secondary p-1" role="group">
         {LAYOUT_OPTIONS.map(({ id, icon: Icon, label }) => (
           <button
             key={id}
@@ -152,7 +152,7 @@ function LayoutControls() {
             aria-label={label}
             title={label}
             className={cn(
-              'grid size-10 place-items-center rounded-lg transition-colors',
+              'grid size-10 place-items-center rounded-[6px] transition-colors',
               layout === id
                 ? 'bg-card text-primary shadow-sm'
                 : 'text-muted-foreground hover:text-foreground',
@@ -185,15 +185,16 @@ function Key({ label, ariaLabel, variant = 'default', onPress, className }: KeyP
       onClick={onPress}
       aria-label={ariaLabel}
       className={cn(
-        'flex min-h-[var(--touch-min)] flex-1 items-center justify-center rounded-xl font-heading font-semibold transition-all active:scale-95',
-        variant === 'default' && 'bg-secondary text-foreground hover:bg-[var(--rule)]',
+        // A key is a card with a hairline and a shallow shadow; pressing darkens it.
+        'flex min-h-[var(--touch-min)] flex-1 items-center justify-center rounded-[6px] font-heading font-semibold',
+        'border border-[var(--rule)] shadow-[var(--btn-shadow)]',
+        'transition-[background,box-shadow] duration-150 active:brightness-95',
+        variant === 'default' && 'bg-card text-foreground hover:bg-[var(--chrome-deep)]',
         variant === 'modifier' &&
           'bg-[var(--key-modifier-bg)] text-[var(--key-modifier-ink)] hover:brightness-125',
         variant === 'active' && 'bg-primary text-primary-foreground',
-        variant === 'space' &&
-          'border border-[var(--rule)] bg-card text-muted-foreground hover:bg-secondary',
-        variant === 'submit' &&
-          'bg-primary text-primary-foreground shadow-[0_6px_20px_-6px_rgb(29_78_216/55%)] hover:brightness-110',
+        variant === 'space' && 'bg-card text-muted-foreground hover:bg-[var(--chrome-deep)]',
+        variant === 'submit' && 'bg-primary text-primary-foreground hover:brightness-110',
         className,
       )}
       style={{ fontSize: 'var(--text-body)' }}

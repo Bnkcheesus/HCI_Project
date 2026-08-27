@@ -49,7 +49,7 @@ export function ScanCart({ bookIds, onRemove }: ScanCartProps) {
 
       {bookIds.length === 0 ? (
         <p
-          className="flex items-center gap-2 rounded-2xl border border-dashed border-[var(--rule)] px-5 py-4 text-muted-foreground"
+          className="flex items-center gap-2 rounded-[8px] border border-dashed border-[var(--rule)] px-5 py-4 text-muted-foreground"
           style={{ fontSize: 'var(--text-meta)' }}
         >
           <BookMarked className="size-5 shrink-0" aria-hidden />
@@ -64,14 +64,14 @@ export function ScanCart({ bookIds, onRemove }: ScanCartProps) {
             return (
               <li
                 key={id}
-                className="flex items-center gap-3 rounded-2xl border border-[var(--rule)] bg-card p-3"
+                className="flex items-center gap-3 rounded-[8px] border border-[var(--rule)] bg-card p-3"
               >
                 {book.coverUrl ? (
-                  <img src={book.coverUrl} alt="" className="h-14 w-10 shrink-0 rounded-md object-cover" />
+                  <img src={book.coverUrl} alt="" className="h-14 w-10 shrink-0 rounded-[6px] object-cover" />
                 ) : (
                   <span
                     aria-hidden
-                    className="h-14 w-10 shrink-0 rounded-md"
+                    className="h-14 w-10 shrink-0 rounded-[6px]"
                     style={{ backgroundColor: SPINE_COLOR[book.spine] }}
                   />
                 )}

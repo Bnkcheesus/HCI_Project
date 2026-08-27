@@ -1,6 +1,7 @@
 // Implements Goal 1–3 / Product-Service 1–3 — kiosk landing screen, entry point into
 // search, AI chat and the self-checkout flow. Figma frame: kiosk-home (5:715).
 import { Sparkles } from 'lucide-react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BookCard } from '@/components/kiosk/BookCard'
 import { KioskHeader } from '@/components/kiosk/KioskHeader'
@@ -20,6 +21,17 @@ export function HomePage() {
   // Only used to decide whether the mic is worth showing; the listening itself happens
   // on the search screen, where the transcript has somewhere to go.
   const { isSupported: speechSupported } = useSpeechSearch({ onFinal: setSearchQuery })
+
+  /**
+   * The home screen is the start of a session, so it starts empty.
+   *
+   * The query lives in the session store because the search and results screens have to
+   * share it, but reaching home means the previous search is over — and on a shared kiosk
+   * the next person must not walk up to whatever a stranger was looking for.
+   */
+  useEffect(() => {
+    setSearchQuery('')
+  }, [setSearchQuery])
 
   function handleModeChange(mode: KioskMode) {
     navigate(mode === 'search' ? '/kiosk/search' : '/kiosk/scan')
@@ -50,10 +62,13 @@ export function HomePage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    // h-screen + overflow-hidden, matching every other kiosk screen: the header and the
+    // footer are fixed chrome, and only the content between them scrolls. With
+    // min-h-screen the whole page scrolled and carried the footer up with it.
+    <div className="flex h-screen flex-col overflow-hidden">
       <KioskHeader statusLabel="Trang chủ" />
 
-      <main className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col gap-8 px-10 py-8">
+      <main className="mx-auto flex w-full min-h-0 max-w-[1280px] flex-1 flex-col gap-8 overflow-y-auto px-10 py-8">
         <div className="kiosk-rise" style={{ animationDelay: '60ms' }}>
           <ModeTabs value="search" onChange={handleModeChange} />
         </div>
@@ -118,7 +133,7 @@ export function HomePage() {
         type="button"
         onClick={() => navigate('/kiosk/ai-chat')}
         aria-label="Mở trợ lý AI gợi ý sách"
-        className="fixed bottom-28 right-10 inline-flex min-h-16 items-center gap-3 rounded-full bg-[var(--live-ink)] px-7 font-heading font-bold text-white shadow-[0_12px_32px_-8px_rgb(10_122_84/55%)] transition-transform hover:scale-105 active:scale-95"
+        className="fixed bottom-28 right-10 inline-flex min-h-16 items-center gap-3 rounded-[6px] bg-[var(--live-ink)] px-7 font-heading font-bold text-white shadow-[var(--lift-2)] transition-[background,box-shadow] duration-150 active:brightness-95"
         style={{ fontSize: 'var(--text-body)' }}
       >
         <Sparkles className="size-6" aria-hidden />

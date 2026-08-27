@@ -69,8 +69,10 @@ function PadKey({
       disabled={disabled}
       aria-label={ariaLabel}
       className={cn(
-        'flex min-h-16 items-center justify-center rounded-xl font-heading font-bold transition-all active:scale-95',
-        variant === 'default' && 'bg-secondary text-foreground hover:bg-[var(--rule)]',
+        'flex min-h-16 items-center justify-center rounded-[6px] font-heading font-bold',
+        'border border-[var(--rule)] shadow-[var(--btn-shadow)]',
+        'transition-[background,box-shadow] duration-150 active:brightness-95',
+        variant === 'default' && 'bg-card text-foreground hover:bg-[var(--chrome-deep)]',
         variant === 'modifier' &&
           'bg-[var(--key-modifier-bg)] text-[var(--key-modifier-ink)] hover:brightness-125',
         variant === 'submit' &&

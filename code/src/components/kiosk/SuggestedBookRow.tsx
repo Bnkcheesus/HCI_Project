@@ -30,7 +30,7 @@ export function SuggestedBookRow({ book, onSelect }: SuggestedBookRowProps) {
       type="button"
       onClick={() => onSelect(book.id)}
       className={cn(
-        'flex w-full items-center gap-4 rounded-2xl border border-[var(--rule)] bg-card p-3 text-left',
+        'flex w-full items-center gap-4 rounded-[8px] border border-[var(--rule)] bg-card p-3 text-left',
         'min-h-[var(--touch-min)] transition-colors hover:border-primary hover:bg-secondary',
       )}
     >
@@ -38,12 +38,12 @@ export function SuggestedBookRow({ book, onSelect }: SuggestedBookRowProps) {
         <img
           src={book.coverUrl}
           alt=""
-          className="h-16 w-12 shrink-0 rounded-md object-cover"
+          className="h-16 w-12 shrink-0 rounded-[6px] object-cover"
         />
       ) : (
         <span
           aria-hidden
-          className="h-16 w-12 shrink-0 rounded-md"
+          className="h-16 w-12 shrink-0 rounded-[6px]"
           style={{ backgroundColor: SPINE_COLOR[book.spine] }}
         />
       )}
@@ -63,7 +63,7 @@ export function SuggestedBookRow({ book, onSelect }: SuggestedBookRowProps) {
         </span>
         <span className="mt-1 flex flex-wrap items-center gap-2">
           <span
-            className="inline-flex items-center rounded-full bg-secondary px-3 py-1 font-semibold text-foreground"
+            className="inline-flex items-center rounded-[6px] bg-secondary px-3 py-1 font-semibold text-foreground"
             style={{ fontSize: 'var(--text-eyebrow)' }}
           >
             Kệ {book.shelfCode} · Tầng {book.floor}

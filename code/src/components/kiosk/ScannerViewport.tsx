@@ -36,7 +36,7 @@ export function ScannerViewport({
       className={cn(
         // Fills whatever box the page gives it, rather than claiming the column itself:
         // step 1 pairs it with the scanned-book list, step 2 has it to itself.
-        'relative flex h-full flex-col items-center justify-center gap-4 overflow-hidden rounded-2xl border-2 border-dashed p-6 text-center transition-colors',
+        'relative flex h-full flex-col items-center justify-center gap-4 overflow-hidden rounded-[8px] border-2 border-dashed p-6 text-center transition-colors',
         done
           ? 'border-[var(--live-ink)] bg-[color-mix(in_srgb,var(--live)_8%,transparent)]'
           : 'border-[var(--rule)] bg-secondary/50',
@@ -60,7 +60,7 @@ export function ScannerViewport({
         type="button"
         onClick={onSimulate}
         disabled={disabled || done}
-        className="inline-flex min-h-[var(--touch-min)] items-center gap-2 rounded-full border-2 border-[var(--rule)] bg-card px-6 font-heading font-semibold text-foreground transition-colors hover:border-primary hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
+        className="inline-flex min-h-[var(--touch-min)] items-center gap-2 rounded-[6px] border border-[var(--rule)] bg-card shadow-[var(--btn-shadow)] px-6 font-heading font-semibold text-foreground transition-colors hover:border-primary hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
         style={{ fontSize: 'var(--text-meta)' }}
       >
         <ScanLine className="size-5" aria-hidden />

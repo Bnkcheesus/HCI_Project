@@ -176,7 +176,7 @@ export function AiChatPage() {
             <img
               src="/maps/floor-3d.jpg"
               alt="Sơ đồ tổng quan không gian thư viện dạng 3D"
-              className="mt-3 max-h-52 w-full rounded-2xl border border-[var(--rule)] bg-card object-contain"
+              className="mt-3 max-h-52 w-full rounded-[8px] border border-[var(--rule)] bg-card object-contain"
             />
 
             {shelves.length > 0 ? (
@@ -248,7 +248,7 @@ export function AiChatPage() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex min-h-16 shrink-0 items-center justify-center gap-3 rounded-full border-2 border-[var(--rule)] bg-card px-10 font-heading font-bold text-foreground transition-colors hover:bg-secondary"
+            className="inline-flex min-h-16 shrink-0 items-center justify-center gap-3 rounded-[6px] border border-[var(--rule)] bg-card shadow-[var(--btn-shadow)] px-10 font-heading font-bold text-foreground transition-colors hover:bg-secondary"
             style={{ fontSize: 'var(--text-tab)' }}
           >
             <ArrowLeft className="size-6" aria-hidden />
@@ -297,7 +297,7 @@ function EmptyState({
               type="button"
               onClick={() => onPick(prompt)}
               disabled={disabled}
-              className="min-h-[var(--touch-min)] rounded-full border-2 border-[var(--rule)] bg-card px-5 font-semibold text-foreground transition-colors hover:border-primary hover:bg-secondary disabled:opacity-40"
+              className="min-h-[var(--touch-min)] rounded-[6px] border border-[var(--rule)] bg-card shadow-[var(--btn-shadow)] px-5 font-semibold text-foreground transition-colors hover:border-primary hover:bg-secondary disabled:opacity-40"
               style={{ fontSize: 'var(--text-meta)' }}
             >
               {prompt}

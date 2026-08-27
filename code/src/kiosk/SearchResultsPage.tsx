@@ -92,7 +92,7 @@ export function SearchResultsPage() {
             type="button"
             onClick={openSearch}
             data-kiosk-surface
-            className="flex flex-1 items-center gap-4 rounded-2xl border-2 border-[var(--rule)] bg-card px-6 py-4 text-left transition-colors hover:border-primary/50"
+            className="flex flex-1 items-center gap-4 rounded-[8px] border border-[var(--rule)] bg-card shadow-[var(--btn-shadow)] px-6 py-4 text-left transition-colors hover:border-primary/50"
           >
             <span
               className="font-heading font-semibold text-foreground"
@@ -109,7 +109,7 @@ export function SearchResultsPage() {
               openSearch()
             }}
             aria-label="Xoá từ khoá và tìm lại"
-            className="grid size-[var(--touch-min)] shrink-0 place-items-center rounded-xl border border-[var(--rule)] bg-card text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            className="grid size-[var(--touch-min)] shrink-0 place-items-center rounded-[8px] border border-[var(--rule)] bg-card text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           >
             <X className="size-5" aria-hidden />
           </button>
@@ -167,7 +167,7 @@ export function SearchResultsPage() {
         {/* Signals that the list continues past the fold. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[var(--paper)] to-transparent"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[var(--page)] to-transparent"
         />
       </div>
 
@@ -195,7 +195,7 @@ function NoMatchForFilters({ onReset }: { onReset: () => void }) {
       <button
         type="button"
         onClick={onReset}
-        className="min-h-[var(--touch-min)] rounded-full bg-primary px-8 font-heading font-bold text-primary-foreground"
+        className="min-h-[var(--touch-min)] rounded-[6px] bg-primary px-8 font-heading font-bold text-primary-foreground"
         style={{ fontSize: 'var(--text-body)' }}
       >
         Đặt lại bộ lọc
@@ -217,7 +217,7 @@ function EmptyState({ query, onRetry }: { query: string; onRetry: () => void }) 
       <button
         type="button"
         onClick={onRetry}
-        className="min-h-[var(--touch-min)] rounded-full bg-primary px-8 font-heading font-bold text-primary-foreground"
+        className="min-h-[var(--touch-min)] rounded-[6px] bg-primary px-8 font-heading font-bold text-primary-foreground"
         style={{ fontSize: 'var(--text-body)' }}
       >
         Tìm lại

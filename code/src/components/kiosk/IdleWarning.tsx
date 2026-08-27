@@ -21,7 +21,7 @@ export function IdleWarning({ secondsLeft, onStay }: IdleWarningProps) {
       role="alertdialog"
       aria-live="assertive"
       aria-label="Phiên mượn sắp hết hạn"
-      className="fixed inset-x-0 bottom-0 z-50 flex flex-wrap items-center justify-center gap-5 border-t-4 border-[var(--destructive)] bg-card px-10 py-5 shadow-[0_-8px_30px_-12px_rgb(22_25_43/35%)]"
+      className="fixed inset-x-0 bottom-0 z-50 flex flex-wrap items-center justify-center gap-5 border-t-4 border-[var(--destructive)] bg-card px-10 py-5 shadow-[var(--lift-2)]"
     >
       <TimerReset className="size-7 shrink-0 text-[var(--destructive)]" aria-hidden />
 
@@ -34,7 +34,7 @@ export function IdleWarning({ secondsLeft, onStay }: IdleWarningProps) {
       <button
         type="button"
         onClick={onStay}
-        className="min-h-[var(--touch-min)] rounded-full bg-primary px-8 font-heading font-bold text-primary-foreground transition-transform hover:scale-105 active:scale-95"
+        className="min-h-[var(--touch-min)] rounded-[6px] bg-primary px-8 font-heading font-bold text-primary-foreground transition-[background,box-shadow] duration-150 active:brightness-95"
         style={{ fontSize: 'var(--text-body)' }}
       >
         Tôi vẫn ở đây

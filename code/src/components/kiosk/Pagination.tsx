@@ -81,7 +81,7 @@ function PageButton({
       aria-label={ariaLabel}
       aria-current={ariaCurrent ? 'page' : undefined}
       className={cn(
-        'grid size-[var(--touch-min)] place-items-center rounded-xl font-heading font-semibold transition-colors',
+        'grid size-[var(--touch-min)] place-items-center rounded-[8px] font-heading font-semibold transition-colors',
         active
           ? 'bg-primary text-primary-foreground'
           : 'border border-[var(--rule)] bg-card text-foreground hover:bg-secondary',

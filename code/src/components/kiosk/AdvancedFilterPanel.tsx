@@ -62,7 +62,7 @@ export function AdvancedFilterPanel({ filters, onChange, onClose }: AdvancedFilt
       data-kiosk-surface
       // Capped and scrollable: the panel opens partway down a 900px kiosk screen, so it
       // must never run off the bottom edge where the controls become unreachable.
-      className="absolute right-0 top-full z-30 mt-3 flex max-h-[34rem] w-[26rem] flex-col overflow-y-auto rounded-2xl border border-[var(--rule)] bg-card p-5 shadow-[0_24px_48px_-16px_rgb(22_25_43/28%)]"
+      className="absolute right-0 top-full z-30 mt-3 flex max-h-[34rem] w-[26rem] flex-col overflow-y-auto rounded-[8px] border border-[var(--rule)] bg-card p-5 shadow-[var(--lift-2)]"
     >
       <header className="flex items-center justify-between gap-4 pb-3">
         <h2
@@ -75,7 +75,7 @@ export function AdvancedFilterPanel({ filters, onChange, onClose }: AdvancedFilt
           type="button"
           onClick={onClose}
           aria-label="Đóng bộ lọc nâng cao"
-          className="grid size-10 place-items-center rounded-xl border border-[var(--rule)] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          className="grid size-10 place-items-center rounded-[8px] border border-[var(--rule)] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
         >
           <X className="size-5" aria-hidden />
         </button>
@@ -124,7 +124,7 @@ export function AdvancedFilterPanel({ filters, onChange, onClose }: AdvancedFilt
           type="button"
           onClick={() => onChange(DEFAULT_FILTERS)}
           disabled={count === 0}
-          className="min-h-[var(--touch-min)] rounded-xl border border-[var(--rule)] px-5 font-heading font-semibold text-foreground transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
+          className="min-h-[var(--touch-min)] rounded-[8px] border border-[var(--rule)] px-5 font-heading font-semibold text-foreground transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
           style={{ fontSize: 'var(--text-meta)' }}
         >
           Đặt lại
@@ -173,7 +173,7 @@ function CheckRow({
       <span
         aria-hidden
         className={cn(
-          'grid size-7 shrink-0 place-items-center rounded-lg border-2 transition-colors',
+          'grid size-7 shrink-0 place-items-center rounded-[6px] border-2 transition-colors',
           'peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--ring)]',
           checked ? 'border-primary bg-primary text-primary-foreground' : 'border-[var(--rule)]',
         )}

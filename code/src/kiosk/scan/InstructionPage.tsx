@@ -63,7 +63,7 @@ export function ScanInstructionPage() {
             scanner, not a substitute for scanning it. */}
         {chosen && (
           <p
-            className="rounded-2xl border border-[var(--rule)] bg-card px-6 py-4 text-foreground"
+            className="rounded-[8px] border border-[var(--rule)] bg-card px-6 py-4 text-foreground"
             style={{ fontSize: 'var(--text-body)' }}
           >
             Bạn vừa chọn <strong className="font-heading font-bold">{chosen.title}</strong> — hãy cầm
@@ -91,7 +91,7 @@ export function ScanInstructionPage() {
         <button
           type="button"
           onClick={leaveCheckout}
-          className="inline-flex min-h-16 items-center justify-center gap-3 rounded-full border-2 border-[var(--rule)] bg-card px-10 font-heading font-bold text-foreground transition-colors hover:bg-secondary"
+          className="inline-flex min-h-16 items-center justify-center gap-3 rounded-[6px] border border-[var(--rule)] bg-card shadow-[var(--btn-shadow)] px-10 font-heading font-bold text-foreground transition-colors hover:bg-secondary"
           style={{ fontSize: 'var(--text-tab)' }}
         >
           <ArrowLeft className="size-6" aria-hidden />
@@ -101,7 +101,7 @@ export function ScanInstructionPage() {
         <button
           type="button"
           onClick={() => navigate('/kiosk/scan/step-1')}
-          className="inline-flex min-h-16 flex-1 items-center justify-center gap-3 rounded-full bg-primary px-8 font-heading font-bold text-primary-foreground shadow-[0_6px_20px_-6px_rgb(29_78_216/55%)] transition-transform hover:scale-[1.01] active:scale-95"
+          className="inline-flex min-h-16 flex-1 items-center justify-center gap-3 rounded-[6px] bg-primary px-8 font-heading font-bold text-primary-foreground shadow-[var(--btn-shadow)] transition-[background,box-shadow] duration-150 active:brightness-95"
           style={{ fontSize: 'var(--text-tab)' }}
         >
           Bắt đầu quy trình mượn sách
@@ -128,7 +128,7 @@ function StepCard({
   return (
     <section
       data-kiosk-surface
-      className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-[var(--rule)] bg-card p-8 text-center"
+      className="flex flex-col items-center justify-center gap-4 rounded-[8px] border border-[var(--rule)] bg-card p-8 text-center"
     >
       <span
         className="grid size-12 place-items-center rounded-full bg-primary font-heading font-bold text-primary-foreground"

@@ -20,7 +20,9 @@ export function KioskFooter() {
   return (
     <footer
       data-kiosk-surface
-      className="flex flex-wrap items-center justify-between gap-x-8 gap-y-2 border-t border-[var(--rule)] bg-card px-10 py-4"
+      // shrink-0: the footer carries the live status and the support number, so it must
+      // never be compressed away when a screen runs short of room.
+      className="flex shrink-0 flex-wrap items-center justify-between gap-x-8 gap-y-2 border-t border-[var(--rule)] bg-[var(--chrome)] px-10 py-4"
       style={{ fontSize: 'var(--text-meta)' }}
     >
       <p className="flex items-center gap-3 font-semibold text-foreground">
