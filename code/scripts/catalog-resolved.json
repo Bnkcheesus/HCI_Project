@@ -1,0 +1,1581 @@
+[
+  {
+    "title": "Giải tích 1",
+    "author": "Nguyễn Đình Trí, Tạ Văn Đĩnh, Nguyễn Hồ Quỳnh",
+    "isbn": "9786040123456",
+    "year": 2018,
+    "language": "vi",
+    "id": "giai-tich-1",
+    "source": "pinned",
+    "coverUrl": "/covers/giai-tich-1.jpg"
+  },
+  {
+    "title": "Vật lý đại cương",
+    "author": "Lương Duyên Bình, Dư Trí Công, Nguyễn Hữu Hồ",
+    "isbn": "9786040234567",
+    "year": 2016,
+    "language": "vi",
+    "id": "vat-ly-dai-cuong",
+    "source": "pinned",
+    "coverUrl": "/covers/vat-ly-dai-cuong.jpg"
+  },
+  {
+    "title": "Lập trình C++",
+    "author": "Phạm Văn Ất",
+    "isbn": "9786040345678",
+    "year": 2020,
+    "language": "vi",
+    "id": "lap-trinh-cpp",
+    "source": "pinned",
+    "coverUrl": "/covers/lap-trinh-cpp.jpg"
+  },
+  {
+    "title": "Đại số tuyến tính",
+    "author": "Nguyễn Hữu Việt Hưng",
+    "isbn": "9786040456789",
+    "year": 2019,
+    "language": "vi",
+    "id": "dai-so-tuyen-tinh",
+    "source": "pinned",
+    "coverUrl": "/covers/dai-so-tuyen-tinh.jpg"
+  },
+  {
+    "title": "Xác suất thống kê",
+    "author": "Đinh Văn Gắng",
+    "isbn": "9786040567890",
+    "year": 2017,
+    "language": "vi",
+    "id": "xac-suat-thong-ke",
+    "source": "pinned"
+  },
+  {
+    "title": "Hóa học đại cương",
+    "author": "Nguyễn Đình Soa",
+    "isbn": "9786040678901",
+    "year": 2015,
+    "language": "vi",
+    "id": "hoa-hoc-dai-cuong",
+    "source": "pinned"
+  },
+  {
+    "title": "Sinh học đại cương",
+    "author": "Phạm Thành Hổ",
+    "isbn": "9786040789012",
+    "year": 2019,
+    "language": "vi",
+    "id": "sinh-hoc-dai-cuong",
+    "source": "pinned"
+  },
+  {
+    "title": "Cấu trúc dữ liệu và giải thuật",
+    "author": "Đỗ Xuân Lôi",
+    "isbn": "9786040890123",
+    "year": 2018,
+    "language": "vi",
+    "id": "cau-truc-du-lieu-giai-thuat",
+    "source": "pinned"
+  },
+  {
+    "id": "stewart-calculus",
+    "title": "Calculus",
+    "authors": [
+      "James Stewart"
+    ],
+    "isbn": "9780840058188",
+    "year": 2017,
+    "language": "en",
+    "coverUrl": "/covers/stewart-calculus.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 364094
+  },
+  {
+    "id": "thomas-calculus",
+    "title": "Thomas' calculus",
+    "authors": [
+      "Ross L. Finney"
+    ],
+    "isbn": "9780201441413",
+    "year": 2014,
+    "language": "en",
+    "coverUrl": "/covers/thomas-calculus.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 134861
+  },
+  {
+    "id": "strang-linear-algebra",
+    "title": "Introduction to linear algebra",
+    "authors": [
+      "Gilbert Strang"
+    ],
+    "isbn": "9780961408893",
+    "year": 2023,
+    "language": "en",
+    "coverUrl": "/covers/strang-linear-algebra.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 725050
+  },
+  {
+    "id": "lay-linear-algebra",
+    "title": "Linear algebra and its applications",
+    "authors": [
+      "David C. Lay",
+      "Lay",
+      "Davic C. Lay",
+      "Steven R. Lay",
+      "Judi J. McDonald",
+      "Addison-Wesley Publishing Staff",
+      "Pearson Education Staff",
+      "David Lay",
+      "Judi McDonald",
+      "David C. Lay; Steven R. Lay; Judi J. McDonald",
+      "Judi McDonald David Lay",
+      "David C. Lay",
+      "Steven Lay"
+    ],
+    "isbn": "9781323170564",
+    "year": 2022,
+    "language": "en",
+    "coverUrl": "/covers/lay-linear-algebra.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 13054058
+  },
+  {
+    "id": "rosen-discrete-math",
+    "title": "Discrete Mathematics and Its Applications",
+    "authors": [
+      "Kenneth H. Rosen"
+    ],
+    "isbn": "9781259676512",
+    "year": 2018,
+    "language": "en",
+    "coverUrl": "/covers/rosen-discrete-math.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 7083171
+  },
+  {
+    "id": "ross-probability",
+    "title": "A first course in probability",
+    "authors": [
+      "Sheldon M. Ross"
+    ],
+    "isbn": "9781292024929",
+    "year": 2018,
+    "language": "en",
+    "coverUrl": "/covers/ross-probability.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 88605
+  },
+  {
+    "id": "ross-probability-models",
+    "title": "Introduction to probability models",
+    "authors": [
+      "Sheldon M. Ross"
+    ],
+    "isbn": "9780125984553",
+    "year": 2014,
+    "language": "en",
+    "coverUrl": "/covers/ross-probability-models.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 4198571
+  },
+  {
+    "id": "rudin-analysis",
+    "title": "Principles of Mathematical Analysis",
+    "authors": [
+      "Walter Rudin"
+    ],
+    "isbn": "9787111133063",
+    "year": 2004,
+    "language": "en",
+    "coverUrl": "/covers/rudin-analysis.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 55297
+  },
+  {
+    "id": "boyce-differential-equations",
+    "title": "Elementary differential equations and boundary value problems",
+    "authors": [
+      "William E. Boyce"
+    ],
+    "isbn": "9780471093312",
+    "year": 2005,
+    "language": "en",
+    "coverUrl": "/covers/boyce-differential-equations.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 4641026
+  },
+  {
+    "id": "kreyszig-engineering-math",
+    "title": "Advanced Engineering Mathematics",
+    "authors": [
+      "Erwin Kreyszig"
+    ],
+    "isbn": "9780471889410",
+    "year": 2005,
+    "language": "en",
+    "coverUrl": "/covers/kreyszig-engineering-math.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8575561
+  },
+  {
+    "id": "burden-numerical-analysis",
+    "title": "Numerical analysis",
+    "authors": [
+      "Richard L. Burden"
+    ],
+    "isbn": "9780534932213",
+    "year": 2005,
+    "language": "en",
+    "coverUrl": "/covers/burden-numerical-analysis.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 3854073
+  },
+  {
+    "id": "dummit-abstract-algebra",
+    "title": "Abstract algebra",
+    "authors": [
+      "David S. Dummit"
+    ],
+    "isbn": "9780135693025",
+    "year": 2004,
+    "language": "en",
+    "coverUrl": "/covers/dummit-abstract-algebra.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 304744
+  },
+  {
+    "id": "munkres-topology",
+    "title": "Topology",
+    "authors": [
+      "James R. Munkres"
+    ],
+    "isbn": "9780131816299",
+    "year": 2004,
+    "language": "en",
+    "coverUrl": "/covers/munkres-topology.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 88212
+  },
+  {
+    "id": "concrete-mathematics",
+    "title": "Concrete mathematics",
+    "authors": [
+      "Ronald L. Graham",
+      "Donald Knuth",
+      "Oren Patashnik"
+    ],
+    "isbn": "9782711748242",
+    "year": 2010,
+    "language": "en",
+    "coverUrl": "/covers/concrete-mathematics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 135182
+  },
+  {
+    "id": "wasserman-all-of-statistics",
+    "title": "All of Statistics",
+    "authors": [
+      "Larry Wasserman"
+    ],
+    "isbn": "9780387217369",
+    "year": 2014,
+    "language": "en",
+    "coverUrl": "/covers/wasserman-all-of-statistics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 245123
+  },
+  {
+    "id": "rice-mathematical-statistics",
+    "title": "Mathematical statistics and data analysis",
+    "authors": [
+      "Rice, John A."
+    ],
+    "isbn": "9780534209346",
+    "year": 2007,
+    "language": "en",
+    "coverUrl": "/covers/rice-mathematical-statistics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 363580
+  },
+  {
+    "id": "halliday-fundamentals-physics",
+    "title": "Fundamentals of physics",
+    "authors": [
+      "David Halliday",
+      "Robert Resnick",
+      "Jearl  Walker"
+    ],
+    "isbn": "9780471332350",
+    "year": 2011,
+    "language": "en",
+    "coverUrl": "/covers/halliday-fundamentals-physics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 1246724
+  },
+  {
+    "id": "young-university-physics",
+    "title": "University physics",
+    "authors": [
+      "Francis Weston Sears",
+      "Mark Waldo Zemansky",
+      "Hugh D. Young",
+      "Roger A. Freedman"
+    ],
+    "isbn": "9780201066814",
+    "year": 2013,
+    "language": "en",
+    "coverUrl": "/covers/young-university-physics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8349382
+  },
+  {
+    "id": "serway-physics",
+    "title": "Physics for scientists and engineers",
+    "authors": [
+      "Raymond A. Serway"
+    ],
+    "isbn": "9780030164880",
+    "year": 2006,
+    "language": "en",
+    "coverUrl": "/covers/serway-physics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 5026455
+  },
+  {
+    "id": "griffiths-electrodynamics",
+    "title": "Introduction to electrodynamics",
+    "authors": [
+      "David Jeffrey Griffiths"
+    ],
+    "isbn": "9780321856562",
+    "year": 2023,
+    "language": "en",
+    "coverUrl": "/covers/griffiths-electrodynamics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 92086
+  },
+  {
+    "id": "griffiths-quantum-mechanics",
+    "title": "Introduction to Quantum Mechanics (2nd Edition) by David J. Griffiths",
+    "authors": [
+      "David Jeffrey Griffiths",
+      "Darrell F. Schroeter"
+    ],
+    "isbn": "9780131244054",
+    "year": 2020,
+    "language": "en",
+    "coverUrl": "/covers/griffiths-quantum-mechanics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 86758
+  },
+  {
+    "id": "goldstein-classical-mechanics",
+    "title": "Classical mechanics",
+    "authors": [
+      "Goldstein, Herbert"
+    ],
+    "isbn": "9780201316117",
+    "year": 2002,
+    "language": "en",
+    "coverUrl": "/covers/goldstein-classical-mechanics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 134022
+  },
+  {
+    "id": "schroeder-thermal-physics",
+    "title": "An Introduction to Thermal Physics",
+    "authors": [
+      "Daniel V. Schroeder"
+    ],
+    "isbn": "9780201380279",
+    "year": 1999,
+    "language": "en",
+    "coverUrl": "/covers/schroeder-thermal-physics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 134641
+  },
+  {
+    "id": "kittel-solid-state",
+    "title": "Introduction to solid state physics",
+    "authors": [
+      "Charles Kittel"
+    ],
+    "isbn": "9780471490241",
+    "year": 2005,
+    "language": "en",
+    "coverUrl": "/covers/kittel-solid-state.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 300730
+  },
+  {
+    "id": "hecht-optics",
+    "title": "Optics",
+    "authors": [
+      "Eugene Hecht"
+    ],
+    "isbn": "9780201028379",
+    "year": 2002,
+    "language": "en",
+    "coverUrl": "/covers/hecht-optics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 136453
+  },
+  {
+    "id": "feynman-lectures",
+    "title": "The Feynman Lectures on Physics",
+    "authors": [
+      "Richard Phillips Feynman"
+    ],
+    "isbn": "9780738202983",
+    "year": 2006,
+    "language": "en",
+    "coverUrl": "/covers/feynman-lectures.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 582109
+  },
+  {
+    "id": "beiser-modern-physics",
+    "title": "Concepts of modern physics",
+    "authors": [
+      "Arthur Beiser"
+    ],
+    "isbn": "9780070043824",
+    "year": 2003,
+    "language": "en",
+    "coverUrl": "/covers/beiser-modern-physics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 53264
+  },
+  {
+    "id": "taylor-error-analysis",
+    "title": "An introduction to error analysis",
+    "authors": [
+      "Taylor, John R."
+    ],
+    "isbn": "9780935702071",
+    "year": 1997,
+    "language": "en",
+    "coverUrl": "/covers/taylor-error-analysis.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 714276
+  },
+  {
+    "id": "brown-central-science",
+    "title": "Chemistry",
+    "authors": [
+      "Theodore L. Brown",
+      "H. Eugene Lemay",
+      "Bruce E. Bursten",
+      "Catherine Murphy",
+      "Patrick Woodward",
+      "Catherine J. Murphy",
+      "James C. Hill",
+      "Theodore E Brown",
+      "Julia R Burdge",
+      "Patrick M. Woodward",
+      "Matthew W. Stoltzfus",
+      "Brown, Theodore, Jr.",
+      "Linda S. Brunauer",
+      "Julia R. Burdge"
+    ],
+    "isbn": "9780321749833",
+    "year": 2025,
+    "language": "en",
+    "coverUrl": "/covers/brown-central-science.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 9407725
+  },
+  {
+    "id": "atkins-physical-chemistry",
+    "title": "Atkins' physical chemistry",
+    "authors": [
+      "Peter Atkins",
+      "Julio de Paula",
+      "James Keeler"
+    ],
+    "isbn": "9780198769866",
+    "year": 2022,
+    "language": "en",
+    "coverUrl": "/covers/atkins-physical-chemistry.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8258832
+  },
+  {
+    "id": "clayden-organic-chemistry",
+    "title": "Organic chemistry - 2. ed.",
+    "authors": [
+      "Jonathan Clayden",
+      "Nick Greeves",
+      "Stuart Warren"
+    ],
+    "isbn": "9780199270293",
+    "year": 2012,
+    "language": "en",
+    "coverUrl": "/covers/clayden-organic-chemistry.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8078006
+  },
+  {
+    "id": "mcmurry-organic-chemistry",
+    "title": "Organic chemistry",
+    "authors": [
+      "John E. McMurry"
+    ],
+    "isbn": "9780534363550",
+    "year": 2012,
+    "language": "en",
+    "coverUrl": "/covers/mcmurry-organic-chemistry.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 363623
+  },
+  {
+    "id": "shriver-inorganic-chemistry",
+    "title": "Shriver & Atkins' inorganic chemistry",
+    "authors": [
+      "P. W. Atkins"
+    ],
+    "isbn": "9780199264636",
+    "year": 2006,
+    "language": "en",
+    "coverUrl": "/covers/shriver-inorganic-chemistry.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 14517593
+  },
+  {
+    "id": "harris-quantitative-analysis",
+    "title": "Quantitative chemical analysis",
+    "authors": [
+      "Daniel C. Harris",
+      "Hopkins Harris"
+    ],
+    "isbn": "9780716770411",
+    "year": 2007,
+    "language": "en",
+    "coverUrl": "/covers/harris-quantitative-analysis.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 3877757
+  },
+  {
+    "id": "skoog-instrumental-analysis",
+    "title": "Principles of instrumental analysis",
+    "authors": [
+      "Douglas Arvid Skoog",
+      "Donald M. West"
+    ],
+    "isbn": "9788448127756",
+    "year": 2016,
+    "language": "en",
+    "coverUrl": "/covers/skoog-instrumental-analysis.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 6614733
+  },
+  {
+    "id": "lehninger-biochemistry",
+    "title": "Lehninger principles of biochemistry",
+    "authors": [
+      "Albert L. Lehninger"
+    ],
+    "isbn": "9780716738671",
+    "year": 2008,
+    "language": "en",
+    "coverUrl": "/covers/lehninger-biochemistry.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 455859
+  },
+  {
+    "id": "stryer-biochemistry",
+    "title": "Biochemistry",
+    "authors": [
+      "Lubert Stryer",
+      "Jeremy Mark Berg"
+    ],
+    "isbn": "9780716726692",
+    "year": 2019,
+    "language": "en",
+    "coverUrl": "/covers/stryer-biochemistry.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 4127619
+  },
+  {
+    "id": "pauling-general-chemistry",
+    "title": "General chemistry",
+    "authors": [
+      "Linus Pauling"
+    ],
+    "isbn": "9783527253920",
+    "year": 1988,
+    "language": "en",
+    "coverUrl": "/covers/pauling-general-chemistry.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 6505051
+  },
+  {
+    "id": "alberts-molecular-biology-cell",
+    "title": "Molecular Biology of the Cell",
+    "authors": [
+      "Bruce Alberts",
+      "Alexander Johnson",
+      "Julian Lewis",
+      "David O Morgan",
+      "Martin Raff",
+      "Julian Lewis",
+      "Keith Roberts",
+      "Peter Walter",
+      "Alexander D. Johnson"
+    ],
+    "isbn": "9781315735368",
+    "year": 2022,
+    "language": "en",
+    "coverUrl": "/covers/alberts-molecular-biology-cell.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 1547643
+  },
+  {
+    "id": "campbell-biology",
+    "title": "Biology",
+    "authors": [
+      "Neil Alexander Campbell"
+    ],
+    "isbn": "9782761306539",
+    "year": 2018,
+    "language": "en",
+    "coverUrl": "/covers/campbell-biology.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 581911
+  },
+  {
+    "id": "alberts-essential-cell-biology",
+    "title": "Essential Cell Biology",
+    "authors": [
+      "Bruce Alberts",
+      "Dennis Bray",
+      "Karen Hopkin",
+      "Alexander D Johnson",
+      "Julian Lewis",
+      "Martin Raff",
+      "Keith Roberts",
+      "Peter Walter"
+    ],
+    "isbn": "9781317806288",
+    "year": 2023,
+    "language": "en",
+    "coverUrl": "/covers/alberts-essential-cell-biology.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 613040
+  },
+  {
+    "id": "watson-molecular-biology-gene",
+    "title": "Molecular biology of the gene",
+    "authors": [
+      "James D. Watson",
+      "Nancy H. Hopkins",
+      "Jeffrey W. Roberts",
+      "Joan Argetsinger Steitz",
+      "Alan M. Weiner"
+    ],
+    "isbn": "9780321762436",
+    "year": 2014,
+    "language": "en",
+    "coverUrl": "/covers/watson-molecular-biology-gene.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8696528
+  },
+  {
+    "id": "griffiths-genetic-analysis",
+    "title": "Introduction to genetic analysis",
+    "authors": [
+      "Anthony J. F. Griffiths",
+      "Susan R. Wessler",
+      "Richard C. Lewontin",
+      "William M. Gelbart",
+      "David T. Suzuki",
+      "Jeffrey H. Miller"
+    ],
+    "isbn": "9781429295758",
+    "year": 2020,
+    "language": "en",
+    "coverUrl": "/covers/griffiths-genetic-analysis.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8665020
+  },
+  {
+    "id": "tortora-microbiology",
+    "title": "Microbiology",
+    "authors": [
+      "Gerard J. Tortora",
+      "Berdell R. Funke",
+      "Christine L. Case"
+    ],
+    "isbn": "9780805375978",
+    "year": 2020,
+    "language": "en",
+    "coverUrl": "/covers/tortora-microbiology.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 10146469
+  },
+  {
+    "id": "madigan-brock-microbiology",
+    "title": "Brock biology of microorganisms",
+    "authors": [
+      "Michael T. Madigan",
+      "Michael Madigan",
+      "John Martinko",
+      "Jack Parker",
+      "John M. Martinko"
+    ],
+    "isbn": "9780135208755",
+    "year": 2011,
+    "language": "en",
+    "coverUrl": "/covers/madigan-brock-microbiology.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 4960448
+  },
+  {
+    "id": "janeway-immunobiology",
+    "title": "Janeway's Immunobiology",
+    "authors": [
+      "Kenneth M. Murphy",
+      "Casey Weaver"
+    ],
+    "isbn": "9780393884906",
+    "year": 2022,
+    "language": "en",
+    "coverUrl": "/covers/janeway-immunobiology.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8895981
+  },
+  {
+    "id": "begon-ecology",
+    "title": "Ecology",
+    "authors": [
+      "Michael Begon",
+      "John L. Harper",
+      "Colin R. Townsend"
+    ],
+    "isbn": "9780632043934",
+    "year": 2020,
+    "language": "en",
+    "coverUrl": "/covers/begon-ecology.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 397305
+  },
+  {
+    "id": "pevsner-bioinformatics",
+    "title": "Bioinformatics and Functional Genomics",
+    "authors": [
+      "Jonathan Pevsner"
+    ],
+    "isbn": "9781118688472",
+    "year": 2015,
+    "language": "en",
+    "coverUrl": "/covers/pevsner-bioinformatics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 302036
+  },
+  {
+    "id": "cormen-algorithms",
+    "title": "Introduction to Algorithms",
+    "authors": [
+      "Thomas H. Cormen",
+      "Charles E. Leiserson",
+      "Ronald L. Rivest",
+      "Clifford Stein"
+    ],
+    "isbn": "9780070131514",
+    "year": 2022,
+    "language": "en",
+    "coverUrl": "/covers/cormen-algorithms.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 2341462
+  },
+  {
+    "id": "sedgewick-algorithms",
+    "title": "Algorithms",
+    "authors": [
+      "Robert Sedgewick"
+    ],
+    "isbn": "9780321573513",
+    "year": 2011,
+    "language": "en",
+    "coverUrl": "/covers/sedgewick-algorithms.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 7992499
+  },
+  {
+    "id": "skiena-algorithm-design",
+    "title": "The algorithm design manual",
+    "authors": [
+      "Steven S. Skiena"
+    ],
+    "isbn": "9783030542580",
+    "year": 2021,
+    "language": "en",
+    "coverUrl": "/covers/skiena-algorithm-design.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 245565
+  },
+  {
+    "id": "sipser-theory-computation",
+    "title": "Introduction to the Theory of Computation. Michael Sipser",
+    "authors": [
+      "Michael Sipser"
+    ],
+    "isbn": "9781133187813",
+    "year": 2012,
+    "language": "en",
+    "coverUrl": "/covers/sipser-theory-computation.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 10255140
+  },
+  {
+    "id": "kernighan-c-programming",
+    "title": "The C Programming Language",
+    "authors": [
+      "Brian W. Kernighan",
+      "Dennis MacAlistair Ritchie"
+    ],
+    "isbn": "9780131107502",
+    "year": 2021,
+    "language": "en",
+    "coverUrl": "/covers/kernighan-c-programming.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 6684943
+  },
+  {
+    "id": "stroustrup-cpp",
+    "title": "The C++ programming language",
+    "authors": [
+      "Bjarne Stroustrup"
+    ],
+    "isbn": "9780201700732",
+    "year": 2013,
+    "language": "en",
+    "coverUrl": "/covers/stroustrup-cpp.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 136583
+  },
+  {
+    "id": "abelson-sicp",
+    "title": "Structure and Interpretation of Computer Programs (SICP)",
+    "authors": [
+      "Harold Abelson",
+      "Gerald Jay Sussman",
+      "Julie Sussman"
+    ],
+    "isbn": "9787111135104",
+    "year": 2022,
+    "language": "en",
+    "coverUrl": "/covers/abelson-sicp.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 149338
+  },
+  {
+    "id": "bloch-effective-java",
+    "title": "Effective Java",
+    "authors": [
+      "Joshua Bloch"
+    ],
+    "isbn": "9781533251497",
+    "year": 2018,
+    "language": "en",
+    "coverUrl": "/covers/bloch-effective-java.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 1176573
+  },
+  {
+    "id": "ramalho-fluent-python",
+    "title": "Fluent Python",
+    "authors": [
+      "Luciano Ramalho"
+    ],
+    "isbn": "9788575224625",
+    "year": 2021,
+    "language": "en",
+    "coverUrl": "/covers/ramalho-fluent-python.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8743408
+  },
+  {
+    "id": "matthes-python-crash-course",
+    "title": "Python Crash Course, 2nd Edition",
+    "authors": [
+      "Eric Matthes"
+    ],
+    "isbn": "9781593279288",
+    "year": 2019,
+    "language": "en",
+    "coverUrl": "/covers/matthes-python-crash-course.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8800209
+  },
+  {
+    "id": "haverbeke-eloquent-javascript",
+    "title": "Eloquent Javascript",
+    "authors": [
+      "Marijn Haverbeke"
+    ],
+    "isbn": "9781593279509",
+    "year": 2024,
+    "language": "en",
+    "coverUrl": "/covers/haverbeke-eloquent-javascript.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 7082166
+  },
+  {
+    "id": "silberschatz-operating-systems",
+    "title": "Operating System Concepts",
+    "authors": [
+      "Abraham Silberschatz"
+    ],
+    "isbn": "9780471417439",
+    "year": 2013,
+    "language": "en",
+    "coverUrl": "/covers/silberschatz-operating-systems.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 302591
+  },
+  {
+    "id": "tanenbaum-modern-operating-systems",
+    "title": "Modern Operating Systems",
+    "authors": [
+      "Andrew S. Tanenbaum",
+      "Herbert Bos"
+    ],
+    "isbn": "9781292061429",
+    "year": 2022,
+    "language": "en",
+    "coverUrl": "/covers/tanenbaum-modern-operating-systems.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 9378721
+  },
+  {
+    "id": "tanenbaum-computer-networks",
+    "title": "Computer Networks",
+    "authors": [
+      "Andrew S. Tanenbaum",
+      "John David Wetherall",
+      "David J. Wetherall",
+      "Nickolas Feamster",
+      "David Wetherall",
+      "James F. Kurose",
+      "Keith W. Ross"
+    ],
+    "isbn": "9780131629592",
+    "year": 2022,
+    "language": "en",
+    "coverUrl": "/covers/tanenbaum-computer-networks.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 9378629
+  },
+  {
+    "id": "kurose-computer-networking",
+    "title": "Computer Networking",
+    "authors": [
+      "James F. Kurose",
+      "Keith W. Ross"
+    ],
+    "isbn": "9780136681557",
+    "year": 2023,
+    "language": "en",
+    "coverUrl": "/covers/kurose-computer-networking.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 193126
+  },
+  {
+    "id": "silberschatz-database-concepts",
+    "title": "Database system concepts",
+    "authors": [
+      "Abraham Silberschatz"
+    ],
+    "isbn": "9780070310865",
+    "year": 2019,
+    "language": "en",
+    "coverUrl": "/covers/silberschatz-database-concepts.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 54871
+  },
+  {
+    "id": "kleppmann-data-intensive",
+    "title": "Designing Data-Intensive Applications",
+    "authors": [
+      "Martin Kleppmann"
+    ],
+    "isbn": "9789352135240",
+    "year": 2022,
+    "language": "en",
+    "coverUrl": "/covers/kleppmann-data-intensive.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8434671
+  },
+  {
+    "id": "patterson-computer-organization",
+    "title": "Computer Organization and Design",
+    "authors": [
+      "John L. Hennessy",
+      "David A. Patterson"
+    ],
+    "isbn": "9781558604285",
+    "year": 2009,
+    "language": "en",
+    "coverUrl": "/covers/patterson-computer-organization.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 3935962
+  },
+  {
+    "id": "bryant-csapp",
+    "title": "Computer systems",
+    "authors": [
+      "Randal Bryant",
+      "Randal E. Bryant",
+      "David R. O'Hallaron"
+    ],
+    "isbn": "9780134143491",
+    "year": 2015,
+    "language": "en",
+    "coverUrl": "/covers/bryant-csapp.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 12475555
+  },
+  {
+    "id": "aho-compilers",
+    "title": "Compilers, principles, techniques, and tools",
+    "authors": [
+      "Alfred V. Aho",
+      "Monica S. Lam",
+      "Ravi Sethi",
+      "Jeffrey D. Ullman"
+    ],
+    "isbn": "9780201100884",
+    "year": 2023,
+    "language": "en",
+    "coverUrl": "/covers/aho-compilers.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 134087
+  },
+  {
+    "id": "gamma-design-patterns",
+    "title": "Design Patterns",
+    "authors": [
+      "Erich Gamma",
+      "John Vlissides",
+      "Richard Helm",
+      "Ralph Johnson",
+      "Johnson, Ralph"
+    ],
+    "isbn": "9780133052664",
+    "year": 2024,
+    "language": "en",
+    "coverUrl": "/covers/gamma-design-patterns.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 6601119
+  },
+  {
+    "id": "martin-clean-code",
+    "title": "Clean Code",
+    "authors": [
+      "Robert C. Martin"
+    ],
+    "isbn": "9780136083221",
+    "year": 2022,
+    "language": "en",
+    "coverUrl": "/covers/martin-clean-code.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8065615
+  },
+  {
+    "id": "fowler-refactoring",
+    "title": "Refactoring",
+    "authors": [
+      "Martin Fowler"
+    ],
+    "isbn": "9780201485677",
+    "year": 1999,
+    "language": "en",
+    "coverUrl": "/covers/fowler-refactoring.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 7087623
+  },
+  {
+    "id": "hunt-pragmatic-programmer",
+    "title": "The Pragmatic Programmer",
+    "authors": [
+      "Andy Hunt",
+      "Dave Thomas"
+    ],
+    "isbn": "9788131722428",
+    "year": 2021,
+    "language": "en",
+    "coverUrl": "/covers/hunt-pragmatic-programmer.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 10143650
+  },
+  {
+    "id": "mcconnell-code-complete",
+    "title": "Code Complete",
+    "authors": [
+      "Steve McConnell"
+    ],
+    "isbn": "9783860635933",
+    "year": 2007,
+    "language": "en",
+    "coverUrl": "/covers/mcconnell-code-complete.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 461500
+  },
+  {
+    "id": "sommerville-software-engineering",
+    "title": "Software engineering",
+    "authors": [
+      "Ian Sommerville",
+      "Sommerville, Ian.",
+      "Ian Sommerville"
+    ],
+    "isbn": "9780201398151",
+    "year": 2016,
+    "language": "en",
+    "coverUrl": "/covers/sommerville-software-engineering.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 3973371
+  },
+  {
+    "id": "stallings-cryptography",
+    "title": "Cryptography and network security",
+    "authors": [
+      "William Stallings"
+    ],
+    "isbn": "9788177587746",
+    "year": 2016,
+    "language": "en",
+    "coverUrl": "/covers/stallings-cryptography.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8323038
+  },
+  {
+    "id": "hughes-computer-graphics",
+    "title": "Computer graphics",
+    "authors": [
+      "James D. Foley",
+      "Steven K. Feiner",
+      "John F. Hughes"
+    ],
+    "isbn": "9780201121100",
+    "year": 1990,
+    "language": "en",
+    "coverUrl": "/covers/hughes-computer-graphics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 6480823
+  },
+  {
+    "id": "statistical-learning",
+    "title": "An Introduction to Statistical Learning",
+    "authors": [
+      "Gareth James"
+    ],
+    "isbn": "9783031387470",
+    "year": 2023,
+    "language": "en",
+    "coverUrl": "/covers/statistical-learning.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8665540
+  },
+  {
+    "id": "hands-on-ml",
+    "title": "Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow",
+    "authors": [
+      "Aurélien Géron"
+    ],
+    "isbn": "9781098122461",
+    "year": 2022,
+    "language": "en",
+    "coverUrl": "/covers/hands-on-ml.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 9388208
+  },
+  {
+    "id": "pattern-recognition",
+    "title": "Pattern Recognition and Machine Learning (Information Science and Statistics)",
+    "authors": [
+      "Christopher M. Bishop"
+    ],
+    "isbn": "9780387310732",
+    "year": 2008,
+    "language": "en",
+    "coverUrl": "/covers/pattern-recognition.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 245089
+  },
+  {
+    "id": "mathematics-for-ml",
+    "title": "Mathematics for Machine Learning",
+    "authors": [
+      "Marc Peter Deisenroth",
+      "A. Aldo Faisal",
+      "Cheng Soon Ong"
+    ],
+    "isbn": "9781108569323",
+    "year": 2020,
+    "language": "en",
+    "coverUrl": "/covers/mathematics-for-ml.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 10281784
+  },
+  {
+    "id": "goodfellow-deep-learning",
+    "title": "Deep Learning",
+    "authors": [
+      "Ian Goodfellow",
+      "Yoshua Bengio",
+      "Aaron Courville",
+      "Francis Bach"
+    ],
+    "isbn": "9780262035613",
+    "year": 2017,
+    "language": "en",
+    "coverUrl": "/covers/goodfellow-deep-learning.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8086288
+  },
+  {
+    "id": "hastie-elements-statistical-learning",
+    "title": "The Elements of Statistical Learning",
+    "authors": [
+      "Trevor Hastie",
+      "Robert Tibshirani",
+      "Jerome Friedman"
+    ],
+    "isbn": "9780387848846",
+    "year": 2013,
+    "language": "en",
+    "coverUrl": "/covers/hastie-elements-statistical-learning.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8643962
+  },
+  {
+    "id": "murphy-probabilistic-ml",
+    "title": "Machine learning",
+    "authors": [
+      "Kevin P. Murphy",
+      "Kevin P. Murphy"
+    ],
+    "isbn": "9780262306164",
+    "year": 2012,
+    "language": "en",
+    "coverUrl": "/covers/murphy-probabilistic-ml.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8063263
+  },
+  {
+    "id": "sutton-reinforcement-learning",
+    "title": "Reinforcement learning",
+    "authors": [
+      "Richard S. Sutton"
+    ],
+    "isbn": "9780262193986",
+    "year": 1998,
+    "language": "en",
+    "coverUrl": "/covers/sutton-reinforcement-learning.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 150672
+  },
+  {
+    "id": "jurafsky-speech-language",
+    "title": "Speech and language processing",
+    "authors": [
+      "Dan Jurafsky",
+      "Daniel Jurafsky",
+      "James H. Martin"
+    ],
+    "isbn": "9780131873216",
+    "year": 2013,
+    "language": "en",
+    "coverUrl": "/covers/jurafsky-speech-language.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 85431
+  },
+  {
+    "id": "chollet-deep-learning-python",
+    "title": "Deep Learning with Python",
+    "authors": [
+      "Francois Chollet",
+      "Matthew Watson"
+    ],
+    "isbn": "9781638352044",
+    "year": 2025,
+    "language": "en",
+    "coverUrl": "/covers/chollet-deep-learning-python.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8507718
+  },
+  {
+    "id": "mackay-information-theory",
+    "title": "Information Theory, Inference & Learning Algorithms",
+    "authors": [
+      "David J.C. MacKay"
+    ],
+    "isbn": "9780521644440",
+    "year": 2004,
+    "language": "en",
+    "coverUrl": "/covers/mackay-information-theory.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 7353083
+  },
+  {
+    "id": "mckinney-python-data-analysis",
+    "title": "Python For Data Analysis",
+    "authors": [
+      "Wes McKinney"
+    ],
+    "isbn": "9781306813099",
+    "year": 2022,
+    "language": "en",
+    "coverUrl": "/covers/mckinney-python-data-analysis.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 7548132
+  },
+  {
+    "id": "grus-data-science-scratch",
+    "title": "Data science from scratch",
+    "authors": [
+      "Joel Grus"
+    ],
+    "isbn": "9781491904398",
+    "year": 2019,
+    "language": "en",
+    "coverUrl": "/covers/grus-data-science-scratch.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 12672936
+  },
+  {
+    "id": "szeliski-computer-vision",
+    "title": "Computer Vision",
+    "authors": [
+      "Richard Szeliski"
+    ],
+    "isbn": "9783030343743",
+    "year": 2023,
+    "language": "en",
+    "coverUrl": "/covers/szeliski-computer-vision.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 9426793
+  },
+  {
+    "id": "russell-norvig-aima",
+    "title": "Artificial intelligence",
+    "authors": [
+      "Stuart J. Russell",
+      "Peter Norvig"
+    ],
+    "isbn": "9781292472553",
+    "year": 2024,
+    "language": "en",
+    "coverUrl": "/covers/russell-norvig-aima.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 92018
+  },
+  {
+    "id": "sedra-microelectronic-circuits",
+    "title": "Microelectronic circuits\t",
+    "authors": [
+      "Adel S. Sedra",
+      "Kenneth C. Smith"
+    ],
+    "isbn": "9780199339181",
+    "year": 2020,
+    "language": "en",
+    "coverUrl": "/covers/sedra-microelectronic-circuits.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 8053759
+  },
+  {
+    "id": "horowitz-art-of-electronics",
+    "title": "The art of electronics",
+    "authors": [
+      "Paul Horowitz",
+      "Winfield Hill"
+    ],
+    "isbn": "9788185618081",
+    "year": 2017,
+    "language": "en",
+    "coverUrl": "/covers/horowitz-art-of-electronics.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 335376
+  },
+  {
+    "id": "alexander-electric-circuits",
+    "title": "Fundamentals of electric circuits",
+    "authors": [
+      "Charles K. Alexander",
+      "Matthew N. O. Sadiku",
+      "Charles Alexander",
+      "Matthew Sadiku"
+    ],
+    "isbn": "9780072463316",
+    "year": 2008,
+    "language": "en",
+    "coverUrl": "/covers/alexander-electric-circuits.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 4263144
+  },
+  {
+    "id": "oppenheim-signals-systems",
+    "title": "Signals and Systems",
+    "authors": [
+      "Alan V. Oppenheim",
+      "Alan S. Willsky"
+    ],
+    "isbn": "9788120312463",
+    "year": 2015,
+    "language": "en",
+    "coverUrl": "/covers/oppenheim-signals-systems.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 14380640
+  },
+  {
+    "id": "oppenheim-discrete-signal-processing",
+    "title": "Discrete-time signal processing",
+    "authors": [
+      "Alan V. Oppenheim",
+      "Ronald Schafer"
+    ],
+    "isbn": "9780131988422",
+    "year": 2013,
+    "language": "en",
+    "coverUrl": "/covers/oppenheim-discrete-signal-processing.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 89350
+  },
+  {
+    "id": "mano-digital-design",
+    "title": "Digital design",
+    "authors": [
+      "M. Morris Mano",
+      "M. Morris Mano"
+    ],
+    "isbn": "9780132129374",
+    "year": 2007,
+    "language": "en",
+    "coverUrl": "/covers/mano-digital-design.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 83869
+  },
+  {
+    "id": "grotzinger-understanding-earth",
+    "title": "Understanding Earth",
+    "authors": [
+      "John Grotzinger",
+      "Thomas H. Jordan"
+    ],
+    "isbn": "9781429240031",
+    "year": 2019,
+    "language": "en",
+    "coverUrl": "/covers/grotzinger-understanding-earth.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 10461953
+  },
+  {
+    "id": "miller-living-in-environment",
+    "title": "Living in the environment",
+    "authors": [
+      "G. Tyler Miller"
+    ],
+    "isbn": "9780495015987",
+    "year": 2009,
+    "language": "en",
+    "coverUrl": "/covers/miller-living-in-environment.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 4093548
+  },
+  {
+    "id": "ahrens-meteorology-today",
+    "title": "Meteorology today",
+    "authors": [
+      "C. Donald Ahrens"
+    ],
+    "isbn": "9780314631473",
+    "year": 2021,
+    "language": "en",
+    "coverUrl": "/covers/ahrens-meteorology-today.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 3944771
+  },
+  {
+    "id": "vanloon-environmental-chemistry",
+    "title": "Environmental chemistry",
+    "authors": [
+      "Colin Baird"
+    ],
+    "isbn": "9780716748779",
+    "year": 2012,
+    "language": "en",
+    "coverUrl": "/covers/vanloon-environmental-chemistry.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 1354784
+  },
+  {
+    "id": "trenberth-climate-system",
+    "title": "Global warming",
+    "authors": [
+      "John Theodore Houghton"
+    ],
+    "isbn": "9780745924588",
+    "year": 2004,
+    "language": "en",
+    "coverUrl": "/covers/trenberth-climate-system.jpg",
+    "source": "openlibrary",
+    "openLibraryCoverId": 3827566
+  },
+  {
+    "title": "Deep Learning Advances (JMLR tuyển tập)",
+    "author": "Journal of Machine Learning Research",
+    "isbn": "9772153001007",
+    "year": 2024,
+    "language": "en",
+    "id": "jmlr-deep-learning",
+    "source": "pinned"
+  },
+  {
+    "title": "Nature Machine Intelligence (số mới nhất)",
+    "author": "Nature Publishing Group",
+    "isbn": "9772522583003",
+    "year": 2025,
+    "language": "en",
+    "id": "nature-machine-intelligence",
+    "source": "pinned"
+  },
+  {
+    "title": "Tia Sáng — chuyên đề Trí tuệ nhân tạo",
+    "author": "Tạp chí Tia Sáng",
+    "isbn": "9771859123004",
+    "year": 2024,
+    "language": "vi",
+    "id": "tia-sang-ai",
+    "source": "pinned"
+  },
+  {
+    "title": "Nature (số lưu hành)",
+    "author": "Nature Publishing Group",
+    "isbn": "9770028083009",
+    "year": 2025,
+    "language": "en",
+    "id": "nature-journal",
+    "source": "pinned"
+  },
+  {
+    "title": "Science (số lưu hành)",
+    "author": "American Association for the Advancement of Science",
+    "isbn": "9770036807003",
+    "year": 2025,
+    "language": "en",
+    "id": "science-journal",
+    "source": "pinned"
+  },
+  {
+    "title": "Toán học và Tuổi trẻ",
+    "author": "Nhà xuất bản Giáo dục Việt Nam",
+    "isbn": "9771859234005",
+    "year": 2025,
+    "language": "vi",
+    "id": "tap-chi-toan-hoc-tuoi-tre",
+    "source": "pinned"
+  }
+]

@@ -92,7 +92,7 @@ export function AiChatPage() {
 
   function openBook(bookId: string) {
     selectBook(bookId)
-    navigate(`/kiosk/books/${bookId}`)
+    navigate(`/kiosk/books/${bookId}`, { state: { from: '/kiosk/ai-chat' } })
   }
 
   return (

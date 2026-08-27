@@ -60,7 +60,7 @@ export function SearchResultsPage() {
 
   function handleSelectBook(bookId: string) {
     selectBook(bookId)
-    navigate(`/kiosk/books/${bookId}`)
+    navigate(`/kiosk/books/${bookId}`, { state: { from: '/kiosk/search/results' } })
   }
 
   function changeType(next: TypeFilter) {
@@ -139,7 +139,10 @@ export function SearchResultsPage() {
       </div>
 
       <div className="relative flex flex-1 overflow-hidden">
-        <main className="mx-auto flex w-full max-w-[1280px] flex-col gap-4 overflow-y-auto px-10 py-4">
+      {/* Full-width scroll container so the scrollbar rides the screen's right edge; the
+          max-width and centring live on the track inside it. See HomePage for the why. */}
+        <main className="w-full overflow-y-auto">
+          <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-4 px-10 py-4">
           {matches.length === 0 ? (
             <EmptyState query={searchQuery} onRetry={openSearch} />
           ) : current.items.length === 0 ? (
@@ -155,13 +158,14 @@ export function SearchResultsPage() {
 
               <ul className="grid grid-cols-2 gap-5 lg:grid-cols-4">
                 {current.items.map((book) => (
-                  <li key={book.id}>
+                  <li key={book.id} className="min-w-0">
                     <ResultCard book={book} onSelect={handleSelectBook} />
                   </li>
                 ))}
               </ul>
             </section>
           )}
+          </div>
         </main>
 
         {/* Signals that the list continues past the fold. */}

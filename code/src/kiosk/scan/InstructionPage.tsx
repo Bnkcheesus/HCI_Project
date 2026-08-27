@@ -3,7 +3,7 @@
 // Figma frame: kiosk-book-scan-instruction (5:971).
 import { ArrowLeft, ArrowRight, CreditCard, QrCode } from 'lucide-react'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { KioskFooter } from '@/components/kiosk/KioskFooter'
 import { KioskHeader } from '@/components/kiosk/KioskHeader'
 import { ScanSteps } from '@/components/kiosk/ScanSteps'
@@ -13,6 +13,7 @@ import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 
 export function ScanInstructionPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const selectedBookId = useBorrowSessionStore((s) => s.selectedBookId)
   const resetCheckout = useBorrowSessionStore((s) => s.resetCheckout)
   const setScanStep = useBorrowSessionStore((s) => s.setScanStep)
@@ -29,20 +30,28 @@ export function ScanInstructionPage() {
   /**
    * Leaves the checkout for a named destination rather than `navigate(-1)`.
    *
-   * Step 1's own "Quay lại" pushes a second /kiosk/scan entry, so history reads
-   * … → scan → step-1 → scan, and stepping back one lands on step 1 — the screen the
-   * reader just left. Going somewhere explicit is the only way out that always makes
-   * sense: back to the book they picked, or the home screen if they came in cold.
+   * History is not a usable "back" here: step 1's own button rewrites the entry behind
+   * this one, so stepping back can land on a screen the reader just left.
+   *
+   * The destination comes from *where this screen was opened from*, never from
+   * `selectedBookId`. That id survives in the session store from an earlier visit, so
+   * using it sent a reader who entered the checkout straight from the home screen to some
+   * book they had looked at minutes before. `fromOrigin` is that caller's own origin,
+   * handed back so the screen we return to keeps a working way out too.
    */
   function leaveCheckout() {
-    navigate(chosen ? `/kiosk/books/${chosen.id}` : '/kiosk')
+    const state = location.state as { from?: string; fromOrigin?: string } | null
+    navigate(state?.from ?? '/kiosk', { state: { from: state?.fromOrigin } })
   }
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <KioskHeader statusLabel="Quét sách & thẻ mượn" />
 
-      <main className="mx-auto flex w-full max-w-[1280px] min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-10 py-5">
+      {/* Full-width scroll container so the scrollbar rides the screen's right edge; the
+          max-width and centring live on the track inside it. See HomePage for the why. */}
+      <main className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto flex min-h-full w-full max-w-[1280px] flex-col gap-5 px-10 py-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1
@@ -84,6 +93,7 @@ export function ScanInstructionPage() {
             title="Quét thẻ sinh viên"
             body="Đặt thẻ lên khay đọc RFID bên dưới màn hình. Hệ thống kiểm tra hạn thẻ, sách quá hạn và số sách bạn đang mượn trước khi xác nhận."
           />
+        </div>
         </div>
       </main>
 

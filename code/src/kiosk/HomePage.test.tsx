@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { availability, suggestedBooks } from '@/mocks'
 import { useAccessibilityStore } from '@/state/useAccessibilityStore'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 import { HomePage } from './HomePage'
@@ -35,8 +36,12 @@ describe('Kiosk HomePage', () => {
 
   it('lists the four suggested books', () => {
     renderHome()
-    for (const title of ['Giải tích 1', 'Vật lý đại cương', 'Lập trình C++', 'Đại số tuyến tính']) {
-      expect(screen.getByText(title)).toBeInTheDocument()
+    // Read from the mocks: which four books are featured is a curation decision that can
+    // change, and this test is about the home screen showing all of them, not about the
+    // titles themselves.
+    expect(suggestedBooks).toHaveLength(4)
+    for (const book of suggestedBooks) {
+      expect(screen.getByText(book.title)).toBeInTheDocument()
     }
   })
 
@@ -49,10 +54,26 @@ describe('Kiosk HomePage', () => {
   // to discover a book is gone, so availability is on the card itself.
   it('shows live availability on every suggested book', () => {
     renderHome()
-    expect(screen.getByText('Còn 3 cuốn')).toBeInTheDocument() // Giải tích 1
-    expect(screen.getByText('Còn 1 cuốn')).toBeInTheDocument() // Vật lý đại cương
-    expect(screen.getByText('Đã mượn hết')).toBeInTheDocument() // Lập trình C++
-    expect(screen.getByText('Còn 4 cuốn')).toBeInTheDocument() // Đại số tuyến tính
+    for (const book of suggestedBooks) {
+      const stock = availability[book.id]
+      const label = stock.copiesAvailable > 0 ? `Còn ${stock.copiesAvailable} cuốn` : 'Đã mượn hết'
+      expect(screen.getByText(label)).toBeInTheDocument()
+    }
+  })
+
+  /**
+   * The four featured books carry four different states on purpose. A reader who only
+   * ever sees green chips has no reason to trust the black one when it finally appears —
+   * and "đã mượn hết before you walk" is the persona's whole complaint about the old
+   * system, so the home screen has to demonstrate it.
+   */
+  it('puts a different availability state on each featured card', () => {
+    const labels = suggestedBooks.map((b) => {
+      const stock = availability[b.id]
+      return stock.copiesAvailable > 0 ? `Còn ${stock.copiesAvailable} cuốn` : 'Đã mượn hết'
+    })
+    expect(new Set(labels).size).toBe(labels.length)
+    expect(labels).toContain('Đã mượn hết')
   })
 
   it('offers one-tap subject shortcuts and the library status bar', () => {

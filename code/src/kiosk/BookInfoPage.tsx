@@ -2,7 +2,7 @@
 // location, the hand-off point to the self-checkout flow.
 // Figma frame: kiosk-book-info (19:243).
 import { ArrowLeft, Navigation, ScanLine } from 'lucide-react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { AvailabilityChip } from '@/components/kiosk/AvailabilityChip'
 import { KioskFooter } from '@/components/kiosk/KioskFooter'
 import { KioskHeader } from '@/components/kiosk/KioskHeader'
@@ -21,6 +21,10 @@ export function BookInfoPage() {
   const navigate = useNavigate()
   const { bookId } = useParams()
   const selectBook = useBorrowSessionStore((s) => s.selectBook)
+  const searchQuery = useBorrowSessionStore((s) => s.searchQuery)
+  // Named routerLocation because `location` below is the book's shelf location.
+  // Both hooks must run before the not-found early return.
+  const routerLocation = useLocation()
 
   const book = books.find((b) => b.id === bookId)
   if (!book) return <NotFound onBack={() => navigate('/kiosk/search/results')} />
@@ -29,16 +33,33 @@ export function BookInfoPage() {
   const isAvailable = (stock?.copiesAvailable ?? 0) > 0
   const location = shelfLocations[book.shelfCode]
 
+  /**
+   * Where "Quay về" goes, as a named route rather than navigate(-1).
+   *
+   * History is not a reliable "back" here: the checkout leaves entries behind it, so
+   * stepping back one from this screen could land on the scan flow the reader just
+   * escaped. Callers say where they came from; the fallback covers a cold link.
+   */
+  const cameFrom = (routerLocation.state as { from?: string } | null)?.from
+  const backTarget = cameFrom ?? (searchQuery ? '/kiosk/search/results' : '/kiosk')
+
   function startBorrow() {
     selectBook(book!.id)
-    navigate('/kiosk/scan')
+    // `from` is where the checkout should return to (here); `fromOrigin` is where this
+    // screen itself came from, so the way out still works after that return.
+    navigate('/kiosk/scan', {
+      state: { from: `/kiosk/books/${book!.id}`, fromOrigin: cameFrom },
+    })
   }
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <KioskHeader statusLabel="Thông tin sách" />
 
-      <main className="mx-auto grid w-full max-w-[1280px] flex-1 grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-8 overflow-y-auto px-10 py-6">
+      {/* Full-width scroll container so the scrollbar rides the screen's right edge; the
+          max-width and centring live on the track inside it. See HomePage for the why. */}
+      <main className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto grid w-full max-w-[1280px] grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-8 px-10 py-6">
         {/* ---------------- Left: the book itself ---------------- */}
         <section className="flex flex-col gap-5">
           <h1
@@ -176,6 +197,7 @@ export function BookInfoPage() {
           )}
 
         </section>
+        </div>
       </main>
 
       {/* Pinned action bar: "Mượn sách" is the whole point of this screen, so it must
@@ -184,7 +206,7 @@ export function BookInfoPage() {
         <div className="mx-auto flex max-w-[1280px] flex-wrap gap-4">
           <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(backTarget)}
             className="inline-flex min-h-16 items-center justify-center gap-3 rounded-[6px] border border-[var(--rule)] bg-card shadow-[var(--btn-shadow)] px-10 font-heading font-bold text-foreground transition-colors hover:bg-secondary"
             style={{ fontSize: 'var(--text-tab)' }}
           >

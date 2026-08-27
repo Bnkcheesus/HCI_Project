@@ -13,8 +13,13 @@ describe('askLibrarian — finding books', () => {
   ])('maps "%s" onto the Machine Learning shelf', (question) => {
     const reply = askLibrarian(question)
     expect(reply.intent).toBe('books')
-    expect(reply.books.length).toBeGreaterThan(0)
-    expect(reply.books.every((b) => b.subject === 'Machine Learning')).toBe(true)
+
+    // The whole shelf comes back, not one lucky title match. Not *only* that shelf,
+    // though: "khoa học dữ liệu" legitimately also matches "Cấu trúc dữ liệu và giải
+    // thuật" by title, and hiding a book the reader asked for would be the worse bug.
+    const onShelf = books.filter((b) => b.subject === 'Machine Learning')
+    const returned = reply.books.filter((b) => b.subject === 'Machine Learning')
+    expect(returned).toHaveLength(onShelf.length)
   })
 
   it('finds a book named directly by title', () => {
@@ -39,10 +44,30 @@ describe('askLibrarian — finding books', () => {
    * all-borrowed result must say so up front rather than reading like a hit.
    */
   it('leads with the bad news when every copy is out', () => {
-    const reply = askLibrarian('sách lập trình C++')
-    expect(reply.books.map((b) => b.id)).toEqual(['lap-trinh-cpp'])
+    // Named by title so the result is exactly one book, and that book is fully out on
+    // loan — a subject query would now pull in the rest of the shelf alongside it.
+    const reply = askLibrarian('sách pattern recognition')
+    expect(reply.books.map((b) => b.id)).toEqual(['pattern-recognition'])
     expect(reply.text).toContain('đang có người mượn')
-    expect(reply.text).toContain(availability['lap-trinh-cpp'].dueBack!)
+    expect(reply.text).toContain(availability['pattern-recognition'].dueBack!)
+  })
+
+  /**
+   * Tone-stripping makes Vietnamese phrases swallow each other: "thuật toán" ends in
+   * "toan", "khoa học" ends in "hoa hoc", "điện từ học" starts with "điện tử". Matching
+   * on bare substrings answered each of these with two shelves at once — a reader asking
+   * for algorithms was handed the whole of mathematics as well.
+   */
+  it.each([
+    ['sách thuật toán', 'Công nghệ thông tin'],
+    ['sách khoa học dữ liệu', 'Machine Learning'],
+    ['sách điện từ học', 'Vật lý'],
+    ['sách điện tử', 'Điện tử – Viễn thông'],
+    ['sách hóa học', 'Hóa học'],
+  ])('answers "%s" with the %s shelf and nothing else', (question, subject) => {
+    const reply = askLibrarian(question)
+    expect(reply.books.length).toBeGreaterThan(0)
+    expect([...new Set(reply.books.map((b) => b.subject))]).toEqual([subject])
   })
 
   it('reports how many of a mixed result set are on the shelf', () => {

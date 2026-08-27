@@ -40,7 +40,14 @@ export function BorrowCompletePage() {
     <div className="flex h-screen flex-col overflow-hidden">
       <KioskHeader statusLabel="Giao dịch hoàn tất" />
 
-      <main className="mx-auto flex w-full max-w-[1180px] min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-10 py-5">
+      {/* Full-width scroll container so the scrollbar rides the screen's right edge; the
+          max-width and centring live on the track inside it. See HomePage for the why. */}
+      <main className="min-h-0 flex-1 overflow-y-auto">
+        {/* h-full, not min-h-full: this screen scrolls *inside* its two panels, so the
+            track needs a definite height for their flex-1 to resolve against. With
+            min-h-full the whole receipt scrolled instead, carrying the hand-off QR out of
+            sight while the reader was still working down a five-book slip. */}
+        <div className="mx-auto flex h-full w-full max-w-[1180px] flex-col gap-5 px-10 py-5">
         <header className="flex shrink-0 items-center gap-5">
           <span
             className="kiosk-rise grid size-16 shrink-0 place-items-center rounded-full bg-[var(--live-ink)] text-white"
@@ -164,6 +171,7 @@ export function BorrowCompletePage() {
               </button>
             </div>
           </aside>
+        </div>
         </div>
       </main>
 

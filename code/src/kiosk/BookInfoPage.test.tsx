@@ -2,8 +2,11 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { books } from '@/mocks'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 import { BookInfoPage } from './BookInfoPage'
+
+const BOOK = 'statistical-learning'
 
 function renderBook(bookId: string) {
   return render(
@@ -29,7 +32,9 @@ describe('Kiosk BookInfoPage', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Gareth James')).toBeInTheDocument()
     expect(screen.getByText('Còn 2 cuốn')).toBeInTheDocument()
-    expect(screen.getByText('2021')).toBeInTheDocument()
+    // Read from the catalogue rather than hardcoded: the bibliographic data is real, and
+    // re-running scripts/fetch-catalog.mjs can legitimately pick up a newer edition.
+    expect(screen.getByText(String(books.find((b) => b.id === BOOK)!.year))).toBeInTheDocument()
     expect(screen.getByText('2 còn / 3 tổng')).toBeInTheDocument()
   })
 

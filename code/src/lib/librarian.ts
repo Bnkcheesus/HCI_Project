@@ -77,11 +77,49 @@ const TOPIC_ALIASES: { subject: string; keywords: string[] }[] = [
       ' ai ',
     ],
   },
-  { subject: 'Toán học', keywords: ['toan', 'giai tich', 'dai so', 'xac suat', 'thong ke'] },
-  { subject: 'Vật lý', keywords: ['vat ly', 'co hoc', 'dien tu hoc'] },
+  {
+    subject: 'Toán học',
+    keywords: ['toan', 'giai tich', 'dai so', 'xac suat', 'thong ke', 'vi phan', 'roi rac'],
+  },
+  {
+    subject: 'Vật lý',
+    keywords: ['vat ly', 'co hoc', 'dien tu hoc', 'luong tu', 'quang hoc', 'nhiet dong'],
+  },
   {
     subject: 'Công nghệ thông tin',
-    keywords: ['lap trinh', 'cong nghe thong tin', 'cntt', 'c++', 'cpp', 'may tinh', 'phan mem'],
+    keywords: [
+      'lap trinh',
+      'cong nghe thong tin',
+      'cntt',
+      'c++',
+      'cpp',
+      'may tinh',
+      'phan mem',
+      'thuat toan',
+      'cau truc du lieu',
+      'co so du lieu',
+      'he dieu hanh',
+      'mang may tinh',
+    ],
+  },
+  {
+    // Space-padded: "hoa hoc" is a substring of "khoa hoc", so an unpadded alias would
+    // drag the whole chemistry shelf into every question about "khoa học dữ liệu".
+    subject: 'Hóa học',
+    keywords: [' hoa hoc', ' hoa huu co', ' hoa vo co', ' hoa ly ', ' hoa phan tich', 'hoa sinh'],
+  },
+  {
+    subject: 'Sinh học',
+    keywords: ['sinh hoc', 'te bao', 'di truyen', 'vi sinh', 'mien dich', 'sinh thai', 'tin sinh'],
+  },
+  {
+    subject: 'Điện tử – Viễn thông',
+    // " dien tu " padded so "điện từ học" stays with Vật lý rather than matching both.
+    keywords: [' dien tu ', 'vien thong', 'mach dien', 'tin hieu', 'vi mach', 'thiet ke so'],
+  },
+  {
+    subject: 'Khoa học môi trường',
+    keywords: ['moi truong', 'dia chat', 'khi tuong', 'khi hau', 'trai dat'],
   },
 ]
 
@@ -101,7 +139,7 @@ function matchBooks(question: string): Book[] {
   // Pad so a word-boundary alias like " ai " can match at the very start or end.
   const padded = ` ${q} `
 
-  const subjects = TOPIC_ALIASES.filter((t) => hasAny(padded, t.keywords)).map((t) => t.subject)
+  const subjects = matchSubjects(padded)
   const bySubject = books.filter((b) => subjects.includes(b.subject))
 
   // Free-text fallback: a title or author named directly ("Giải tích 1", "Goodfellow").
@@ -114,22 +152,48 @@ function matchBooks(question: string): Book[] {
 }
 
 /**
+ * Which subject shelves a question is about.
+ *
+ * Stripping tones makes several Vietnamese phrases contain one another: "thuật toán" is
+ * an algorithm but ends in "toan", and "khoa học" ends in "hoa hoc". Matching the longest
+ * alias and discarding any shorter alias contained within it keeps "sách thuật toán" on
+ * the computing shelf instead of returning it plus the whole of mathematics.
+ */
+function matchSubjects(paddedQuestion: string): string[] {
+  const hits: { subject: string; keyword: string }[] = []
+  for (const topic of TOPIC_ALIASES) {
+    for (const keyword of topic.keywords) {
+      if (paddedQuestion.includes(keyword)) hits.push({ subject: topic.subject, keyword: keyword.trim() })
+    }
+  }
+
+  const winning = hits.filter(
+    (hit) => !hits.some((other) => other.keyword.length > hit.keyword.length && other.keyword.includes(hit.keyword)),
+  )
+  return [...new Set(winning.map((h) => h.subject))]
+}
+
+/**
  * A question mentions a book when it contains a distinctive run of its title, or the
  * author's surname. Whole-title matching alone is too strict — nobody types
  * "An Introduction to Statistical Learning" on a kiosk keyboard.
+ *
+ * Every comparison is on whole words: without the padding, "sách khoa học dữ liệu" hits
+ * "Hóa học đại cương", because "khoa hoc" ends in "hoa hoc" once the tones are gone.
  */
 function titleOrAuthorMentioned(book: Book, normalizedQuestion: string): boolean {
+  const haystack = ` ${normalizedQuestion} `
   const title = normalize(book.title)
-  if (title.length >= 4 && normalizedQuestion.includes(title)) return true
+  if (title.length >= 4 && haystack.includes(` ${title} `)) return true
 
   // Any 2+ consecutive significant title words, e.g. "giai tich" out of "Giải tích 1".
   const words = title.split(/[^a-z0-9+]+/).filter((w) => w.length >= 3)
   for (let i = 0; i < words.length - 1; i++) {
-    if (normalizedQuestion.includes(`${words[i]} ${words[i + 1]}`)) return true
+    if (haystack.includes(` ${words[i]} ${words[i + 1]} `)) return true
   }
 
   const surname = normalize(book.author).split(/\s+/).pop() ?? ''
-  return surname.length >= 4 && normalizedQuestion.includes(surname)
+  return surname.length >= 4 && haystack.includes(` ${surname} `)
 }
 
 function listFloors(list: Book[]): string {

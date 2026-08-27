@@ -32,14 +32,33 @@ export function ResultCard({ book, onSelect }: ResultCardProps) {
   const isAvailable = (record?.copiesAvailable ?? 0) > 0
   const TypeIcon = TYPE_ICON[book.type]
 
+  /*
+   * w-full + min-w-0 here are load-bearing, not decoration. A <button> sizes to
+   * fit-content even as a block-level flex container, so without w-full it grows to its
+   * widest descendant — and the author line is `truncate`, i.e. nowrap, i.e. as wide as
+   * the full credit. Real books carry three-author credits ("Marc Peter Deisenroth,
+   * A. Aldo Faisal, Cheng Soon Ong"), which pushed this card 122px past its grid track
+   * and the fourth column off the side of a 1280px kiosk screen.
+   */
   return (
     <button
       type="button"
       onClick={() => onSelect(book.id)}
       data-kiosk-surface
-      className="group flex h-full flex-col overflow-hidden rounded-[8px] border border-[var(--rule)] bg-card text-left transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--lift-2)]"
+      className="group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[8px] border border-[var(--rule)] bg-card text-left transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--lift-2)]"
     >
-      <div className="relative aspect-[16/9] shrink-0 overflow-hidden bg-secondary">
+      {/*
+        The cover is the card's shock absorber. aspect-[16/9] sets its height wherever the
+        card sizes itself (search results, search suggestions); shrink and grow let it
+        trade that height back where the card is pinned to a row (the home screen, which
+        must not scroll); min-h-20 stops it collapsing to a sliver.
+
+        w-full is not redundant next to a stretched flex item: with an aspect ratio and a
+        height handed to it by flex-grow, an engine is free to derive the *width* from the
+        ratio instead, which blows the cover out past the card. Pinning the width to 100%
+        leaves the ratio only the height to set.
+      */}
+      <div className="relative aspect-[16/9] w-full min-h-20 shrink grow overflow-hidden bg-secondary">
         <span
           aria-hidden
           className="absolute inset-y-0 left-0 z-10 w-1.5"
@@ -72,7 +91,9 @@ export function ResultCard({ book, onSelect }: ResultCardProps) {
         <AvailabilityChip bookId={book.id} className="absolute right-3 top-3 z-10 shadow-sm" />
       </div>
 
-      <div className="flex flex-1 flex-col gap-1 px-4 py-3">
+      {/* shrink-0: the cover takes the slack in a stretched card, not this block — a taller
+          white panel below a letterboxed cover reads as a layout accident. */}
+      <div className="flex min-w-0 shrink-0 flex-col gap-1 px-4 py-3">
         <p
           className="line-clamp-2 font-heading font-semibold leading-snug text-foreground"
           style={{ fontSize: 'var(--text-body)' }}

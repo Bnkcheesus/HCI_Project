@@ -3,7 +3,7 @@
 import { Sparkles } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { BookCard } from '@/components/kiosk/BookCard'
+import { ResultCard } from '@/components/kiosk/ResultCard'
 import { KioskFooter } from '@/components/kiosk/KioskFooter'
 import { KioskHeader } from '@/components/kiosk/KioskHeader'
 import { OnScreenKeyboard } from '@/components/kiosk/OnScreenKeyboard'
@@ -50,7 +50,7 @@ export function SearchPage() {
 
   function handleSelectBook(bookId: string) {
     selectBook(bookId)
-    navigate(`/kiosk/books/${bookId}`)
+    navigate(`/kiosk/books/${bookId}`, { state: { from: '/kiosk/search' } })
   }
 
   function handleSubmit() {
@@ -62,7 +62,10 @@ export function SearchPage() {
       <KioskHeader statusLabel="Tìm sách" />
 
       {/* Results area: suggestions before typing, live matches once the user starts. */}
-      <main className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col gap-4 overflow-y-auto px-10 py-4">
+      {/* Full-width scroll container so the scrollbar rides the screen's right edge; the
+          max-width and centring live on the track inside it. See HomePage for the why. */}
+      <main className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-4 px-10 py-4">
         {isTyping ? (
           <SearchSuggestions query={fieldValue} onSelect={handleSelectBook} />
         ) : (
@@ -75,13 +78,14 @@ export function SearchPage() {
             </h2>
             <ul className="grid grid-cols-2 gap-5 lg:grid-cols-4">
               {suggestedBooks.map((book) => (
-                <li key={book.id}>
-                  <BookCard book={book} onSelect={handleSelectBook} />
+                <li key={book.id} className="min-w-0">
+                  <ResultCard book={book} onSelect={handleSelectBook} />
                 </li>
               ))}
             </ul>
           </section>
         )}
+        </div>
       </main>
 
       {/* Search field sits directly above the keyboard, where the thumbs are. */}

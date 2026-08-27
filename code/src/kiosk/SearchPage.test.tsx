@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { suggestedBooks } from '@/mocks'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 import { useKeyboardStore } from '@/state/useKeyboardStore'
 import { SearchPage } from './SearchPage'
@@ -72,7 +73,7 @@ describe('Kiosk SearchPage', () => {
   it('shows suggested books before the user types anything', () => {
     renderSearch()
     expect(screen.getByText('Gợi ý cho bạn')).toBeInTheDocument()
-    expect(screen.getByText('Giải tích 1')).toBeInTheDocument()
+    expect(screen.getByText(suggestedBooks[0].title)).toBeInTheDocument()
   })
 
   // Telex on the on-screen keyboard: g-i-a-i-r must render "giải", not "giair".
@@ -96,8 +97,10 @@ describe('Kiosk SearchPage', () => {
     }
 
     expect(screen.queryByText('Gợi ý cho bạn')).not.toBeInTheDocument()
-    expect(screen.getByText(/1 kết quả cho/i)).toBeInTheDocument()
-    expect(screen.getByText('Còn 3 cuốn')).toBeInTheDocument()
+    // The count moves with the catalogue, so what is asserted is that a count is shown
+    // and that the book being typed is among the live matches.
+    expect(screen.getByText(/kết quả cho/i)).toBeInTheDocument()
+    expect(screen.getByText('Giải tích 1')).toBeInTheDocument()
   })
 
   // Typing without tones must still find the book — Telex is optional, not required.

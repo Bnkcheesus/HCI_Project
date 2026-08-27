@@ -158,6 +158,52 @@ describe('Leaving the checkout', () => {
     expect(screen.getByRole('button', { name: /Mượn sách|Đã mượn hết/ })).toBeInTheDocument()
   })
 
+  /**
+   * The fix above pushes a fresh /kiosk/books entry on the way out of the checkout, which
+   * left the detail screen's own navigate(-1) landing back on the scan flow. Both back
+   * buttons now go to named routes, so the whole loop has to be walked to prove it.
+   */
+  it('returns to the results list from the book screen after a checkout detour', async () => {
+    const user = userEvent.setup()
+    useBorrowSessionStore.getState().setSearchQuery('giải tích')
+    renderAt('/kiosk/search/results')
+
+    await user.click(screen.getByRole('button', { name: /Giải tích 1/ }))
+    await user.click(screen.getByRole('button', { name: /Mượn sách/ }))
+    expect(screen.getByText('Tự mượn sách tại kiosk')).toBeInTheDocument()
+
+    // Out of the checkout, back onto the book screen.
+    await user.click(screen.getByRole('button', { name: /^Quay về$/ }))
+    expect(screen.getByRole('button', { name: /Mượn sách|Đã mượn hết/ })).toBeInTheDocument()
+
+    // …and the book screen's own back must reach the results, not the scan flow again.
+    await user.click(screen.getByRole('button', { name: /^Quay về$/ }))
+    expect(screen.queryByText('Tự mượn sách tại kiosk')).not.toBeInTheDocument()
+    expect(screen.getByText('Kết quả tìm kiếm')).toBeInTheDocument()
+  })
+
+  /**
+   * Entering the checkout from the home screen must come back to the home screen — even
+   * when a book was viewed earlier in the session. The exit used to be chosen from
+   * selectedBookId, which survives in the store, so it sent the reader to a book they had
+   * looked at minutes before and never asked to borrow now.
+   */
+  it('returns home from a checkout started on the home screen, ignoring a stale selection', async () => {
+    const user = userEvent.setup()
+    // A book was viewed earlier in the session and is still selected in the store.
+    useBorrowSessionStore.getState().selectBook(inStock[0].id)
+    renderAt('/kiosk')
+
+    await user.click(screen.getByRole('tab', { name: 'Mượn sách' }))
+    expect(screen.getByText('Tự mượn sách tại kiosk')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^Quay về$/ }))
+
+    // The mode tabs only exist on the home screen; the detail screen's heading must not.
+    expect(screen.getByRole('tab', { name: 'Tìm sách thông minh' })).toBeInTheDocument()
+    expect(screen.queryByText('Thông tin sách')).not.toBeInTheDocument()
+  })
+
   it('goes to the home screen when no book was picked first', async () => {
     const user = userEvent.setup()
     renderAt('/kiosk/scan')
