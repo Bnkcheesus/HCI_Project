@@ -178,7 +178,7 @@ export function HomePage() {
               type="button"
               onClick={() => navigate('/kiosk/ai-chat')}
               aria-label="Mở trợ lý AI gợi ý sách"
-              className="inline-flex min-h-16 shrink-0 items-center gap-3 rounded-[6px] bg-[var(--live-ink)] px-7 font-heading font-bold text-white shadow-[var(--lift-2)] transition-[background,box-shadow] duration-150 active:brightness-95"
+              className="inline-flex min-h-16 shrink-0 items-center gap-3 rounded-[6px] bg-[var(--ink)] px-7 font-heading font-bold text-white shadow-[var(--lift-2)] transition-[background,box-shadow] duration-150 active:brightness-95"
               style={{ fontSize: 'var(--text-body)' }}
             >
               <Sparkles className="size-6" aria-hidden />

@@ -1,11 +1,16 @@
-import { Mic, MicOff, SendHorizontal } from 'lucide-react'
+import { Mic, MicOff } from 'lucide-react'
 import type { FormEvent, KeyboardEvent } from 'react'
 import { applyTelexKey } from '@/lib/telex'
 import { cn } from '@/lib/utils'
 
 /**
  * Question box for the AI librarian — Figma ChatComposer in kiosk-ai-chat (5:779):
- * text field, voice button, send button.
+ * text field and voice button.
+ *
+ * No send button of its own: the on-screen keyboard directly below already carries a
+ * "Gửi" key, and two send buttons a few centimetres apart on a touchscreen is a choice
+ * the reader should not have to make. The form still submits on Enter — with a single
+ * text field and no submit button, that is the browser's implicit submission.
  *
  * Deliberately not `SearchField`: that one morphs between the home and search screens
  * via a shared View Transition name and submits into the results route. Reusing it here
@@ -102,16 +107,6 @@ export function ChatComposer({
           )}
         </button>
       )}
-
-      <button
-        type="submit"
-        disabled={!canSend}
-        aria-label="Gửi câu hỏi"
-        title="Gửi câu hỏi"
-        className="grid size-16 shrink-0 place-items-center rounded-full bg-[var(--live-ink)] text-white shadow-[var(--btn-shadow)] transition-[background,box-shadow] duration-150 active:brightness-95 disabled:cursor-not-allowed disabled:opacity-35 disabled:shadow-none disabled:hover:scale-100"
-      >
-        <SendHorizontal className="size-6" aria-hidden />
-      </button>
     </form>
   )
 }

@@ -53,7 +53,7 @@ console.log(
 // 3. A long conversation must scroll the transcript, not the page.
 for (const q of ['sách vật lý', 'thư viện mở cửa mấy giờ', 'làm sao gia hạn thẻ']) {
   await page.getByLabel('Câu hỏi cho trợ lý LibAssist').fill(q)
-  await page.getByRole('button', { name: 'Gửi câu hỏi' }).click()
+  await page.getByRole('group', { name: 'Bàn phím ảo' }).getByRole('button', { name: 'Gửi' }).click()
   await page.waitForTimeout(900)
 }
 await overflow('after 4 turns')

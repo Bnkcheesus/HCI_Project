@@ -37,10 +37,10 @@ export function KioskHeader({ statusLabel }: KioskHeaderProps) {
             LibAssist
           </p>
           <p
-            className="font-semibold text-[var(--live-ink)]"
+            className="font-semibold text-[var(--ink)]"
             style={{ fontSize: 'var(--text-meta)' }}
           >
-            Kiosk số #04 • ĐH Khoa học Tự nhiên
+            Kiosk số 04 • ĐH Khoa học Tự nhiên
           </p>
         </div>
       </div>

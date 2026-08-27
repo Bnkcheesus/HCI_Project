@@ -21,6 +21,13 @@ function renderChat() {
 }
 
 const composer = () => screen.getByLabelText('Câu hỏi cho trợ lý LibAssist')
+/**
+ * The on-screen keyboard's enter key is the only send control on this screen — the
+ * composer used to carry a second one beside the mic, which is a needless choice to put
+ * in front of someone standing at a kiosk.
+ */
+const sendKey = () =>
+  within(screen.getByRole('group', { name: 'Bàn phím ảo' })).getByRole('button', { name: 'Gửi' })
 const sidePanel = () => within(screen.getByRole('complementary'))
 const transcript = () => within(screen.getByRole('log'))
 
@@ -59,9 +66,15 @@ describe('AI chat — the empty state', () => {
     expect(screen.getByText(/Chưa có gợi ý nào/)).toBeInTheDocument()
   })
 
-  it('cannot send an empty question', () => {
+  it('cannot send an empty question', async () => {
+    const user = userEvent.setup()
     renderChat()
-    expect(screen.getByRole('button', { name: 'Gửi câu hỏi' })).toBeDisabled()
+
+    await user.click(sendKey())
+
+    // Nothing was said, so the starter chips are still the whole screen.
+    expect(screen.getByRole('button', { name: ASK_AI_BOOKS })).toBeInTheDocument()
+    expect(transcript().queryByRole('article')).not.toBeInTheDocument()
   })
 })
 
@@ -84,10 +97,25 @@ describe('AI chat — asking a question', () => {
     // Physical-keyboard input is routed through Telex, same as the search screen.
     expect(composer()).toHaveValue('sach vật lý')
 
-    await user.click(screen.getByRole('button', { name: 'Gửi câu hỏi' }))
+    await user.click(sendKey())
 
     expect(await findAnswer(ANSWER_BOOKS)).toBeInTheDocument()
     // The field empties so the next question starts clean.
+    expect(composer()).toHaveValue('')
+  })
+
+  /**
+   * With the composer's own send button gone, the form has a single text field and no
+   * submit button — which is exactly the case where the browser submits on Enter by
+   * itself. Someone on a physical keyboard must not be forced down to the on-screen one.
+   */
+  it('sends on Enter from a physical keyboard', async () => {
+    const user = userEvent.setup()
+    renderChat()
+
+    await user.type(composer(), 'sach vaatj lys{Enter}')
+
+    expect(await findAnswer(ANSWER_BOOKS)).toBeInTheDocument()
     expect(composer()).toHaveValue('')
   })
 
@@ -178,7 +206,7 @@ describe('AI chat — the suggestion panel', () => {
 
     await user.click(composer())
     await user.paste('Thư viện mở cửa mấy giờ')
-    await user.click(screen.getByRole('button', { name: 'Gửi câu hỏi' }))
+    await user.click(sendKey())
     await findAnswer(ANSWER_HOURS)
 
     expect(sidePanel().getByRole('button', { name: /Giải tích 1/ })).toBeInTheDocument()
@@ -230,6 +258,6 @@ describe('AI chat — when the browser has no speech support', () => {
   it('hides the mic rather than showing a dead button', () => {
     renderChat()
     expect(screen.queryByRole('button', { name: 'Hỏi bằng giọng nói' })).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Gửi câu hỏi' })).toBeInTheDocument()
+    expect(sendKey()).toBeInTheDocument()
   })
 })

@@ -277,7 +277,7 @@ function EmptyState({
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center">
       <div
-        className="grid size-20 place-items-center rounded-full bg-[var(--live-ink)] text-white"
+        className="grid size-20 place-items-center rounded-full bg-[var(--ink)] text-white"
         aria-hidden
       >
         <BookOpen className="size-9" strokeWidth={2} />
