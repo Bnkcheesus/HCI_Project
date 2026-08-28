@@ -1,0 +1,1893 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LibAssist — chọn bảng màu</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px 32px 80px;
+    font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: #ffffff; color: #15161a;
+  }
+  h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .lede { max-width: 74ch; color: #55565e; margin: 0 0 8px; }
+  .toc { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0 40px; }
+  .toc a { padding: 7px 13px; border: 1px solid #e0e0dc; border-radius: 6px;
+           text-decoration: none; color: #15161a; font-weight: 600; font-size: 14px; }
+  .palette { border-top: 2px solid #15161a; padding-top: 20px; margin-top: 48px; }
+  .p-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  h2 { font-size: 21px; margin: 0; letter-spacing: -0.01em; }
+  h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em;
+       color: #6e6f77; margin: 24px 0 10px; }
+  code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+         background: #f2f2ef; padding: 2px 6px; border-radius: 4px; }
+  .note { max-width: 74ch; color: #55565e; margin: 8px 0 20px; }
+
+  /* Mini-mockup */
+  .prev { border: 1px solid #d9d9d4; border-radius: 10px; overflow: hidden; }
+  .prev-bar { display: flex; align-items: center; gap: 10px;
+              padding: 11px 14px; border-bottom: 1px solid; font-size: 14px; }
+  .prev-logo { width: 24px; height: 24px; border-radius: 5px; display: inline-block; }
+  .prev-body { display: grid; grid-template-columns: 210px 1fr; gap: 16px; padding: 18px; }
+  .prev-card { background: #fff; border: 1px solid; border-radius: 8px; overflow: hidden; }
+  .prev-cover { position: relative; aspect-ratio: 16/9; }
+  .prev-spine { position: absolute; inset: 0 auto 0 0; width: 6px; }
+  .prev-chip { position: absolute; right: 8px; top: 8px; color: #fff;
+               font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 5px; }
+  .prev-meta { padding: 10px 12px; display: grid; gap: 3px; }
+  .prev-side { display: grid; gap: 10px; align-content: start; }
+  .prev-field { border: 1px solid; border-radius: 6px; padding: 10px 12px;
+                background: #fff; font: inherit; font-size: 14px; width: 100%; }
+  .prev-btn { border: 0; border-radius: 6px; color: #fff; font: inherit;
+              font-weight: 700; padding: 11px 18px; justify-self: start; }
+  .prev-row { color: #fff; font-size: 13px; font-weight: 600;
+              padding: 8px 12px; border-radius: 6px; }
+  .prev-status { display: flex; gap: 18px; font-size: 13px; }
+  .prev-spines { display: flex; gap: 6px; }
+  .prev-spines span { width: 34px; height: 14px; border-radius: 3px; }
+
+  .cols { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+          gap: 32px; margin-top: 4px; }
+  @media (max-width: 900px) { .cols, .prev-body { grid-template-columns: 1fr; } }
+
+  .swatches { display: grid; gap: 3px; }
+  .sw { display: grid; grid-template-columns: 22px 108px 74px 1fr;
+        align-items: center; gap: 10px; font-size: 13px; }
+  .sw-chip { width: 22px; height: 22px; border-radius: 4px; border: 1px solid #00000018; }
+  .sw-token { font: 12px ui-monospace, Menlo, monospace; }
+  .sw-hex { font: 12px ui-monospace, Menlo, monospace; color: #55565e; }
+  .sw-role { color: #6e6f77; }
+
+  .ratios { border-collapse: collapse; width: 100%; font-size: 13px; }
+  .ratios td { padding: 6px 8px; border-bottom: 1px solid #eeeeea; }
+  .ratios td:nth-child(2) { font: 12px ui-monospace, Menlo, monospace; text-align: right; }
+  .ratios td:nth-child(3) { width: 90px; color: #0f6b45; font-weight: 600; }
+  .ratios tr.bad td:nth-child(3) { color: #a2372a; }
+
+  pre { background: #f6f6f3; border: 1px solid #e4e4df; border-radius: 8px;
+        padding: 14px; overflow-x: auto;
+        font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; }
+</style>
+</head>
+<body>
+
+<h1>Chọn bảng màu cho LibAssist</h1>
+<p class="lede">
+  Bốn ứng viên, cộng bảng đang chạy để đối chiếu. Mỗi bảng giữ nguyên <em>cấu trúc</em> của
+  bảng hiện tại — nền gần trung tính ba bậc, màu chỉ xuất hiện ở ba chỗ có nghĩa (hành động,
+  tín hiệu còn sách, lời từ chối) — và chỉ thay tông. Đổi bảng màu là đổi cảm giác, không
+  đổi ngữ nghĩa.
+</p>
+<p class="lede">
+  Mọi cặp màu đều đã đo bằng <code>scripts/check-palette.mjs</code> theo ngưỡng WCAG AA cho
+  <strong>chữ thường</strong> (4.5:1) — không dùng ngưỡng chữ lớn, vì persona thị lực kém.
+  Viền ô nhập đo theo WCAG 1.4.11 (3:1). Trang này được sinh ra từ
+  <code>scripts/palettes.data.mjs</code>; sửa file đó rồi chạy lại
+  <code>node scripts/build-palette-page.mjs</code>, đừng sửa trực tiếp HTML.
+</p>
+<p class="lede">
+  Chọn xong, nói tên bảng (<code>cham</code>, <code>thanChi</code>, <code>datNung</code>,
+  <code>timTram</code>) — phần chế độ trợ năng trong <code>tokens.css</code> cũng cần chỉnh
+  theo, khối CSS bên dưới mới chỉ là phần <code>:root</code>.
+</p>
+
+<nav class="toc">
+  <a href="#current">Đang chạy — H · Nửa đêm & Nghệ</a>
+  <a href="#cham">A · Chàm — Indigo & Ngọc lục</a>
+  <a href="#thanChi">B · Than chì — Graphite & Hổ phách</a>
+  <a href="#datNung">C · Đất nung — Gạch & Thông</a>
+  <a href="#timTram">D · Tím trầm — Plum & Rêu</a>
+  <a href="#coVit">E · Cổ vịt — Teal & Lá mạ</a>
+  <a href="#dienTu">F · Điện tử — Xanh dương rực & Trắng lạnh</a>
+  <a href="#datSet">G · Đất sét — Nền hồng đất & Mực xanh</a>
+  <a href="#nuaDem">H · Nửa đêm & Nghệ</a>
+</nav>
+
+
+<section class="palette" id="current">
+  <header class="p-head">
+    <h2>Đang chạy — H · Nửa đêm & Nghệ</h2>
+    <code>current</code>
+  </header>
+  <p class="note">Bảng màu hiện có trong src/index.css. Giống hệt mục H bên dưới.</p>
+
+  
+  <div class="prev" style="background:#f4f5f6">
+    <div class="prev-bar" style="background:#ecedef;border-color:#dfe1e4">
+      <span class="prev-logo" style="background:#16233d"></span>
+      <span style="color:#12151b;font-weight:800">LibAssist</span>
+      <span style="margin-left:auto;color:#4f545d;font-size:12px">Kiosk số 04</span>
+    </div>
+
+    <div class="prev-body">
+      <div class="prev-card" style="border-color:#dfe1e4">
+        <div class="prev-cover" style="background:#dfe1e4">
+          <span class="prev-spine" style="background:#16233d"></span>
+          <span class="prev-chip" style="background:#125239">Còn 3 cuốn</span>
+        </div>
+        <div class="prev-meta">
+          <div style="color:#12151b;font-weight:600">Introduction to Algorithms</div>
+          <div style="color:#4f545d;font-size:12px">Cormen, Leiserson, Rivest</div>
+          <div style="color:#125239;font-size:12px;font-weight:600">Kệ A3 · Tầng 2</div>
+        </div>
+      </div>
+
+      <div class="prev-side">
+        <input class="prev-field" style="border-color:#8d939c;color:#12151b"
+               value="Tìm sách, tác giả…" readonly>
+        <button class="prev-btn" style="background:#16233d">Mượn sách</button>
+        <div class="prev-row" style="background:#8a5a0c">Hàng đang chọn</div>
+        <div class="prev-status">
+          <span style="color:#125239;font-weight:600">Đã trả</span>
+          <span style="color:#16233d;font-weight:600">Đang mượn</span>
+          <span style="color:#a3202e;font-weight:600">Quá hạn</span>
+        </div>
+        <div class="prev-spines">
+          <span style="background:#16233d"></span><span style="background:#125239"></span><span style="background:#8a5a0c"></span><span style="background:#7a3550"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3>Token</h3>
+      <div class="swatches">
+      <div class="sw">
+        <span class="sw-chip" style="background:#f4f5f6"></span>
+        <span class="sw-token">--page</span>
+        <span class="sw-hex">#f4f5f6</span>
+        <span class="sw-role">nền trang</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#ecedef"></span>
+        <span class="sw-token">--chrome</span>
+        <span class="sw-hex">#ecedef</span>
+        <span class="sw-role">header / footer / bàn phím</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#dfe1e4"></span>
+        <span class="sw-token">--chrome-deep</span>
+        <span class="sw-hex">#dfe1e4</span>
+        <span class="sw-role">chrome khi nhấn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#12151b"></span>
+        <span class="sw-token">--ink</span>
+        <span class="sw-hex">#12151b</span>
+        <span class="sw-role">chữ chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#4f545d"></span>
+        <span class="sw-token">--ink-soft</span>
+        <span class="sw-hex">#4f545d</span>
+        <span class="sw-role">chữ phụ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#626871"></span>
+        <span class="sw-token">--ink-faint</span>
+        <span class="sw-hex">#626871</span>
+        <span class="sw-role">placeholder</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#dfe1e4"></span>
+        <span class="sw-token">--rule</span>
+        <span class="sw-hex">#dfe1e4</span>
+        <span class="sw-role">đường kẻ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#eaebee"></span>
+        <span class="sw-token">--rule-soft</span>
+        <span class="sw-hex">#eaebee</span>
+        <span class="sw-role">kẻ mờ nhất</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0e1526"></span>
+        <span class="sw-token">--navy-deep</span>
+        <span class="sw-hex">#0e1526</span>
+        <span class="sw-role">nút chính khi hover</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#16233d"></span>
+        <span class="sw-token">--navy</span>
+        <span class="sw-hex">#16233d</span>
+        <span class="sw-role">nút chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8a5a0c"></span>
+        <span class="sw-token">--navy-soft</span>
+        <span class="sw-hex">#8a5a0c</span>
+        <span class="sw-role">hàng được chọn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#125239"></span>
+        <span class="sw-token">--live</span>
+        <span class="sw-hex">#125239</span>
+        <span class="sw-role">còn sách</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#125239"></span>
+        <span class="sw-token">--live-ink</span>
+        <span class="sw-hex">#125239</span>
+        <span class="sw-role">chữ "còn sách"</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8d939c"></span>
+        <span class="sw-token">--sunken</span>
+        <span class="sw-hex">#8d939c</span>
+        <span class="sw-role">viền ô nhập</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#16233d"></span>
+        <span class="sw-token">--spine-1</span>
+        <span class="sw-hex">#16233d</span>
+        <span class="sw-role">gáy sách 1</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#125239"></span>
+        <span class="sw-token">--spine-2</span>
+        <span class="sw-hex">#125239</span>
+        <span class="sw-role">gáy sách 2</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8a5a0c"></span>
+        <span class="sw-token">--spine-3</span>
+        <span class="sw-hex">#8a5a0c</span>
+        <span class="sw-role">gáy sách 3</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#7a3550"></span>
+        <span class="sw-token">--spine-4</span>
+        <span class="sw-hex">#7a3550</span>
+        <span class="sw-role">gáy sách 4</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#a3202e"></span>
+        <span class="sw-token">--destructive</span>
+        <span class="sw-hex">#a3202e</span>
+        <span class="sw-role">quá hạn / lỗi</span>
+      </div></div>
+    </div>
+    <div>
+      <h3>Tương phản đo được</h3>
+      <table class="ratios"><tbody><tr class=""><td>chữ chính trên nền</td><td>16.75:1</td><td>✓</td></tr><tr class=""><td>chữ phụ trên nền</td><td>6.97:1</td><td>✓</td></tr><tr class=""><td>placeholder trên chrome</td><td>4.80:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên nút chính</td><td>15.65:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên chip còn sách</td><td>9.16:1</td><td>✓</td></tr><tr class=""><td>chữ quá hạn trên thẻ trắng</td><td>7.49:1</td><td>✓</td></tr><tr class=""><td>viền ô nhập trên thẻ trắng</td><td>3.09:1</td><td>✓</td></tr></tbody></table>
+
+      <h3>Dán vào <code>src/index.css</code></h3>
+      <pre>:root {
+  --page:         #f4f5f6; /* nền trang */
+  --chrome:       #ecedef; /* header / footer / bàn phím */
+  --chrome-deep:  #dfe1e4; /* chrome khi nhấn */
+  --ink:          #12151b; /* chữ chính */
+  --ink-soft:     #4f545d; /* chữ phụ */
+  --ink-faint:    #626871; /* placeholder */
+  --rule:         #dfe1e4; /* đường kẻ */
+  --rule-soft:    #eaebee; /* kẻ mờ nhất */
+  --navy-deep:    #0e1526; /* nút chính khi hover */
+  --navy:         #16233d; /* nút chính */
+  --navy-soft:    #8a5a0c; /* hàng được chọn */
+  --live:         #125239; /* còn sách */
+  --live-ink:     #125239; /* chữ "còn sách" */
+  --sunken:       #8d939c; /* viền ô nhập */
+  --spine-1:      #16233d; /* gáy sách 1 */
+  --spine-2:      #125239; /* gáy sách 2 */
+  --spine-3:      #8a5a0c; /* gáy sách 3 */
+  --spine-4:      #7a3550; /* gáy sách 4 */
+  --destructive:  #a3202e; /* quá hạn / lỗi */
+
+  /* các token dẫn xuất giữ nguyên như index.css hiện tại */
+  --primary: var(--navy);
+  --destructive: #a3202e;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<section class="palette" id="cham">
+  <header class="p-head">
+    <h2>A · Chàm — Indigo & Ngọc lục</h2>
+    <code>cham</code>
+  </header>
+  <p class="note">Lạnh và sắc nét hơn hiện tại. Nền xám ngả xanh, hành động là chàm bão hoà, tín hiệu còn sách là ngọc lục. Gần với bảng hiện tại nhất — đổi sang ít rủi ro nhất.</p>
+
+  
+  <div class="prev" style="background:#f4f5f7">
+    <div class="prev-bar" style="background:#eceef2;border-color:#dfe2e8">
+      <span class="prev-logo" style="background:#2a3a8f"></span>
+      <span style="color:#14161c;font-weight:800">LibAssist</span>
+      <span style="margin-left:auto;color:#51555f;font-size:12px">Kiosk số 04</span>
+    </div>
+
+    <div class="prev-body">
+      <div class="prev-card" style="border-color:#dfe2e8">
+        <div class="prev-cover" style="background:#dfe2e8">
+          <span class="prev-spine" style="background:#2a3a8f"></span>
+          <span class="prev-chip" style="background:#0b6b46">Còn 3 cuốn</span>
+        </div>
+        <div class="prev-meta">
+          <div style="color:#14161c;font-weight:600">Introduction to Algorithms</div>
+          <div style="color:#51555f;font-size:12px">Cormen, Leiserson, Rivest</div>
+          <div style="color:#0b6b46;font-size:12px;font-weight:600">Kệ A3 · Tầng 2</div>
+        </div>
+      </div>
+
+      <div class="prev-side">
+        <input class="prev-field" style="border-color:#8e929e;color:#14161c"
+               value="Tìm sách, tác giả…" readonly>
+        <button class="prev-btn" style="background:#2a3a8f">Mượn sách</button>
+        <div class="prev-row" style="background:#3b4da8">Hàng đang chọn</div>
+        <div class="prev-status">
+          <span style="color:#0b6b46;font-weight:600">Đã trả</span>
+          <span style="color:#2a3a8f;font-weight:600">Đang mượn</span>
+          <span style="color:#a3202e;font-weight:600">Quá hạn</span>
+        </div>
+        <div class="prev-spines">
+          <span style="background:#2a3a8f"></span><span style="background:#0b6b46"></span><span style="background:#8a5a0c"></span><span style="background:#6b3aa0"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3>Token</h3>
+      <div class="swatches">
+      <div class="sw">
+        <span class="sw-chip" style="background:#f4f5f7"></span>
+        <span class="sw-token">--page</span>
+        <span class="sw-hex">#f4f5f7</span>
+        <span class="sw-role">nền trang</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#eceef2"></span>
+        <span class="sw-token">--chrome</span>
+        <span class="sw-hex">#eceef2</span>
+        <span class="sw-role">header / footer / bàn phím</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#dfe2e8"></span>
+        <span class="sw-token">--chrome-deep</span>
+        <span class="sw-hex">#dfe2e8</span>
+        <span class="sw-role">chrome khi nhấn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#14161c"></span>
+        <span class="sw-token">--ink</span>
+        <span class="sw-hex">#14161c</span>
+        <span class="sw-role">chữ chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#51555f"></span>
+        <span class="sw-token">--ink-soft</span>
+        <span class="sw-hex">#51555f</span>
+        <span class="sw-role">chữ phụ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#666a75"></span>
+        <span class="sw-token">--ink-faint</span>
+        <span class="sw-hex">#666a75</span>
+        <span class="sw-role">placeholder</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#dfe2e8"></span>
+        <span class="sw-token">--rule</span>
+        <span class="sw-hex">#dfe2e8</span>
+        <span class="sw-role">đường kẻ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#ecedf1"></span>
+        <span class="sw-token">--rule-soft</span>
+        <span class="sw-hex">#ecedf1</span>
+        <span class="sw-role">kẻ mờ nhất</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#1e2a6e"></span>
+        <span class="sw-token">--navy-deep</span>
+        <span class="sw-hex">#1e2a6e</span>
+        <span class="sw-role">nút chính khi hover</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#2a3a8f"></span>
+        <span class="sw-token">--navy</span>
+        <span class="sw-hex">#2a3a8f</span>
+        <span class="sw-role">nút chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#3b4da8"></span>
+        <span class="sw-token">--navy-soft</span>
+        <span class="sw-hex">#3b4da8</span>
+        <span class="sw-role">hàng được chọn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0b6b46"></span>
+        <span class="sw-token">--live</span>
+        <span class="sw-hex">#0b6b46</span>
+        <span class="sw-role">còn sách</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0b6b46"></span>
+        <span class="sw-token">--live-ink</span>
+        <span class="sw-hex">#0b6b46</span>
+        <span class="sw-role">chữ "còn sách"</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8e929e"></span>
+        <span class="sw-token">--sunken</span>
+        <span class="sw-hex">#8e929e</span>
+        <span class="sw-role">viền ô nhập</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#2a3a8f"></span>
+        <span class="sw-token">--spine-1</span>
+        <span class="sw-hex">#2a3a8f</span>
+        <span class="sw-role">gáy sách 1</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0b6b46"></span>
+        <span class="sw-token">--spine-2</span>
+        <span class="sw-hex">#0b6b46</span>
+        <span class="sw-role">gáy sách 2</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8a5a0c"></span>
+        <span class="sw-token">--spine-3</span>
+        <span class="sw-hex">#8a5a0c</span>
+        <span class="sw-role">gáy sách 3</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#6b3aa0"></span>
+        <span class="sw-token">--spine-4</span>
+        <span class="sw-hex">#6b3aa0</span>
+        <span class="sw-role">gáy sách 4</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#a3202e"></span>
+        <span class="sw-token">--destructive</span>
+        <span class="sw-hex">#a3202e</span>
+        <span class="sw-role">quá hạn / lỗi</span>
+      </div></div>
+    </div>
+    <div>
+      <h3>Tương phản đo được</h3>
+      <table class="ratios"><tbody><tr class=""><td>chữ chính trên nền</td><td>16.58:1</td><td>✓</td></tr><tr class=""><td>chữ phụ trên nền</td><td>6.84:1</td><td>✓</td></tr><tr class=""><td>placeholder trên chrome</td><td>4.66:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên nút chính</td><td>10.00:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên chip còn sách</td><td>6.55:1</td><td>✓</td></tr><tr class=""><td>chữ quá hạn trên thẻ trắng</td><td>7.49:1</td><td>✓</td></tr><tr class=""><td>viền ô nhập trên thẻ trắng</td><td>3.11:1</td><td>✓</td></tr></tbody></table>
+
+      <h3>Dán vào <code>src/index.css</code></h3>
+      <pre>:root {
+  --page:         #f4f5f7; /* nền trang */
+  --chrome:       #eceef2; /* header / footer / bàn phím */
+  --chrome-deep:  #dfe2e8; /* chrome khi nhấn */
+  --ink:          #14161c; /* chữ chính */
+  --ink-soft:     #51555f; /* chữ phụ */
+  --ink-faint:    #666a75; /* placeholder */
+  --rule:         #dfe2e8; /* đường kẻ */
+  --rule-soft:    #ecedf1; /* kẻ mờ nhất */
+  --navy-deep:    #1e2a6e; /* nút chính khi hover */
+  --navy:         #2a3a8f; /* nút chính */
+  --navy-soft:    #3b4da8; /* hàng được chọn */
+  --live:         #0b6b46; /* còn sách */
+  --live-ink:     #0b6b46; /* chữ "còn sách" */
+  --sunken:       #8e929e; /* viền ô nhập */
+  --spine-1:      #2a3a8f; /* gáy sách 1 */
+  --spine-2:      #0b6b46; /* gáy sách 2 */
+  --spine-3:      #8a5a0c; /* gáy sách 3 */
+  --spine-4:      #6b3aa0; /* gáy sách 4 */
+  --destructive:  #a3202e; /* quá hạn / lỗi */
+
+  /* các token dẫn xuất giữ nguyên như index.css hiện tại */
+  --primary: var(--navy);
+  --destructive: #a3202e;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<section class="palette" id="thanChi">
+  <header class="p-head">
+    <h2>B · Than chì — Graphite & Hổ phách</h2>
+    <code>thanChi</code>
+  </header>
+  <p class="note">Gần như đơn sắc. Hành động là than chì đen, nên màu duy nhất còn ý nghĩa trên màn hình là xanh "còn sách" và đỏ "quá hạn" — tín hiệu nổi bật nhất trong bốn bảng. Hổ phách chỉ xuất hiện ở gáy sách.</p>
+
+  
+  <div class="prev" style="background:#f5f5f4">
+    <div class="prev-bar" style="background:#eeeeec;border-color:#e1e1de">
+      <span class="prev-logo" style="background:#26282f"></span>
+      <span style="color:#17181a;font-weight:800">LibAssist</span>
+      <span style="margin-left:auto;color:#53555a;font-size:12px">Kiosk số 04</span>
+    </div>
+
+    <div class="prev-body">
+      <div class="prev-card" style="border-color:#e1e1de">
+        <div class="prev-cover" style="background:#e1e1de">
+          <span class="prev-spine" style="background:#26282f"></span>
+          <span class="prev-chip" style="background:#12603d">Còn 3 cuốn</span>
+        </div>
+        <div class="prev-meta">
+          <div style="color:#17181a;font-weight:600">Introduction to Algorithms</div>
+          <div style="color:#53555a;font-size:12px">Cormen, Leiserson, Rivest</div>
+          <div style="color:#12603d;font-size:12px;font-weight:600">Kệ A3 · Tầng 2</div>
+        </div>
+      </div>
+
+      <div class="prev-side">
+        <input class="prev-field" style="border-color:#909089;color:#17181a"
+               value="Tìm sách, tác giả…" readonly>
+        <button class="prev-btn" style="background:#26282f">Mượn sách</button>
+        <div class="prev-row" style="background:#414450">Hàng đang chọn</div>
+        <div class="prev-status">
+          <span style="color:#12603d;font-weight:600">Đã trả</span>
+          <span style="color:#26282f;font-weight:600">Đang mượn</span>
+          <span style="color:#9c2418;font-weight:600">Quá hạn</span>
+        </div>
+        <div class="prev-spines">
+          <span style="background:#26282f"></span><span style="background:#12603d"></span><span style="background:#8a5410"></span><span style="background:#7a3520"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3>Token</h3>
+      <div class="swatches">
+      <div class="sw">
+        <span class="sw-chip" style="background:#f5f5f4"></span>
+        <span class="sw-token">--page</span>
+        <span class="sw-hex">#f5f5f4</span>
+        <span class="sw-role">nền trang</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#eeeeec"></span>
+        <span class="sw-token">--chrome</span>
+        <span class="sw-hex">#eeeeec</span>
+        <span class="sw-role">header / footer / bàn phím</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#e1e1de"></span>
+        <span class="sw-token">--chrome-deep</span>
+        <span class="sw-hex">#e1e1de</span>
+        <span class="sw-role">chrome khi nhấn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#17181a"></span>
+        <span class="sw-token">--ink</span>
+        <span class="sw-hex">#17181a</span>
+        <span class="sw-role">chữ chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#53555a"></span>
+        <span class="sw-token">--ink-soft</span>
+        <span class="sw-hex">#53555a</span>
+        <span class="sw-role">chữ phụ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#68696f"></span>
+        <span class="sw-token">--ink-faint</span>
+        <span class="sw-hex">#68696f</span>
+        <span class="sw-role">placeholder</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#e1e1de"></span>
+        <span class="sw-token">--rule</span>
+        <span class="sw-hex">#e1e1de</span>
+        <span class="sw-role">đường kẻ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#ebebe9"></span>
+        <span class="sw-token">--rule-soft</span>
+        <span class="sw-hex">#ebebe9</span>
+        <span class="sw-role">kẻ mờ nhất</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#17181c"></span>
+        <span class="sw-token">--navy-deep</span>
+        <span class="sw-hex">#17181c</span>
+        <span class="sw-role">nút chính khi hover</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#26282f"></span>
+        <span class="sw-token">--navy</span>
+        <span class="sw-hex">#26282f</span>
+        <span class="sw-role">nút chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#414450"></span>
+        <span class="sw-token">--navy-soft</span>
+        <span class="sw-hex">#414450</span>
+        <span class="sw-role">hàng được chọn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#12603d"></span>
+        <span class="sw-token">--live</span>
+        <span class="sw-hex">#12603d</span>
+        <span class="sw-role">còn sách</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#12603d"></span>
+        <span class="sw-token">--live-ink</span>
+        <span class="sw-hex">#12603d</span>
+        <span class="sw-role">chữ "còn sách"</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#909089"></span>
+        <span class="sw-token">--sunken</span>
+        <span class="sw-hex">#909089</span>
+        <span class="sw-role">viền ô nhập</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#26282f"></span>
+        <span class="sw-token">--spine-1</span>
+        <span class="sw-hex">#26282f</span>
+        <span class="sw-role">gáy sách 1</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#12603d"></span>
+        <span class="sw-token">--spine-2</span>
+        <span class="sw-hex">#12603d</span>
+        <span class="sw-role">gáy sách 2</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8a5410"></span>
+        <span class="sw-token">--spine-3</span>
+        <span class="sw-hex">#8a5410</span>
+        <span class="sw-role">gáy sách 3</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#7a3520"></span>
+        <span class="sw-token">--spine-4</span>
+        <span class="sw-hex">#7a3520</span>
+        <span class="sw-role">gáy sách 4</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#9c2418"></span>
+        <span class="sw-token">--destructive</span>
+        <span class="sw-hex">#9c2418</span>
+        <span class="sw-role">quá hạn / lỗi</span>
+      </div></div>
+    </div>
+    <div>
+      <h3>Tương phản đo được</h3>
+      <table class="ratios"><tbody><tr class=""><td>chữ chính trên nền</td><td>16.29:1</td><td>✓</td></tr><tr class=""><td>chữ phụ trên nền</td><td>6.84:1</td><td>✓</td></tr><tr class=""><td>placeholder trên chrome</td><td>4.71:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên nút chính</td><td>14.72:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên chip còn sách</td><td>7.59:1</td><td>✓</td></tr><tr class=""><td>chữ quá hạn trên thẻ trắng</td><td>7.84:1</td><td>✓</td></tr><tr class=""><td>viền ô nhập trên thẻ trắng</td><td>3.21:1</td><td>✓</td></tr></tbody></table>
+
+      <h3>Dán vào <code>src/index.css</code></h3>
+      <pre>:root {
+  --page:         #f5f5f4; /* nền trang */
+  --chrome:       #eeeeec; /* header / footer / bàn phím */
+  --chrome-deep:  #e1e1de; /* chrome khi nhấn */
+  --ink:          #17181a; /* chữ chính */
+  --ink-soft:     #53555a; /* chữ phụ */
+  --ink-faint:    #68696f; /* placeholder */
+  --rule:         #e1e1de; /* đường kẻ */
+  --rule-soft:    #ebebe9; /* kẻ mờ nhất */
+  --navy-deep:    #17181c; /* nút chính khi hover */
+  --navy:         #26282f; /* nút chính */
+  --navy-soft:    #414450; /* hàng được chọn */
+  --live:         #12603d; /* còn sách */
+  --live-ink:     #12603d; /* chữ "còn sách" */
+  --sunken:       #909089; /* viền ô nhập */
+  --spine-1:      #26282f; /* gáy sách 1 */
+  --spine-2:      #12603d; /* gáy sách 2 */
+  --spine-3:      #8a5410; /* gáy sách 3 */
+  --spine-4:      #7a3520; /* gáy sách 4 */
+  --destructive:  #9c2418; /* quá hạn / lỗi */
+
+  /* các token dẫn xuất giữ nguyên như index.css hiện tại */
+  --primary: var(--navy);
+  --destructive: #9c2418;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<section class="palette" id="datNung">
+  <header class="p-head">
+    <h2>C · Đất nung — Gạch & Thông</h2>
+    <code>datNung</code>
+  </header>
+  <p class="note">Ấm nhất. Nền ngà, hành động là gạch nung, tín hiệu còn sách là xanh thông. ⚠ Cảnh báo đã kiểm bằng mắt: trong hàng trạng thái, "Đang mượn" (gạch) và "Quá hạn" (đỏ thẫm) nằm cạnh nhau rất khó tách — cả hai đều đạt AA khi đo riêng, nhưng số đo tương phản không nói được hai sắc độ có phân biệt nổi với nhau hay không. Với persona thị lực kém thì đây là rủi ro thật, không phải chuyện thẩm mỹ.</p>
+
+  
+  <div class="prev" style="background:#faf7f2">
+    <div class="prev-bar" style="background:#f3efe7;border-color:#e7e1d6">
+      <span class="prev-logo" style="background:#8f4419"></span>
+      <span style="color:#1d1a15;font-weight:800">LibAssist</span>
+      <span style="margin-left:auto;color:#585049;font-size:12px">Kiosk số 04</span>
+    </div>
+
+    <div class="prev-body">
+      <div class="prev-card" style="border-color:#e7e1d6">
+        <div class="prev-cover" style="background:#e7e1d6">
+          <span class="prev-spine" style="background:#8f4419"></span>
+          <span class="prev-chip" style="background:#155c3b">Còn 3 cuốn</span>
+        </div>
+        <div class="prev-meta">
+          <div style="color:#1d1a15;font-weight:600">Introduction to Algorithms</div>
+          <div style="color:#585049;font-size:12px">Cormen, Leiserson, Rivest</div>
+          <div style="color:#155c3b;font-size:12px;font-weight:600">Kệ A3 · Tầng 2</div>
+        </div>
+      </div>
+
+      <div class="prev-side">
+        <input class="prev-field" style="border-color:#96897a;color:#1d1a15"
+               value="Tìm sách, tác giả…" readonly>
+        <button class="prev-btn" style="background:#8f4419">Mượn sách</button>
+        <div class="prev-row" style="background:#a3552a">Hàng đang chọn</div>
+        <div class="prev-status">
+          <span style="color:#155c3b;font-weight:600">Đã trả</span>
+          <span style="color:#8f4419;font-weight:600">Đang mượn</span>
+          <span style="color:#93132f;font-weight:600">Quá hạn</span>
+        </div>
+        <div class="prev-spines">
+          <span style="background:#8f4419"></span><span style="background:#155c3b"></span><span style="background:#7a5a12"></span><span style="background:#4a3f6b"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3>Token</h3>
+      <div class="swatches">
+      <div class="sw">
+        <span class="sw-chip" style="background:#faf7f2"></span>
+        <span class="sw-token">--page</span>
+        <span class="sw-hex">#faf7f2</span>
+        <span class="sw-role">nền trang</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#f3efe7"></span>
+        <span class="sw-token">--chrome</span>
+        <span class="sw-hex">#f3efe7</span>
+        <span class="sw-role">header / footer / bàn phím</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#e7e1d6"></span>
+        <span class="sw-token">--chrome-deep</span>
+        <span class="sw-hex">#e7e1d6</span>
+        <span class="sw-role">chrome khi nhấn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#1d1a15"></span>
+        <span class="sw-token">--ink</span>
+        <span class="sw-hex">#1d1a15</span>
+        <span class="sw-role">chữ chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#585049"></span>
+        <span class="sw-token">--ink-soft</span>
+        <span class="sw-hex">#585049</span>
+        <span class="sw-role">chữ phụ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#6b6259"></span>
+        <span class="sw-token">--ink-faint</span>
+        <span class="sw-hex">#6b6259</span>
+        <span class="sw-role">placeholder</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#e7e1d6"></span>
+        <span class="sw-token">--rule</span>
+        <span class="sw-hex">#e7e1d6</span>
+        <span class="sw-role">đường kẻ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#f0ebe3"></span>
+        <span class="sw-token">--rule-soft</span>
+        <span class="sw-hex">#f0ebe3</span>
+        <span class="sw-role">kẻ mờ nhất</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#7a3712"></span>
+        <span class="sw-token">--navy-deep</span>
+        <span class="sw-hex">#7a3712</span>
+        <span class="sw-role">nút chính khi hover</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8f4419"></span>
+        <span class="sw-token">--navy</span>
+        <span class="sw-hex">#8f4419</span>
+        <span class="sw-role">nút chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#a3552a"></span>
+        <span class="sw-token">--navy-soft</span>
+        <span class="sw-hex">#a3552a</span>
+        <span class="sw-role">hàng được chọn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#155c3b"></span>
+        <span class="sw-token">--live</span>
+        <span class="sw-hex">#155c3b</span>
+        <span class="sw-role">còn sách</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#155c3b"></span>
+        <span class="sw-token">--live-ink</span>
+        <span class="sw-hex">#155c3b</span>
+        <span class="sw-role">chữ "còn sách"</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#96897a"></span>
+        <span class="sw-token">--sunken</span>
+        <span class="sw-hex">#96897a</span>
+        <span class="sw-role">viền ô nhập</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8f4419"></span>
+        <span class="sw-token">--spine-1</span>
+        <span class="sw-hex">#8f4419</span>
+        <span class="sw-role">gáy sách 1</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#155c3b"></span>
+        <span class="sw-token">--spine-2</span>
+        <span class="sw-hex">#155c3b</span>
+        <span class="sw-role">gáy sách 2</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#7a5a12"></span>
+        <span class="sw-token">--spine-3</span>
+        <span class="sw-hex">#7a5a12</span>
+        <span class="sw-role">gáy sách 3</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#4a3f6b"></span>
+        <span class="sw-token">--spine-4</span>
+        <span class="sw-hex">#4a3f6b</span>
+        <span class="sw-role">gáy sách 4</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#93132f"></span>
+        <span class="sw-token">--destructive</span>
+        <span class="sw-hex">#93132f</span>
+        <span class="sw-role">quá hạn / lỗi</span>
+      </div></div>
+    </div>
+    <div>
+      <h3>Tương phản đo được</h3>
+      <table class="ratios"><tbody><tr class=""><td>chữ chính trên nền</td><td>16.23:1</td><td>✓</td></tr><tr class=""><td>chữ phụ trên nền</td><td>7.39:1</td><td>✓</td></tr><tr class=""><td>placeholder trên chrome</td><td>5.21:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên nút chính</td><td>6.98:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên chip còn sách</td><td>8.00:1</td><td>✓</td></tr><tr class=""><td>chữ quá hạn trên thẻ trắng</td><td>8.84:1</td><td>✓</td></tr><tr class=""><td>viền ô nhập trên thẻ trắng</td><td>3.41:1</td><td>✓</td></tr></tbody></table>
+
+      <h3>Dán vào <code>src/index.css</code></h3>
+      <pre>:root {
+  --page:         #faf7f2; /* nền trang */
+  --chrome:       #f3efe7; /* header / footer / bàn phím */
+  --chrome-deep:  #e7e1d6; /* chrome khi nhấn */
+  --ink:          #1d1a15; /* chữ chính */
+  --ink-soft:     #585049; /* chữ phụ */
+  --ink-faint:    #6b6259; /* placeholder */
+  --rule:         #e7e1d6; /* đường kẻ */
+  --rule-soft:    #f0ebe3; /* kẻ mờ nhất */
+  --navy-deep:    #7a3712; /* nút chính khi hover */
+  --navy:         #8f4419; /* nút chính */
+  --navy-soft:    #a3552a; /* hàng được chọn */
+  --live:         #155c3b; /* còn sách */
+  --live-ink:     #155c3b; /* chữ "còn sách" */
+  --sunken:       #96897a; /* viền ô nhập */
+  --spine-1:      #8f4419; /* gáy sách 1 */
+  --spine-2:      #155c3b; /* gáy sách 2 */
+  --spine-3:      #7a5a12; /* gáy sách 3 */
+  --spine-4:      #4a3f6b; /* gáy sách 4 */
+  --destructive:  #93132f; /* quá hạn / lỗi */
+
+  /* các token dẫn xuất giữ nguyên như index.css hiện tại */
+  --primary: var(--navy);
+  --destructive: #93132f;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<section class="palette" id="timTram">
+  <header class="p-head">
+    <h2>D · Tím trầm — Plum & Rêu</h2>
+    <code>timTram</code>
+  </header>
+  <p class="note">Khác biệt nhất, ít giống hệ thống hành chính nhất. Nền xám ngả tím, hành động là tím mận, tín hiệu còn sách là rêu. Tách bạch rõ ba màu chức năng vì tím không nằm giữa xanh lá và đỏ trên vòng màu.</p>
+
+  
+  <div class="prev" style="background:#f6f4f6">
+    <div class="prev-bar" style="background:#efebf0;border-color:#e2dde4">
+      <span class="prev-logo" style="background:#5b2a70"></span>
+      <span style="color:#17141a;font-weight:800">LibAssist</span>
+      <span style="margin-left:auto;color:#55505c;font-size:12px">Kiosk số 04</span>
+    </div>
+
+    <div class="prev-body">
+      <div class="prev-card" style="border-color:#e2dde4">
+        <div class="prev-cover" style="background:#e2dde4">
+          <span class="prev-spine" style="background:#5b2a70"></span>
+          <span class="prev-chip" style="background:#0f6244">Còn 3 cuốn</span>
+        </div>
+        <div class="prev-meta">
+          <div style="color:#17141a;font-weight:600">Introduction to Algorithms</div>
+          <div style="color:#55505c;font-size:12px">Cormen, Leiserson, Rivest</div>
+          <div style="color:#0f6244;font-size:12px;font-weight:600">Kệ A3 · Tầng 2</div>
+        </div>
+      </div>
+
+      <div class="prev-side">
+        <input class="prev-field" style="border-color:#948ba0;color:#17141a"
+               value="Tìm sách, tác giả…" readonly>
+        <button class="prev-btn" style="background:#5b2a70">Mượn sách</button>
+        <div class="prev-row" style="background:#71408a">Hàng đang chọn</div>
+        <div class="prev-status">
+          <span style="color:#0f6244;font-weight:600">Đã trả</span>
+          <span style="color:#5b2a70;font-weight:600">Đang mượn</span>
+          <span style="color:#a02133;font-weight:600">Quá hạn</span>
+        </div>
+        <div class="prev-spines">
+          <span style="background:#5b2a70"></span><span style="background:#0f6244"></span><span style="background:#8a5410"></span><span style="background:#1d5570"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3>Token</h3>
+      <div class="swatches">
+      <div class="sw">
+        <span class="sw-chip" style="background:#f6f4f6"></span>
+        <span class="sw-token">--page</span>
+        <span class="sw-hex">#f6f4f6</span>
+        <span class="sw-role">nền trang</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#efebf0"></span>
+        <span class="sw-token">--chrome</span>
+        <span class="sw-hex">#efebf0</span>
+        <span class="sw-role">header / footer / bàn phím</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#e2dde4"></span>
+        <span class="sw-token">--chrome-deep</span>
+        <span class="sw-hex">#e2dde4</span>
+        <span class="sw-role">chrome khi nhấn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#17141a"></span>
+        <span class="sw-token">--ink</span>
+        <span class="sw-hex">#17141a</span>
+        <span class="sw-role">chữ chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#55505c"></span>
+        <span class="sw-token">--ink-soft</span>
+        <span class="sw-hex">#55505c</span>
+        <span class="sw-role">chữ phụ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#686370"></span>
+        <span class="sw-token">--ink-faint</span>
+        <span class="sw-hex">#686370</span>
+        <span class="sw-role">placeholder</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#e2dde4"></span>
+        <span class="sw-token">--rule</span>
+        <span class="sw-hex">#e2dde4</span>
+        <span class="sw-role">đường kẻ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#ebe7ec"></span>
+        <span class="sw-token">--rule-soft</span>
+        <span class="sw-hex">#ebe7ec</span>
+        <span class="sw-role">kẻ mờ nhất</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#4a1f5c"></span>
+        <span class="sw-token">--navy-deep</span>
+        <span class="sw-hex">#4a1f5c</span>
+        <span class="sw-role">nút chính khi hover</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#5b2a70"></span>
+        <span class="sw-token">--navy</span>
+        <span class="sw-hex">#5b2a70</span>
+        <span class="sw-role">nút chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#71408a"></span>
+        <span class="sw-token">--navy-soft</span>
+        <span class="sw-hex">#71408a</span>
+        <span class="sw-role">hàng được chọn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0f6244"></span>
+        <span class="sw-token">--live</span>
+        <span class="sw-hex">#0f6244</span>
+        <span class="sw-role">còn sách</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0f6244"></span>
+        <span class="sw-token">--live-ink</span>
+        <span class="sw-hex">#0f6244</span>
+        <span class="sw-role">chữ "còn sách"</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#948ba0"></span>
+        <span class="sw-token">--sunken</span>
+        <span class="sw-hex">#948ba0</span>
+        <span class="sw-role">viền ô nhập</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#5b2a70"></span>
+        <span class="sw-token">--spine-1</span>
+        <span class="sw-hex">#5b2a70</span>
+        <span class="sw-role">gáy sách 1</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0f6244"></span>
+        <span class="sw-token">--spine-2</span>
+        <span class="sw-hex">#0f6244</span>
+        <span class="sw-role">gáy sách 2</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8a5410"></span>
+        <span class="sw-token">--spine-3</span>
+        <span class="sw-hex">#8a5410</span>
+        <span class="sw-role">gáy sách 3</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#1d5570"></span>
+        <span class="sw-token">--spine-4</span>
+        <span class="sw-hex">#1d5570</span>
+        <span class="sw-role">gáy sách 4</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#a02133"></span>
+        <span class="sw-token">--destructive</span>
+        <span class="sw-hex">#a02133</span>
+        <span class="sw-role">quá hạn / lỗi</span>
+      </div></div>
+    </div>
+    <div>
+      <h3>Tương phản đo được</h3>
+      <table class="ratios"><tbody><tr class=""><td>chữ chính trên nền</td><td>16.67:1</td><td>✓</td></tr><tr class=""><td>chữ phụ trên nền</td><td>7.14:1</td><td>✓</td></tr><tr class=""><td>placeholder trên chrome</td><td>4.94:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên nút chính</td><td>10.45:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên chip còn sách</td><td>7.37:1</td><td>✓</td></tr><tr class=""><td>chữ quá hạn trên thẻ trắng</td><td>7.61:1</td><td>✓</td></tr><tr class=""><td>viền ô nhập trên thẻ trắng</td><td>3.25:1</td><td>✓</td></tr></tbody></table>
+
+      <h3>Dán vào <code>src/index.css</code></h3>
+      <pre>:root {
+  --page:         #f6f4f6; /* nền trang */
+  --chrome:       #efebf0; /* header / footer / bàn phím */
+  --chrome-deep:  #e2dde4; /* chrome khi nhấn */
+  --ink:          #17141a; /* chữ chính */
+  --ink-soft:     #55505c; /* chữ phụ */
+  --ink-faint:    #686370; /* placeholder */
+  --rule:         #e2dde4; /* đường kẻ */
+  --rule-soft:    #ebe7ec; /* kẻ mờ nhất */
+  --navy-deep:    #4a1f5c; /* nút chính khi hover */
+  --navy:         #5b2a70; /* nút chính */
+  --navy-soft:    #71408a; /* hàng được chọn */
+  --live:         #0f6244; /* còn sách */
+  --live-ink:     #0f6244; /* chữ "còn sách" */
+  --sunken:       #948ba0; /* viền ô nhập */
+  --spine-1:      #5b2a70; /* gáy sách 1 */
+  --spine-2:      #0f6244; /* gáy sách 2 */
+  --spine-3:      #8a5410; /* gáy sách 3 */
+  --spine-4:      #1d5570; /* gáy sách 4 */
+  --destructive:  #a02133; /* quá hạn / lỗi */
+
+  /* các token dẫn xuất giữ nguyên như index.css hiện tại */
+  --primary: var(--navy);
+  --destructive: #a02133;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<section class="palette" id="coVit">
+  <header class="p-head">
+    <h2>E · Cổ vịt — Teal & Lá mạ</h2>
+    <code>coVit</code>
+  </header>
+  <p class="note">Hành động là xanh mòng két, tín hiệu còn sách kéo về xanh lá mạ ngả vàng để tách khỏi nó. Nền cũng ngả xanh nhẹ nên toàn màn hình nằm trong một họ màu lạnh, thay vì nền trung tính đỡ cho một điểm nhấn.</p>
+
+  
+  <div class="prev" style="background:#f3f6f5">
+    <div class="prev-bar" style="background:#eaefee;border-color:#dce4e3">
+      <span class="prev-logo" style="background:#0d5560"></span>
+      <span style="color:#12191a;font-weight:800">LibAssist</span>
+      <span style="margin-left:auto;color:#4e585a;font-size:12px">Kiosk số 04</span>
+    </div>
+
+    <div class="prev-body">
+      <div class="prev-card" style="border-color:#dce4e3">
+        <div class="prev-cover" style="background:#dce4e3">
+          <span class="prev-spine" style="background:#0d5560"></span>
+          <span class="prev-chip" style="background:#2f6b12">Còn 3 cuốn</span>
+        </div>
+        <div class="prev-meta">
+          <div style="color:#12191a;font-weight:600">Introduction to Algorithms</div>
+          <div style="color:#4e585a;font-size:12px">Cormen, Leiserson, Rivest</div>
+          <div style="color:#2f6b12;font-size:12px;font-weight:600">Kệ A3 · Tầng 2</div>
+        </div>
+      </div>
+
+      <div class="prev-side">
+        <input class="prev-field" style="border-color:#889798;color:#12191a"
+               value="Tìm sách, tác giả…" readonly>
+        <button class="prev-btn" style="background:#0d5560">Mượn sách</button>
+        <div class="prev-row" style="background:#146673">Hàng đang chọn</div>
+        <div class="prev-status">
+          <span style="color:#2f6b12;font-weight:600">Đã trả</span>
+          <span style="color:#0d5560;font-weight:600">Đang mượn</span>
+          <span style="color:#a3202e;font-weight:600">Quá hạn</span>
+        </div>
+        <div class="prev-spines">
+          <span style="background:#0d5560"></span><span style="background:#2f6b12"></span><span style="background:#8a5410"></span><span style="background:#6b3aa0"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3>Token</h3>
+      <div class="swatches">
+      <div class="sw">
+        <span class="sw-chip" style="background:#f3f6f5"></span>
+        <span class="sw-token">--page</span>
+        <span class="sw-hex">#f3f6f5</span>
+        <span class="sw-role">nền trang</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#eaefee"></span>
+        <span class="sw-token">--chrome</span>
+        <span class="sw-hex">#eaefee</span>
+        <span class="sw-role">header / footer / bàn phím</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#dce4e3"></span>
+        <span class="sw-token">--chrome-deep</span>
+        <span class="sw-hex">#dce4e3</span>
+        <span class="sw-role">chrome khi nhấn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#12191a"></span>
+        <span class="sw-token">--ink</span>
+        <span class="sw-hex">#12191a</span>
+        <span class="sw-role">chữ chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#4e585a"></span>
+        <span class="sw-token">--ink-soft</span>
+        <span class="sw-hex">#4e585a</span>
+        <span class="sw-role">chữ phụ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#606c6e"></span>
+        <span class="sw-token">--ink-faint</span>
+        <span class="sw-hex">#606c6e</span>
+        <span class="sw-role">placeholder</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#dce4e3"></span>
+        <span class="sw-token">--rule</span>
+        <span class="sw-hex">#dce4e3</span>
+        <span class="sw-role">đường kẻ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#e9efee"></span>
+        <span class="sw-token">--rule-soft</span>
+        <span class="sw-hex">#e9efee</span>
+        <span class="sw-role">kẻ mờ nhất</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0a464f"></span>
+        <span class="sw-token">--navy-deep</span>
+        <span class="sw-hex">#0a464f</span>
+        <span class="sw-role">nút chính khi hover</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0d5560"></span>
+        <span class="sw-token">--navy</span>
+        <span class="sw-hex">#0d5560</span>
+        <span class="sw-role">nút chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#146673"></span>
+        <span class="sw-token">--navy-soft</span>
+        <span class="sw-hex">#146673</span>
+        <span class="sw-role">hàng được chọn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#2f6b12"></span>
+        <span class="sw-token">--live</span>
+        <span class="sw-hex">#2f6b12</span>
+        <span class="sw-role">còn sách</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#2f6b12"></span>
+        <span class="sw-token">--live-ink</span>
+        <span class="sw-hex">#2f6b12</span>
+        <span class="sw-role">chữ "còn sách"</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#889798"></span>
+        <span class="sw-token">--sunken</span>
+        <span class="sw-hex">#889798</span>
+        <span class="sw-role">viền ô nhập</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0d5560"></span>
+        <span class="sw-token">--spine-1</span>
+        <span class="sw-hex">#0d5560</span>
+        <span class="sw-role">gáy sách 1</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#2f6b12"></span>
+        <span class="sw-token">--spine-2</span>
+        <span class="sw-hex">#2f6b12</span>
+        <span class="sw-role">gáy sách 2</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8a5410"></span>
+        <span class="sw-token">--spine-3</span>
+        <span class="sw-hex">#8a5410</span>
+        <span class="sw-role">gáy sách 3</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#6b3aa0"></span>
+        <span class="sw-token">--spine-4</span>
+        <span class="sw-hex">#6b3aa0</span>
+        <span class="sw-role">gáy sách 4</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#a3202e"></span>
+        <span class="sw-token">--destructive</span>
+        <span class="sw-hex">#a3202e</span>
+        <span class="sw-role">quá hạn / lỗi</span>
+      </div></div>
+    </div>
+    <div>
+      <h3>Tương phản đo được</h3>
+      <table class="ratios"><tbody><tr class=""><td>chữ chính trên nền</td><td>16.37:1</td><td>✓</td></tr><tr class=""><td>chữ phụ trên nền</td><td>6.73:1</td><td>✓</td></tr><tr class=""><td>placeholder trên chrome</td><td>4.67:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên nút chính</td><td>8.45:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên chip còn sách</td><td>6.50:1</td><td>✓</td></tr><tr class=""><td>chữ quá hạn trên thẻ trắng</td><td>7.49:1</td><td>✓</td></tr><tr class=""><td>viền ô nhập trên thẻ trắng</td><td>3.03:1</td><td>✓</td></tr></tbody></table>
+
+      <h3>Dán vào <code>src/index.css</code></h3>
+      <pre>:root {
+  --page:         #f3f6f5; /* nền trang */
+  --chrome:       #eaefee; /* header / footer / bàn phím */
+  --chrome-deep:  #dce4e3; /* chrome khi nhấn */
+  --ink:          #12191a; /* chữ chính */
+  --ink-soft:     #4e585a; /* chữ phụ */
+  --ink-faint:    #606c6e; /* placeholder */
+  --rule:         #dce4e3; /* đường kẻ */
+  --rule-soft:    #e9efee; /* kẻ mờ nhất */
+  --navy-deep:    #0a464f; /* nút chính khi hover */
+  --navy:         #0d5560; /* nút chính */
+  --navy-soft:    #146673; /* hàng được chọn */
+  --live:         #2f6b12; /* còn sách */
+  --live-ink:     #2f6b12; /* chữ "còn sách" */
+  --sunken:       #889798; /* viền ô nhập */
+  --spine-1:      #0d5560; /* gáy sách 1 */
+  --spine-2:      #2f6b12; /* gáy sách 2 */
+  --spine-3:      #8a5410; /* gáy sách 3 */
+  --spine-4:      #6b3aa0; /* gáy sách 4 */
+  --destructive:  #a3202e; /* quá hạn / lỗi */
+
+  /* các token dẫn xuất giữ nguyên như index.css hiện tại */
+  --primary: var(--navy);
+  --destructive: #a3202e;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<section class="palette" id="dienTu">
+  <header class="p-head">
+    <h2>F · Điện tử — Xanh dương rực & Trắng lạnh</h2>
+    <code>dienTu</code>
+  </header>
+  <p class="note">Sáng và bão hoà nhất — gần với ứng dụng công nghệ hơn là với thư viện. Nền trắng ngả xanh, hành động là xanh dương rực. Được cái nút bấm không thể nhầm với thứ gì khác trên màn hình; mất cái không khí "giấy và gỗ" của các bảng còn lại.</p>
+
+  
+  <div class="prev" style="background:#f2f5fa">
+    <div class="prev-bar" style="background:#e9eef7;border-color:#dae2f0">
+      <span class="prev-logo" style="background:#0b52d1"></span>
+      <span style="color:#101623;font-weight:800">LibAssist</span>
+      <span style="margin-left:auto;color:#4d5566;font-size:12px">Kiosk số 04</span>
+    </div>
+
+    <div class="prev-body">
+      <div class="prev-card" style="border-color:#dae2f0">
+        <div class="prev-cover" style="background:#dae2f0">
+          <span class="prev-spine" style="background:#0b52d1"></span>
+          <span class="prev-chip" style="background:#0b6b46">Còn 3 cuốn</span>
+        </div>
+        <div class="prev-meta">
+          <div style="color:#101623;font-weight:600">Introduction to Algorithms</div>
+          <div style="color:#4d5566;font-size:12px">Cormen, Leiserson, Rivest</div>
+          <div style="color:#0b6b46;font-size:12px;font-weight:600">Kệ A3 · Tầng 2</div>
+        </div>
+      </div>
+
+      <div class="prev-side">
+        <input class="prev-field" style="border-color:#8b95aa;color:#101623"
+               value="Tìm sách, tác giả…" readonly>
+        <button class="prev-btn" style="background:#0b52d1">Mượn sách</button>
+        <div class="prev-row" style="background:#1f5fd6">Hàng đang chọn</div>
+        <div class="prev-status">
+          <span style="color:#0b6b46;font-weight:600">Đã trả</span>
+          <span style="color:#0b52d1;font-weight:600">Đang mượn</span>
+          <span style="color:#c01730;font-weight:600">Quá hạn</span>
+        </div>
+        <div class="prev-spines">
+          <span style="background:#0b52d1"></span><span style="background:#0b6b46"></span><span style="background:#8a5410"></span><span style="background:#7a2fa8"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3>Token</h3>
+      <div class="swatches">
+      <div class="sw">
+        <span class="sw-chip" style="background:#f2f5fa"></span>
+        <span class="sw-token">--page</span>
+        <span class="sw-hex">#f2f5fa</span>
+        <span class="sw-role">nền trang</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#e9eef7"></span>
+        <span class="sw-token">--chrome</span>
+        <span class="sw-hex">#e9eef7</span>
+        <span class="sw-role">header / footer / bàn phím</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#dae2f0"></span>
+        <span class="sw-token">--chrome-deep</span>
+        <span class="sw-hex">#dae2f0</span>
+        <span class="sw-role">chrome khi nhấn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#101623"></span>
+        <span class="sw-token">--ink</span>
+        <span class="sw-hex">#101623</span>
+        <span class="sw-role">chữ chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#4d5566"></span>
+        <span class="sw-token">--ink-soft</span>
+        <span class="sw-hex">#4d5566</span>
+        <span class="sw-role">chữ phụ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#5f6879"></span>
+        <span class="sw-token">--ink-faint</span>
+        <span class="sw-hex">#5f6879</span>
+        <span class="sw-role">placeholder</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#dae2f0"></span>
+        <span class="sw-token">--rule</span>
+        <span class="sw-hex">#dae2f0</span>
+        <span class="sw-role">đường kẻ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#e8edf5"></span>
+        <span class="sw-token">--rule-soft</span>
+        <span class="sw-hex">#e8edf5</span>
+        <span class="sw-role">kẻ mờ nhất</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0842ab"></span>
+        <span class="sw-token">--navy-deep</span>
+        <span class="sw-hex">#0842ab</span>
+        <span class="sw-role">nút chính khi hover</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0b52d1"></span>
+        <span class="sw-token">--navy</span>
+        <span class="sw-hex">#0b52d1</span>
+        <span class="sw-role">nút chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#1f5fd6"></span>
+        <span class="sw-token">--navy-soft</span>
+        <span class="sw-hex">#1f5fd6</span>
+        <span class="sw-role">hàng được chọn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0b6b46"></span>
+        <span class="sw-token">--live</span>
+        <span class="sw-hex">#0b6b46</span>
+        <span class="sw-role">còn sách</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0b6b46"></span>
+        <span class="sw-token">--live-ink</span>
+        <span class="sw-hex">#0b6b46</span>
+        <span class="sw-role">chữ "còn sách"</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8b95aa"></span>
+        <span class="sw-token">--sunken</span>
+        <span class="sw-hex">#8b95aa</span>
+        <span class="sw-role">viền ô nhập</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0b52d1"></span>
+        <span class="sw-token">--spine-1</span>
+        <span class="sw-hex">#0b52d1</span>
+        <span class="sw-role">gáy sách 1</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0b6b46"></span>
+        <span class="sw-token">--spine-2</span>
+        <span class="sw-hex">#0b6b46</span>
+        <span class="sw-role">gáy sách 2</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8a5410"></span>
+        <span class="sw-token">--spine-3</span>
+        <span class="sw-hex">#8a5410</span>
+        <span class="sw-role">gáy sách 3</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#7a2fa8"></span>
+        <span class="sw-token">--spine-4</span>
+        <span class="sw-hex">#7a2fa8</span>
+        <span class="sw-role">gáy sách 4</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#c01730"></span>
+        <span class="sw-token">--destructive</span>
+        <span class="sw-hex">#c01730</span>
+        <span class="sw-role">quá hạn / lỗi</span>
+      </div></div>
+    </div>
+    <div>
+      <h3>Tương phản đo được</h3>
+      <table class="ratios"><tbody><tr class=""><td>chữ chính trên nền</td><td>16.55:1</td><td>✓</td></tr><tr class=""><td>chữ phụ trên nền</td><td>6.85:1</td><td>✓</td></tr><tr class=""><td>placeholder trên chrome</td><td>4.82:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên nút chính</td><td>6.68:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên chip còn sách</td><td>6.55:1</td><td>✓</td></tr><tr class=""><td>chữ quá hạn trên thẻ trắng</td><td>6.16:1</td><td>✓</td></tr><tr class=""><td>viền ô nhập trên thẻ trắng</td><td>3.01:1</td><td>✓</td></tr></tbody></table>
+
+      <h3>Dán vào <code>src/index.css</code></h3>
+      <pre>:root {
+  --page:         #f2f5fa; /* nền trang */
+  --chrome:       #e9eef7; /* header / footer / bàn phím */
+  --chrome-deep:  #dae2f0; /* chrome khi nhấn */
+  --ink:          #101623; /* chữ chính */
+  --ink-soft:     #4d5566; /* chữ phụ */
+  --ink-faint:    #5f6879; /* placeholder */
+  --rule:         #dae2f0; /* đường kẻ */
+  --rule-soft:    #e8edf5; /* kẻ mờ nhất */
+  --navy-deep:    #0842ab; /* nút chính khi hover */
+  --navy:         #0b52d1; /* nút chính */
+  --navy-soft:    #1f5fd6; /* hàng được chọn */
+  --live:         #0b6b46; /* còn sách */
+  --live-ink:     #0b6b46; /* chữ "còn sách" */
+  --sunken:       #8b95aa; /* viền ô nhập */
+  --spine-1:      #0b52d1; /* gáy sách 1 */
+  --spine-2:      #0b6b46; /* gáy sách 2 */
+  --spine-3:      #8a5410; /* gáy sách 3 */
+  --spine-4:      #7a2fa8; /* gáy sách 4 */
+  --destructive:  #c01730; /* quá hạn / lỗi */
+
+  /* các token dẫn xuất giữ nguyên như index.css hiện tại */
+  --primary: var(--navy);
+  --destructive: #c01730;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<section class="palette" id="datSet">
+  <header class="p-head">
+    <h2>G · Đất sét — Nền hồng đất & Mực xanh</h2>
+    <code>datSet</code>
+  </header>
+  <p class="note">Điểm lạ nằm ở *nền*, không ở nút: nền ngà ngả hồng đất, còn hành động lại là mực xanh đen rất trầm. Ba màu chức năng vẫn quen thuộc, nhưng cả màn hình ấm lên và không giống bất kỳ phần mềm hành chính nào.</p>
+
+  
+  <div class="prev" style="background:#faf4f3">
+    <div class="prev-bar" style="background:#f3eae8;border-color:#e8dcd9">
+      <span class="prev-logo" style="background:#1c2f4d"></span>
+      <span style="color:#1c1614;font-weight:800">LibAssist</span>
+      <span style="margin-left:auto;color:#574d4a;font-size:12px">Kiosk số 04</span>
+    </div>
+
+    <div class="prev-body">
+      <div class="prev-card" style="border-color:#e8dcd9">
+        <div class="prev-cover" style="background:#e8dcd9">
+          <span class="prev-spine" style="background:#1c2f4d"></span>
+          <span class="prev-chip" style="background:#14603c">Còn 3 cuốn</span>
+        </div>
+        <div class="prev-meta">
+          <div style="color:#1c1614;font-weight:600">Introduction to Algorithms</div>
+          <div style="color:#574d4a;font-size:12px">Cormen, Leiserson, Rivest</div>
+          <div style="color:#14603c;font-size:12px;font-weight:600">Kệ A3 · Tầng 2</div>
+        </div>
+      </div>
+
+      <div class="prev-side">
+        <input class="prev-field" style="border-color:#9a8a86;color:#1c1614"
+               value="Tìm sách, tác giả…" readonly>
+        <button class="prev-btn" style="background:#1c2f4d">Mượn sách</button>
+        <div class="prev-row" style="background:#33507d">Hàng đang chọn</div>
+        <div class="prev-status">
+          <span style="color:#14603c;font-weight:600">Đã trả</span>
+          <span style="color:#1c2f4d;font-weight:600">Đang mượn</span>
+          <span style="color:#a02030;font-weight:600">Quá hạn</span>
+        </div>
+        <div class="prev-spines">
+          <span style="background:#1c2f4d"></span><span style="background:#14603c"></span><span style="background:#8a5216"></span><span style="background:#7a3550"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3>Token</h3>
+      <div class="swatches">
+      <div class="sw">
+        <span class="sw-chip" style="background:#faf4f3"></span>
+        <span class="sw-token">--page</span>
+        <span class="sw-hex">#faf4f3</span>
+        <span class="sw-role">nền trang</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#f3eae8"></span>
+        <span class="sw-token">--chrome</span>
+        <span class="sw-hex">#f3eae8</span>
+        <span class="sw-role">header / footer / bàn phím</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#e8dcd9"></span>
+        <span class="sw-token">--chrome-deep</span>
+        <span class="sw-hex">#e8dcd9</span>
+        <span class="sw-role">chrome khi nhấn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#1c1614"></span>
+        <span class="sw-token">--ink</span>
+        <span class="sw-hex">#1c1614</span>
+        <span class="sw-role">chữ chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#574d4a"></span>
+        <span class="sw-token">--ink-soft</span>
+        <span class="sw-hex">#574d4a</span>
+        <span class="sw-role">chữ phụ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#6b5f5b"></span>
+        <span class="sw-token">--ink-faint</span>
+        <span class="sw-hex">#6b5f5b</span>
+        <span class="sw-role">placeholder</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#e8dcd9"></span>
+        <span class="sw-token">--rule</span>
+        <span class="sw-hex">#e8dcd9</span>
+        <span class="sw-role">đường kẻ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#f0e7e5"></span>
+        <span class="sw-token">--rule-soft</span>
+        <span class="sw-hex">#f0e7e5</span>
+        <span class="sw-role">kẻ mờ nhất</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#16263f"></span>
+        <span class="sw-token">--navy-deep</span>
+        <span class="sw-hex">#16263f</span>
+        <span class="sw-role">nút chính khi hover</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#1c2f4d"></span>
+        <span class="sw-token">--navy</span>
+        <span class="sw-hex">#1c2f4d</span>
+        <span class="sw-role">nút chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#33507d"></span>
+        <span class="sw-token">--navy-soft</span>
+        <span class="sw-hex">#33507d</span>
+        <span class="sw-role">hàng được chọn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#14603c"></span>
+        <span class="sw-token">--live</span>
+        <span class="sw-hex">#14603c</span>
+        <span class="sw-role">còn sách</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#14603c"></span>
+        <span class="sw-token">--live-ink</span>
+        <span class="sw-hex">#14603c</span>
+        <span class="sw-role">chữ "còn sách"</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#9a8a86"></span>
+        <span class="sw-token">--sunken</span>
+        <span class="sw-hex">#9a8a86</span>
+        <span class="sw-role">viền ô nhập</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#1c2f4d"></span>
+        <span class="sw-token">--spine-1</span>
+        <span class="sw-hex">#1c2f4d</span>
+        <span class="sw-role">gáy sách 1</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#14603c"></span>
+        <span class="sw-token">--spine-2</span>
+        <span class="sw-hex">#14603c</span>
+        <span class="sw-role">gáy sách 2</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8a5216"></span>
+        <span class="sw-token">--spine-3</span>
+        <span class="sw-hex">#8a5216</span>
+        <span class="sw-role">gáy sách 3</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#7a3550"></span>
+        <span class="sw-token">--spine-4</span>
+        <span class="sw-hex">#7a3550</span>
+        <span class="sw-role">gáy sách 4</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#a02030"></span>
+        <span class="sw-token">--destructive</span>
+        <span class="sw-hex">#a02030</span>
+        <span class="sw-role">quá hạn / lỗi</span>
+      </div></div>
+    </div>
+    <div>
+      <h3>Tương phản đo được</h3>
+      <table class="ratios"><tbody><tr class=""><td>chữ chính trên nền</td><td>16.44:1</td><td>✓</td></tr><tr class=""><td>chữ phụ trên nền</td><td>7.52:1</td><td>✓</td></tr><tr class=""><td>placeholder trên chrome</td><td>5.20:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên nút chính</td><td>13.43:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên chip còn sách</td><td>7.59:1</td><td>✓</td></tr><tr class=""><td>chữ quá hạn trên thẻ trắng</td><td>7.65:1</td><td>✓</td></tr><tr class=""><td>viền ô nhập trên thẻ trắng</td><td>3.31:1</td><td>✓</td></tr></tbody></table>
+
+      <h3>Dán vào <code>src/index.css</code></h3>
+      <pre>:root {
+  --page:         #faf4f3; /* nền trang */
+  --chrome:       #f3eae8; /* header / footer / bàn phím */
+  --chrome-deep:  #e8dcd9; /* chrome khi nhấn */
+  --ink:          #1c1614; /* chữ chính */
+  --ink-soft:     #574d4a; /* chữ phụ */
+  --ink-faint:    #6b5f5b; /* placeholder */
+  --rule:         #e8dcd9; /* đường kẻ */
+  --rule-soft:    #f0e7e5; /* kẻ mờ nhất */
+  --navy-deep:    #16263f; /* nút chính khi hover */
+  --navy:         #1c2f4d; /* nút chính */
+  --navy-soft:    #33507d; /* hàng được chọn */
+  --live:         #14603c; /* còn sách */
+  --live-ink:     #14603c; /* chữ "còn sách" */
+  --sunken:       #9a8a86; /* viền ô nhập */
+  --spine-1:      #1c2f4d; /* gáy sách 1 */
+  --spine-2:      #14603c; /* gáy sách 2 */
+  --spine-3:      #8a5216; /* gáy sách 3 */
+  --spine-4:      #7a3550; /* gáy sách 4 */
+  --destructive:  #a02030; /* quá hạn / lỗi */
+
+  /* các token dẫn xuất giữ nguyên như index.css hiện tại */
+  --primary: var(--navy);
+  --destructive: #a02030;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<section class="palette" id="nuaDem">
+  <header class="p-head">
+    <h2>H · Nửa đêm & Nghệ</h2>
+    <code>nuaDem</code>
+  </header>
+  <p class="note">Hai màu nhấn thay vì một: nút chính là xanh nửa đêm gần như đen, còn hàng đang chọn chuyển sang vàng nghệ. Thứ người đọc *bấm* và thứ người đọc *đang ở trên* trở thành hai màu khác hẳn nhau — không bảng nào khác làm vậy. ĐÃ CHỌN, đang chạy. ⚠ Hiện --navy-soft mới chỉ được dùng ở avatar trên mobile: tab và số trang ở kiosk vẫn tô bg-primary, nên màu nhấn thứ hai đã khai báo nhưng chưa hiện ở nơi nó có ích.</p>
+
+  
+  <div class="prev" style="background:#f4f5f6">
+    <div class="prev-bar" style="background:#ecedef;border-color:#dfe1e4">
+      <span class="prev-logo" style="background:#16233d"></span>
+      <span style="color:#12151b;font-weight:800">LibAssist</span>
+      <span style="margin-left:auto;color:#4f545d;font-size:12px">Kiosk số 04</span>
+    </div>
+
+    <div class="prev-body">
+      <div class="prev-card" style="border-color:#dfe1e4">
+        <div class="prev-cover" style="background:#dfe1e4">
+          <span class="prev-spine" style="background:#16233d"></span>
+          <span class="prev-chip" style="background:#125239">Còn 3 cuốn</span>
+        </div>
+        <div class="prev-meta">
+          <div style="color:#12151b;font-weight:600">Introduction to Algorithms</div>
+          <div style="color:#4f545d;font-size:12px">Cormen, Leiserson, Rivest</div>
+          <div style="color:#125239;font-size:12px;font-weight:600">Kệ A3 · Tầng 2</div>
+        </div>
+      </div>
+
+      <div class="prev-side">
+        <input class="prev-field" style="border-color:#8d939c;color:#12151b"
+               value="Tìm sách, tác giả…" readonly>
+        <button class="prev-btn" style="background:#16233d">Mượn sách</button>
+        <div class="prev-row" style="background:#8a5a0c">Hàng đang chọn</div>
+        <div class="prev-status">
+          <span style="color:#125239;font-weight:600">Đã trả</span>
+          <span style="color:#16233d;font-weight:600">Đang mượn</span>
+          <span style="color:#a3202e;font-weight:600">Quá hạn</span>
+        </div>
+        <div class="prev-spines">
+          <span style="background:#16233d"></span><span style="background:#125239"></span><span style="background:#8a5a0c"></span><span style="background:#7a3550"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3>Token</h3>
+      <div class="swatches">
+      <div class="sw">
+        <span class="sw-chip" style="background:#f4f5f6"></span>
+        <span class="sw-token">--page</span>
+        <span class="sw-hex">#f4f5f6</span>
+        <span class="sw-role">nền trang</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#ecedef"></span>
+        <span class="sw-token">--chrome</span>
+        <span class="sw-hex">#ecedef</span>
+        <span class="sw-role">header / footer / bàn phím</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#dfe1e4"></span>
+        <span class="sw-token">--chrome-deep</span>
+        <span class="sw-hex">#dfe1e4</span>
+        <span class="sw-role">chrome khi nhấn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#12151b"></span>
+        <span class="sw-token">--ink</span>
+        <span class="sw-hex">#12151b</span>
+        <span class="sw-role">chữ chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#4f545d"></span>
+        <span class="sw-token">--ink-soft</span>
+        <span class="sw-hex">#4f545d</span>
+        <span class="sw-role">chữ phụ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#626871"></span>
+        <span class="sw-token">--ink-faint</span>
+        <span class="sw-hex">#626871</span>
+        <span class="sw-role">placeholder</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#dfe1e4"></span>
+        <span class="sw-token">--rule</span>
+        <span class="sw-hex">#dfe1e4</span>
+        <span class="sw-role">đường kẻ</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#eaebee"></span>
+        <span class="sw-token">--rule-soft</span>
+        <span class="sw-hex">#eaebee</span>
+        <span class="sw-role">kẻ mờ nhất</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#0e1526"></span>
+        <span class="sw-token">--navy-deep</span>
+        <span class="sw-hex">#0e1526</span>
+        <span class="sw-role">nút chính khi hover</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#16233d"></span>
+        <span class="sw-token">--navy</span>
+        <span class="sw-hex">#16233d</span>
+        <span class="sw-role">nút chính</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8a5a0c"></span>
+        <span class="sw-token">--navy-soft</span>
+        <span class="sw-hex">#8a5a0c</span>
+        <span class="sw-role">hàng được chọn</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#125239"></span>
+        <span class="sw-token">--live</span>
+        <span class="sw-hex">#125239</span>
+        <span class="sw-role">còn sách</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#125239"></span>
+        <span class="sw-token">--live-ink</span>
+        <span class="sw-hex">#125239</span>
+        <span class="sw-role">chữ "còn sách"</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8d939c"></span>
+        <span class="sw-token">--sunken</span>
+        <span class="sw-hex">#8d939c</span>
+        <span class="sw-role">viền ô nhập</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#16233d"></span>
+        <span class="sw-token">--spine-1</span>
+        <span class="sw-hex">#16233d</span>
+        <span class="sw-role">gáy sách 1</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#125239"></span>
+        <span class="sw-token">--spine-2</span>
+        <span class="sw-hex">#125239</span>
+        <span class="sw-role">gáy sách 2</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#8a5a0c"></span>
+        <span class="sw-token">--spine-3</span>
+        <span class="sw-hex">#8a5a0c</span>
+        <span class="sw-role">gáy sách 3</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#7a3550"></span>
+        <span class="sw-token">--spine-4</span>
+        <span class="sw-hex">#7a3550</span>
+        <span class="sw-role">gáy sách 4</span>
+      </div>
+      <div class="sw">
+        <span class="sw-chip" style="background:#a3202e"></span>
+        <span class="sw-token">--destructive</span>
+        <span class="sw-hex">#a3202e</span>
+        <span class="sw-role">quá hạn / lỗi</span>
+      </div></div>
+    </div>
+    <div>
+      <h3>Tương phản đo được</h3>
+      <table class="ratios"><tbody><tr class=""><td>chữ chính trên nền</td><td>16.75:1</td><td>✓</td></tr><tr class=""><td>chữ phụ trên nền</td><td>6.97:1</td><td>✓</td></tr><tr class=""><td>placeholder trên chrome</td><td>4.80:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên nút chính</td><td>15.65:1</td><td>✓</td></tr><tr class=""><td>chữ trắng trên chip còn sách</td><td>9.16:1</td><td>✓</td></tr><tr class=""><td>chữ quá hạn trên thẻ trắng</td><td>7.49:1</td><td>✓</td></tr><tr class=""><td>viền ô nhập trên thẻ trắng</td><td>3.09:1</td><td>✓</td></tr></tbody></table>
+
+      <h3>Dán vào <code>src/index.css</code></h3>
+      <pre>:root {
+  --page:         #f4f5f6; /* nền trang */
+  --chrome:       #ecedef; /* header / footer / bàn phím */
+  --chrome-deep:  #dfe1e4; /* chrome khi nhấn */
+  --ink:          #12151b; /* chữ chính */
+  --ink-soft:     #4f545d; /* chữ phụ */
+  --ink-faint:    #626871; /* placeholder */
+  --rule:         #dfe1e4; /* đường kẻ */
+  --rule-soft:    #eaebee; /* kẻ mờ nhất */
+  --navy-deep:    #0e1526; /* nút chính khi hover */
+  --navy:         #16233d; /* nút chính */
+  --navy-soft:    #8a5a0c; /* hàng được chọn */
+  --live:         #125239; /* còn sách */
+  --live-ink:     #125239; /* chữ "còn sách" */
+  --sunken:       #8d939c; /* viền ô nhập */
+  --spine-1:      #16233d; /* gáy sách 1 */
+  --spine-2:      #125239; /* gáy sách 2 */
+  --spine-3:      #8a5a0c; /* gáy sách 3 */
+  --spine-4:      #7a3550; /* gáy sách 4 */
+  --destructive:  #a3202e; /* quá hạn / lỗi */
+
+  /* các token dẫn xuất giữ nguyên như index.css hiện tại */
+  --primary: var(--navy);
+  --destructive: #a3202e;
+}</pre>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

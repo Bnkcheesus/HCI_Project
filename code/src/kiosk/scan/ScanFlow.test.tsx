@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '@/App'
 import { MAX_BOOKS_PER_LOAN } from '@/lib/borrow'
+import { clearSavedSlips, findSavedSlip } from '@/lib/loanSlips'
 import { IDLE_SECONDS, IDLE_WARN_AT } from '@/lib/kioskSession'
 import { availability, books } from '@/mocks'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
@@ -30,6 +31,8 @@ function seedCart(count: number) {
 
 beforeEach(() => {
   useBorrowSessionStore.getState().reset()
+  // Slips persist to localStorage on purpose, so each test starts from an empty account.
+  clearSavedSlips()
 })
 
 describe('Step 1 — scanning books', () => {
@@ -310,7 +313,13 @@ describe('The whole checkout, end to end', () => {
     }
   })
 
-  it('offers the phone hand-off as well as the paper slip', async () => {
+  /**
+   * Gain Creator 3 is "in phiếu HOẶC đồng bộ app" — paper alone drops half the promise.
+   * The app half used to be a QR the reader had to stop and scan; it now happens on its
+   * own, so this asserts the slip really was filed, not just that a reassuring line of
+   * text is on screen.
+   */
+  it('files the slip to the app and still offers the paper one', async () => {
     const user = userEvent.setup()
     seedCart(1)
     renderAt('/kiosk/scan/step-2')
@@ -319,9 +328,24 @@ describe('The whole checkout, end to end', () => {
     await user.click(keypad().getByRole('button', { name: 'OK' }))
     await user.click(screen.getByRole('button', { name: /Xác nhận mượn/ }))
 
-    // Gain Creator 3 — "in phiếu HOẶC đồng bộ app"; paper alone drops half the promise.
-    expect(screen.getByText(/Quét để lưu phiếu vào app/)).toBeInTheDocument()
+    expect(screen.getByText(/Đã lưu vào ứng dụng LibAssist/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /In lại phiếu mượn/ })).toBeInTheDocument()
+
+    const slip = useBorrowSessionStore.getState().slip!
+    expect(findSavedSlip(slip.id)).toEqual(slip)
+  })
+
+  // Nothing is asked of the reader to make the sync happen — no scan, no extra tap.
+  it('does not ask the reader to scan anything to save the slip', async () => {
+    const user = userEvent.setup()
+    seedCart(1)
+    renderAt('/kiosk/scan/step-2')
+
+    await user.type(codeField(), '20215012')
+    await user.click(keypad().getByRole('button', { name: 'OK' }))
+    await user.click(screen.getByRole('button', { name: /Xác nhận mượn/ }))
+
+    expect(screen.queryByText(/Quét/)).not.toBeInTheDocument()
   })
 
   it('redirects away from the receipt when nothing was borrowed', () => {

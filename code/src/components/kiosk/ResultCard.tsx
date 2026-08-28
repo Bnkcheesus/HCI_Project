@@ -45,7 +45,11 @@ export function ResultCard({ book, onSelect }: ResultCardProps) {
       type="button"
       onClick={() => onSelect(book.id)}
       data-kiosk-surface
-      className="group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[8px] border border-[var(--rule)] bg-card text-left transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--lift-2)]"
+      // items-stretch: the HTML rendering spec gives <button> `align-items: flex-start`,
+      // which WebKit applies and Chromium does not. In a flex column that shrink-wraps the
+      // cover and the text block to their content, and the availability chip — positioned
+      // against the cover's right edge — lands in the middle of the card.
+      className="group flex h-full w-full min-w-0 flex-col items-stretch overflow-hidden rounded-[8px] border border-[var(--rule)] bg-card text-left transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--lift-2)]"
     >
       {/*
         The cover is the card's shock absorber. aspect-[16/9] sets its height wherever the

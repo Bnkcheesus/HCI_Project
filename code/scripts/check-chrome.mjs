@@ -177,6 +177,44 @@ for (const [width, height] of [
   await page.close()
 }
 
+/**
+ * Every <button> laid out as a flex column must name its own align-items.
+ *
+ * The HTML rendering spec gives buttons `align-items: flex-start`. Chromium does not apply
+ * it, WebKit does — and in a flex column the cross axis is horizontal, so under that rule
+ * every child shrink-wraps to its content: covers collapse and the availability chip,
+ * positioned against the cover's right edge, lands mid-card. This is a *declaration* check
+ * rather than a measurement, because the browser doing the measuring is the one that gets
+ * it right; the bug is invisible here by construction and only shows on the reader's phone.
+ */
+console.log('\n— <button> flex columns declare align-items —')
+{
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
+  for (const route of ['/kiosk', '/kiosk/search']) {
+    await page.goto(`http://localhost:5173${route}`, { waitUntil: 'networkidle' })
+    await page.waitForTimeout(300)
+
+    const bad = await page.evaluate(() =>
+      [...document.querySelectorAll('button')]
+        .filter((b) => {
+          const cs = getComputedStyle(b)
+          return (
+            cs.display.includes('flex') &&
+            cs.flexDirection.startsWith('column') &&
+            cs.alignItems === 'normal'
+          )
+        })
+        .map((b) => (b.textContent || '?').trim().slice(0, 30)),
+    )
+
+    const ok = bad.length === 0
+    if (!ok) failures++
+    console.log(`  ${route.padEnd(16)} không khai báo=${bad.length}  ${ok ? 'ok' : 'BROKEN'}`)
+    if (bad.length) console.log(`      ${bad.slice(0, 3).join(' | ')}`)
+  }
+  await page.close()
+}
+
 await browser.close()
 
 console.log(failures === 0 ? '\nAll screens keep their chrome pinned.' : `\n${failures} screen(s) BROKEN`)

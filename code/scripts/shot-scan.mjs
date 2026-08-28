@@ -117,7 +117,12 @@ await page.getByRole('button', { name: /Xác nhận mượn/ }).click()
 await page.waitForTimeout(700)
 await overflow('receipt')
 console.log(`  slip books listed          ${await page.locator('section[aria-label="Phiếu mượn sách"] ol li').count()}`)
-console.log(`  sync QR rendered           ${await page.locator('figure img').count() > 0}`)
+console.log(
+  `  slip synced to app         ${await page.getByText(/Đã lưu vào ứng dụng LibAssist/).count() > 0}`,
+)
+console.log(
+  `  nothing to scan            ${(await page.getByText(/Quét/).count()) === 0}`,
+)
 await ctaVisible(/Quay về trang chủ/)
 await page.screenshot({ path: '/tmp/scan-6-receipt.png' })
 

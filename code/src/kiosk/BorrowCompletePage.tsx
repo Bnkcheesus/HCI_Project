@@ -1,13 +1,13 @@
 // Implements Job 3 / Gain Creator 3 / Product-Service 3 — the receipt that closes the
-// self-checkout, plus the phone hand-off from Gain Creator 3 ("in phiếu hoặc đồng bộ
-// app") and Pain Reliever 4 (app nhắc hạn trả).
+// self-checkout. Gain Creator 3 promises "in phiếu hoặc đồng bộ app": the paper half is
+// the reprint button, the app half syncs on its own the moment the borrow is confirmed
+// (lib/loanSlips.ts), so this screen confirms it rather than asking for a scan.
 // Figma frame: kiosk-borrow-complete (5:1033).
-import { CheckCircle2, House, Printer } from 'lucide-react'
+import { CheckCircle2, CloudCheck, House, Printer } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { KioskFooter } from '@/components/kiosk/KioskFooter'
 import { KioskHeader } from '@/components/kiosk/KioskHeader'
-import { KioskQr } from '@/components/kiosk/KioskQr'
 import { formatDate, LOAN_DAYS } from '@/lib/borrow'
 import { books, libraryStatus } from '@/mocks'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
@@ -45,8 +45,8 @@ export function BorrowCompletePage() {
       <main className="min-h-0 flex-1 overflow-y-auto">
         {/* h-full, not min-h-full: this screen scrolls *inside* its two panels, so the
             track needs a definite height for their flex-1 to resolve against. With
-            min-h-full the whole receipt scrolled instead, carrying the hand-off QR out of
-            sight while the reader was still working down a five-book slip. */}
+            min-h-full the whole receipt scrolled instead, carrying the sync confirmation
+            and the actions out of sight while the reader worked a five-book slip. */}
         <div className="mx-auto flex h-full w-full max-w-[1180px] flex-col gap-5 px-10 py-5">
         <header className="flex shrink-0 items-center gap-5">
           <span
@@ -63,7 +63,7 @@ export function BorrowCompletePage() {
               Mượn sách thành công!
             </h1>
             <p className="text-muted-foreground" style={{ fontSize: 'var(--text-body)' }}>
-              Vui lòng nhận biên lai in ra từ khe bên dưới, hoặc quét mã QR để lưu phiếu vào điện thoại.
+              Phiếu đã được lưu vào ứng dụng LibAssist của bạn. Nhận thêm biên lai giấy ở khe bên dưới nếu cần.
             </p>
           </div>
         </header>
@@ -127,19 +127,39 @@ export function BorrowCompletePage() {
 
           {/* Hand-off + actions */}
           <aside className="flex min-h-0 flex-col items-center gap-4 overflow-y-auto">
-            <KioskQr
-              size="lg"
-              target={`${window.location.origin}/mobile/phieu-muon?slip=${encodeURIComponent(slip.id)}`}
-              alt={`Mã QR lưu phiếu mượn ${slip.id} vào ứng dụng LibAssist trên điện thoại`}
-              caption="Quét để lưu phiếu vào app và được nhắc hạn trả"
-            />
-
-            <p
-              className="text-center text-muted-foreground"
-              style={{ fontSize: 'var(--text-meta)' }}
+            {/* Gain Creator 3 is "in phiếu HOẶC đồng bộ app" — both halves, and the app
+                half now happens by itself. A QR the reader had to stop and scan was a step
+                the value map never asked for; the slip is already in their account by the
+                time this screen appears (see lib/loanSlips.ts). */}
+            <div
+              data-kiosk-surface
+              className="flex w-full flex-col items-center gap-3 rounded-[8px] border border-[var(--rule)] bg-card p-6 text-center shadow-[var(--card-shadow)]"
             >
-              Ứng dụng sẽ nhắc bạn trước ngày {formatDate(slip.dueAt)} để khỏi quên hạn trả.
-            </p>
+              <span className="grid size-14 place-items-center rounded-full bg-[var(--live-ink)] text-white">
+                <CloudCheck className="size-7" strokeWidth={2} aria-hidden />
+              </span>
+
+              <p
+                className="font-heading font-bold text-foreground"
+                style={{ fontSize: 'var(--text-section)' }}
+              >
+                Đã lưu vào ứng dụng LibAssist
+              </p>
+
+              <p className="text-muted-foreground" style={{ fontSize: 'var(--text-meta)' }}>
+                Phiếu <span className="font-semibold text-foreground">{slip.id}</span> đã tự động
+                đồng bộ vào tài khoản của bạn.
+              </p>
+
+              <p
+                className="text-muted-foreground"
+                style={{ fontSize: 'var(--text-meta)' }}
+              >
+                Ứng dụng sẽ nhắc bạn trước ngày{' '}
+                <span className="font-semibold text-foreground">{formatDate(slip.dueAt)}</span> để
+                khỏi quên hạn trả.
+              </p>
+            </div>
 
             <div className="mt-auto flex w-full flex-col gap-3">
               <button

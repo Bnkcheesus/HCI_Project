@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { LoanSlip } from '@/lib/borrow'
+import { saveSlip } from '@/lib/loanSlips'
 
 // Cross-screen session state for the search -> locate -> scan -> borrow flow.
 // Backs Job 1–4 / Product-Service 1–4 across kiosk-search-results, kiosk-book-info,
@@ -60,7 +61,13 @@ export const useBorrowSessionStore = create<BorrowSessionState>((set) => ({
     set((s) => ({ scannedBookIds: s.scannedBookIds.filter((id) => id !== bookId) })),
 
   setStudentCard: (studentCardCode) => set({ studentCardCode }),
-  completeBorrow: (slip) => set({ slip, scanStep: 'complete' }),
+
+  // Syncing happens here rather than on the receipt screen because this is the single
+  // moment a borrow becomes real — a caller cannot confirm a loan and forget to file it.
+  completeBorrow: (slip) => {
+    saveSlip(slip)
+    set({ slip, scanStep: 'complete' })
+  },
 
   resetCheckout: () => set({ ...EMPTY_CHECKOUT }),
 

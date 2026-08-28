@@ -6,12 +6,30 @@ import { isoDaysFromNow } from './students'
 
 export interface LoanRecord {
   id: string
+  /**
+   * The slip this book went out on. Books borrowed in one visit share it — that is what
+   * makes a four-book loan one slip rather than four coincidences with matching dates.
+   *
+   * A real field rather than something inferred from borrowedAt + dueAt: two separate
+   * visits on the same day would collapse into one slip under that guess, and a slip with
+   * no id of its own cannot be shown to the reader alongside one the kiosk printed.
+   */
+  slipId: string
   /** Card the loan sits against — see students.ts. */
   studentId: string
   bookId: string
   borrowedAt: string // ISO date
   dueAt: string // ISO date
   returnedAt: string | null
+}
+
+/**
+ * Slip number in the same shape createLoanSlip() prints at the kiosk, so a slip from the
+ * seeded history and one filed today are indistinguishable to a reader.
+ */
+export function historySlipId(borrowedAt: string, studentId: string): string {
+  const [year, month, day] = borrowedAt.split('-')
+  return `SLIP-${year}-${month}${day}-${studentId.slice(-4)}`
 }
 
 /**
@@ -22,6 +40,7 @@ export const loanHistory: LoanRecord[] = [
   // Nguyễn Minh Khang — the persona. One healthy loan, so borrowing is allowed.
   {
     id: 'loan-1',
+    slipId: historySlipId(isoDaysFromNow(-4), '20215012'),
     studentId: '20215012',
     bookId: 'dai-so-tuyen-tinh',
     borrowedAt: isoDaysFromNow(-4),
@@ -32,6 +51,7 @@ export const loanHistory: LoanRecord[] = [
   // Lê Văn Nam — two books past their due date: demonstrates the overdue refusal.
   {
     id: 'loan-2',
+    slipId: historySlipId(isoDaysFromNow(-25), '20218888'),
     studentId: '20218888',
     bookId: 'vat-ly-dai-cuong',
     borrowedAt: isoDaysFromNow(-25),
@@ -40,6 +60,7 @@ export const loanHistory: LoanRecord[] = [
   },
   {
     id: 'loan-3',
+    slipId: historySlipId(isoDaysFromNow(-20), '20218888'),
     studentId: '20218888',
     bookId: 'giai-tich-1',
     borrowedAt: isoDaysFromNow(-20),
@@ -51,6 +72,8 @@ export const loanHistory: LoanRecord[] = [
   ...['statistical-learning', 'pattern-recognition', 'hands-on-ml', 'mathematics-for-ml', 'lap-trinh-cpp'].map(
     (bookId, i): LoanRecord => ({
       id: `loan-limit-${i + 1}`,
+      // All five went out in one visit — one slip, not five.
+      slipId: historySlipId(isoDaysFromNow(-3), '20217777'),
       studentId: '20217777',
       bookId,
       borrowedAt: isoDaysFromNow(-3),
@@ -62,11 +85,64 @@ export const loanHistory: LoanRecord[] = [
   // A closed loan — proves returned books stop counting against the limit.
   {
     id: 'loan-returned',
+    slipId: historySlipId(isoDaysFromNow(-40), '20215012'),
     studentId: '20215012',
     bookId: 'giai-tich-1',
     borrowedAt: isoDaysFromNow(-40),
     dueAt: isoDaysFromNow(-26),
     returnedAt: isoDaysFromNow(-28),
+  },
+
+  /*
+   * Further closed loans for the persona, so the mobile app's history is a history rather
+   * than a single row.
+   *
+   * Closed on purpose, and it has to stay that way. checkEligibility blocks a borrow when
+   * `openLoansFor + cart > MAX_BOOKS_PER_LOAN`; this card carries exactly one open loan
+   * and the kiosk flow scans four, which lands on 5 — the limit itself. One more open loan
+   * here breaks the self-checkout and the tests that cover it, and any *overdue* one would
+   * block the card outright. Returned records touch neither rule.
+   */
+  /*
+   * Three books borrowed in one visit — the case Pain 4 is actually about ("nhiều đầu
+   * sách cùng lúc"). Without one seeded here, a multi-book slip only ever appeared after
+   * someone walked through the kiosk checkout, so opening the app cold never showed the
+   * very situation the feature exists for.
+   *
+   * Closed, like every addition on this card: an open one would push the borrowing limit
+   * and break the kiosk flow. See the note above.
+   */
+  ...['cormen-algorithms', 'rosen-discrete-math', 'kernighan-c-programming'].map(
+    (bookId, i): LoanRecord => ({
+      id: `loan-returned-batch-${i + 1}`,
+      slipId: historySlipId(isoDaysFromNow(-70), '20215012'),
+      studentId: '20215012',
+      bookId,
+      borrowedAt: isoDaysFromNow(-70),
+      dueAt: isoDaysFromNow(-56),
+      returnedAt: isoDaysFromNow(-58),
+    }),
+  ),
+
+  {
+    // Returned four days after it was due: the app tracks lateness, not just the fact of
+    // a return, so "Đã trả trễ" has something real behind it.
+    id: 'loan-returned-late',
+    slipId: historySlipId(isoDaysFromNow(-130), '20215012'),
+    studentId: '20215012',
+    bookId: 'stewart-calculus',
+    borrowedAt: isoDaysFromNow(-130),
+    dueAt: isoDaysFromNow(-116),
+    returnedAt: isoDaysFromNow(-112),
+  },
+  {
+    id: 'loan-returned-4',
+    slipId: historySlipId(isoDaysFromNow(-160), '20215012'),
+    studentId: '20215012',
+    bookId: 'campbell-biology',
+    borrowedAt: isoDaysFromNow(-160),
+    dueAt: isoDaysFromNow(-146),
+    returnedAt: isoDaysFromNow(-150),
   },
 ]
 

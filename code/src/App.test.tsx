@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 import App from './App'
+import { findStudentByCard } from '@/mocks'
+import { MOBILE_ACCOUNT_CARD } from './mobile/account'
 
 describe('App routing', () => {
   it('redirects / to the kiosk home screen', () => {
@@ -20,7 +22,11 @@ describe('App routing', () => {
         <App />
       </MemoryRouter>,
     )
-    expect(screen.getByText('Mobile — Trang chủ')).toBeInTheDocument()
+    // The companion app opens straight onto the persona's account — no sign-in step, see
+    // mobile/account.ts.
+    expect(
+      screen.getByRole('heading', { name: findStudentByCard(MOBILE_ACCOUNT_CARD)!.name }),
+    ).toBeInTheDocument()
   })
 
   /**
