@@ -70,6 +70,82 @@ INSERT INTO BOOK (IDBook, Title, Author, Summary, BookType, PublishYear, Quantit
 ('B00000000050', N'Lý Thuyết Độ Đo Và Tích Phân Lebesgue', N'Nguyễn Xuân Liêm', N'Nghiên cứu không dịch độ đo, hàm đo được và tích phân Lebesgue trong không gian Banach.', N'Toán học', 2006, 3, 4.7);
 
 -- =============================================
+-- Insert Data into Section Table (5 Sections)
+-- IDSection Format: SXXXX (len = 5)
+-- =============================================
+INSERT INTO Section (IDSection, SectionName) VALUES
+('SEC01', N'Khu vực Văn học Việt Nam'),
+('SEC02', N'Khu vực Văn học nước ngoài'),
+('SEC03', N'Khu vực Công nghệ thông tin'),
+('SEC04', N'Khu vực Ngôn ngữ học'),
+('SEC05', N'Khu vực Toán học');
+
+-- =============================================
+-- Insert Data into ShelfLocation Table (50 Locations - 1 per book)
+-- IDSection + IDShelfRow + BookID
+-- =============================================
+INSERT INTO ShelfLocation (IDSection, IDShelfRow, BookID) VALUES
+-- Section 1: Văn học Việt Nam (IDs B00000000001 - B00000000010)
+('SEC01', 1, 'B00000000001'),
+('SEC01', 1, 'B00000000002'),
+('SEC01', 1, 'B00000000003'),
+('SEC01', 1, 'B00000000004'),
+('SEC01', 1, 'B00000000005'),
+('SEC01', 2, 'B00000000006'),
+('SEC01', 2, 'B00000000007'),
+('SEC01', 2, 'B00000000008'),
+('SEC01', 2, 'B00000000009'),
+('SEC01', 2, 'B00000000010'),
+
+-- Section 2: Văn học nước ngoài (IDs B00000000011 - B00000000020)
+('SEC02', 1, 'B00000000011'),
+('SEC02', 1, 'B00000000012'),
+('SEC02', 1, 'B00000000013'),
+('SEC02', 1, 'B00000000014'),
+('SEC02', 1, 'B00000000015'),
+('SEC02', 2, 'B00000000016'),
+('SEC02', 2, 'B00000000017'),
+('SEC02', 2, 'B00000000018'),
+('SEC02', 2, 'B00000000019'),
+('SEC02', 2, 'B00000000020'),
+
+-- Section 3: Công nghệ thông tin (IDs B00000000021 - B00000000030)
+('SEC03', 1, 'B00000000021'),
+('SEC03', 1, 'B00000000022'),
+('SEC03', 1, 'B00000000023'),
+('SEC03', 1, 'B00000000024'),
+('SEC03', 1, 'B00000000025'),
+('SEC03', 2, 'B00000000026'),
+('SEC03', 2, 'B00000000027'),
+('SEC03', 2, 'B00000000028'),
+('SEC03', 2, 'B00000000029'),
+('SEC03', 2, 'B00000000030'),
+
+-- Section 4: Ngôn ngữ học (IDs B00000000031 - B00000000040)
+('SEC04', 1, 'B00000000031'),
+('SEC04', 1, 'B00000000032'),
+('SEC04', 1, 'B00000000033'),
+('SEC04', 1, 'B00000000034'),
+('SEC04', 1, 'B00000000035'),
+('SEC04', 2, 'B00000000036'),
+('SEC04', 2, 'B00000000037'),
+('SEC04', 2, 'B00000000038'),
+('SEC04', 2, 'B00000000039'),
+('SEC04', 2, 'B00000000040'),
+
+-- Section 5: Toán học (IDs B00000000041 - B00000000050)
+('SEC05', 1, 'B00000000041'),
+('SEC05', 1, 'B00000000042'),
+('SEC05', 1, 'B00000000043'),
+('SEC05', 1, 'B00000000044'),
+('SEC05', 1, 'B00000000045'),
+('SEC05', 2, 'B00000000046'),
+('SEC05', 2, 'B00000000047'),
+('SEC05', 2, 'B00000000048'),
+('SEC05', 2, 'B00000000049'),
+('SEC05', 2, 'B00000000050');
+
+-- =============================================
 -- Insert Data into MEMBER Table (20 Members)
 -- IDMember Format: RXXXXXXXXX (len = 10)
 -- =============================================

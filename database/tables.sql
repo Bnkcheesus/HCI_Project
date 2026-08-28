@@ -34,3 +34,18 @@ CREATE TABLE BORROW_SLIP (
     FOREIGN KEY (IDMember) REFERENCES MEMBER(IDMember),
     FOREIGN KEY (IDBook) REFERENCES BOOK(IDBook)
 )
+
+CREATE TABLE Section (
+    IDSection VARCHAR(5),
+    SectionName NVARCHAR(100),
+    PRIMARY KEY (IDSection)
+)
+
+CREATE TABLE ShelfLocation (
+    IDSection VARCHAR(5),
+    IDShelfRow INT,
+    BookID VARCHAR(12),
+    PRIMARY KEY (IDSection, IDShelfRow, BookID),
+    FOREIGN KEY (IDSection) REFERENCES Section(IDSection),
+    FOREIGN KEY (BookID) REFERENCES BOOK(IDBook)
+)
