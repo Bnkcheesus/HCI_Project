@@ -1,6 +1,6 @@
 ---
 name: code-generator
-description: Build and continue the LibAssist implementation in code/ — a Kiosk AI web app and a mobile companion web app — from the Figma file (pulled live via the REST API) and the persona/value-proposition/scenario pipeline outputs (feature/scope source of truth). All 10 kiosk screens are built and tested; the 4 mobile screens are still placeholders. Use when the user asks to build, fix, tweak, or extend anything under code/ — new screens, bug fixes, UI polish, mock data, tests.
+description: Build and continue the LibAssist implementation in code/ — a Kiosk AI web app and a mobile companion web app — from the Figma file (pulled live via the REST API) and the persona/value-proposition/scenario pipeline outputs (feature/scope source of truth). All 10 kiosk screens and all 4 mobile screens are built and tested. Use when the user asks to build, fix, tweak, or extend anything under code/ — new screens, bug fixes, UI polish, mock data, tests.
 ---
 
 # Code Generator
@@ -16,15 +16,17 @@ Turn the UX pipeline (persona → value proposition → scenario) and the Figma 
 ```bash
 cd code && npm run build && npm run test
 ```
-Both pass. The app is **not a scaffold** — it is a working implementation with real interaction logic, real (non-placeholder) mock data, and 184+ tests. Treat it as a codebase to extend and fix, not a template to redo.
+Both pass. The app is **not a scaffold** — it is a working implementation with real interaction logic, real (non-placeholder) mock data, and 253+ tests. Treat it as a codebase to extend and fix, not a template to redo.
 
-**Kiosk (`/kiosk/*`) — all 10 screens built, tested, and through multiple rounds of real UI polish.** Mobile (`/mobile/*`) — all 4 screens still render `PlaceholderScreen`; nobody has asked for them yet in this session, so don't build them unprompted.
+**All 14 screens are built** — 10 kiosk (`/kiosk/*`) and 4 mobile (`/mobile/*`) — and every one has been through rounds of real UI polish against browser screenshots. `PlaceholderScreen` is gone; nothing is stubbed.
+
+The two surfaces are joined by a QR handoff, and it works end to end: `LocationQr` on any kiosk book page encodes `/mobile/location?book=<id>`, and `src/lib/qrHandoff.ts` resolves that URL — or a hand-typed ISBN, or a slip number — into the route to open. Breaking either side breaks a promise the other side is making on screen, so change them together.
 
 ## Required input
 - `persona/output/persona.md` — who we're building for, and which needs are in scope.
 - `value-proposition/output/value-proposition.md` — the only valid source of **feature scope**: every screen/flow built must trace back to a `Products & Services`, `Pain Reliever` or `Gain Creator` entry. Do not build features that aren't there.
 - `scenario/output/scenario.md` — the reference interaction flow (existing-system vs LibAssist) to translate into actual screen-to-screen navigation.
-- **The Figma file** — visual source of truth for layout, spacing, color, typography and component states. File key: `Kf12R4YMZqpvHF2xolpJeH` (from `https://www.figma.com/design/Kf12R4YMZqpvHF2xolpJeH/HCI_Project`). Needed less often now that the design system is settled in `src/index.css`/`src/styles/tokens.css` — mainly for a genuinely new screen (mobile) or a frame nobody has looked at yet.
+- **The Figma file** — visual source of truth for layout, spacing, color, typography and component states. File key: `Kf12R4YMZqpvHF2xolpJeH` (from `https://www.figma.com/design/Kf12R4YMZqpvHF2xolpJeH/HCI_Project`). Rarely needed now: every frame has been built, and both the palette and the mobile layouts have deliberately moved past it. PNG exports of the four phone frames are checked in at `figma/mobile/` if you want to see what was specified.
 
 ## Figma access — REST API with a personal token
 Plain `WebFetch`/`curl` on the Figma web URL returns **403** — the design surface is only reachable through the API with an authenticated token.
@@ -62,10 +64,10 @@ Figma color channels are 0–1 floats (`{r,g,b,a}`) — convert to hex/rgba befo
 | `/kiosk/scan/step-1` | kiosk-book-scan-step1 (+ fail state) | 20:366 / 39:82 | built |
 | `/kiosk/scan/step-2` | kiosk-book-scan-step2 | 24:72 | built |
 | `/kiosk/borrow-complete` | kiosk-borrow-complete | 5:1033 | built |
-| `/mobile` | Phone-home-screen | 39:286 | **placeholder** |
-| `/mobile/qr` | Phone-QR | 41:598 | **placeholder** |
-| `/mobile/location` | Phone-Location | 41:630 | **placeholder** |
-| `/mobile/phieu-muon` | Phone-PhieuMuon | 49:122 | **placeholder** |
+| `/mobile` | Phone-home-screen | 39:286 | built |
+| `/mobile/qr` | Phone-QR | 41:598 | built — simulated scan (`ScannerViewport`) + manual code entry; no camera, by decision |
+| `/mobile/location` | Phone-Location | 41:630 | built — real `ShelfRouteMap`, not the frame's static 3D drawing |
+| `/mobile/phieu-muon` | Phone-PhieuMuon | 49:122 | built — `LoanSlipsPage`; the route path stays Vietnamese, the component does not |
 
 Skip these Figma nodes — backups/duplicates, not separate screens: `kiosk-search-backup` (16:230), `kiosk-search-results-backup` (19:2), `kiosk-borrow-complete-backup` (37:2), the duplicate `kiosk-book-scan-step2` at 39:183, the extra `Phone-PhieuMuon` variants at 53:50 / 53:85.
 
@@ -97,13 +99,14 @@ code/
   src/
     kiosk/                 # /kiosk/* — one file per screen, all built (table above)
       scan/                  # 3-step self-checkout sub-flow
-    mobile/                 # /mobile/* — all 4 screens still PlaceholderScreen
+    mobile/                 # /mobile/* — HomePage, QrPage, LocationPage, LoanSlipsPage
     components/
-      PlaceholderScreen.tsx  # scaffold stub — still used by every mobile screen
       kiosk/                 # ~25 shared kiosk components (cards, keyboard, chat, scan UI...)
+      mobile/                # MobileFrame (shared chrome), SlipCard, DueBadge
       ui/                    # shadcn primitives, added on demand via `npx shadcn@latest add`
     lib/                   # framework-free logic: search.ts, librarian.ts, borrow.ts,
-                            # telex.ts, useSpeechSearch.ts, useKioskIdle.ts, kioskSession.ts
+                            # telex.ts, useSpeechSearch.ts, useKioskIdle.ts, kioskSession.ts,
+                            # loans.ts, loanSlips.ts, accountSlips.ts, qrHandoff.ts
     mocks/                  # catalog, availability, libraryMap, libraryStatus, loanHistory,
                             # students — typed, index.ts barrel, no backend yet
     state/                  # the four Zustand stores
@@ -192,17 +195,19 @@ The kiosk home screen additionally must **never scroll** (the subject-shortcut s
 4. If it touches a scrollable region or anything sized relative to the viewport, verify on a real browser (see Verification) — this class of bug is invisible to `npm run test`.
 5. Run the full verification loop before calling it done.
 
-### Building a new mobile screen (the remaining scope)
-1. Fetch its design: `curl .../v1/files/$FILE_KEY/nodes?ids=<node id>` from the table above, plus an image export if the JSON alone doesn't make the layout obvious.
-2. Replace the `PlaceholderScreen` with real markup — reuse existing kiosk components/tokens where the mobile UI wants the same thing (design tokens are already shared), write phone-specific ones under `src/components/mobile/` where it doesn't.
-3. Wire to `src/mocks/` and the Zustand stores as the flow requires; extend mocks rather than hardcoding.
-4. Verify: `npm run dev` and actually use it on a narrow viewport; `npm run test`; `npm run build`.
+### Working on a mobile screen
+Every screen exists; this is now the same job as the kiosk case above, plus two things specific to a phone.
+
+1. **Height is the scarce resource, and 375×667 is the size that proves it.** Both phone screens built here first shipped a layout that fitted on an iPhone 14 and clipped its primary control on an iPhone SE. Budget the height before choosing a box: chrome takes ~144px, and what is left has to hold the title, the content and the action. When the picture and the words compete, the words win — Pain Reliever 5 names a picture-only map as the pain itself.
+2. **Reuse a kiosk component rather than forking it, and extend it if it does not fit.** `ScannerViewport`, `ShelfRouteMap` and `AvailabilityChip` are all used unchanged on the phone; `ShelfRouteMap` grew a `className` prop for the aspect ratio instead of being copied. Every fix made to serve the phone (an `shrink-0` on an icon, a marker anchored to its own coordinate) turned out to fix a latent kiosk bug too.
+
+Then verify with `node scripts/check-mobile.mjs`, and **look at the screenshots it writes** — all three of the layout bugs above were invisible to the script until the picture was opened.
 
 ## Verification (run every time, not just at the end)
 ```bash
 cd code
 npm run build     # tsc -b && vite build
-npm run test      # vitest run — 184+ tests
+npm run test      # vitest run — 253+ tests
 npm run lint      # oxlint
 npm run dev       # then actually click through the flow — see below
 ```
@@ -214,5 +219,13 @@ node scripts/shot-scan.mjs       # walks the full borrow flow to the receipt, sc
 node scripts/shot-aichat.mjs     # AI chat flow, including a11y-mode contrast measurement
 node scripts/shot-search.mjs     # on-screen keyboard + Telex + live search
 node scripts/shot-results.mjs    # sort/filter/pagination on the results screen
+node scripts/check-mobile.mjs    # every /mobile/* route at 4 phone sizes: overflow, 48px touch floor,
+                                 # pinned back button, chevron alignment, a11y contrast
+node scripts/check-palette.mjs   # every colour pairing the components actually paint, against AA
+                                 # for *normal* text (4.5:1) — see scripts/palettes.data.mjs
 ```
+`check-mobile.mjs` and `check-chrome.mjs` are the two that gate a change; the `shot-*` ones
+are for looking. Two checks in them deliberately assert a *declaration* rather than a
+rendering (`align-items` on flex-column buttons), because the bug they guard against is one
+Chromium cannot reproduce — see Gotchas.
 These are throwaway/ad hoc scripts, not a fixed suite — write a new one (or a one-off inline Playwright probe) for whatever you just changed rather than assuming an existing script covers it. Always screenshot and actually look at the image (`Read` tool opens PNGs) — "the script printed ok" without looking at the picture has missed real bugs in this project before.

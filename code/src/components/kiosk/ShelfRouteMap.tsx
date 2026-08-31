@@ -1,5 +1,6 @@
 import { Book, MapPin } from 'lucide-react'
 import { AISLE_COUNT, type ShelfLocation } from '@/mocks'
+import { cn } from '@/lib/utils'
 
 /**
  * 2D route map — Figma MapView (10:321), rebuilt so the route is drawn to whichever
@@ -28,16 +29,26 @@ function aisleX(index: number): number {
 
 interface ShelfRouteMapProps {
   location: ShelfLocation
+  /**
+   * Overrides the aspect ratio. 100/38 suits a 1280px kiosk panel and is far too wide for
+   * a phone held upright, where the same map would be a 130px letterbox. The viewBox is
+   * drawn with preserveAspectRatio="none" and the pins are positioned in percentages, so
+   * a taller box stretches the floor plan without moving anything off its mark.
+   */
+  className?: string
 }
 
-export function ShelfRouteMap({ location }: ShelfRouteMapProps) {
+export function ShelfRouteMap({ location, className }: ShelfRouteMapProps) {
   const targetX = aisleX(location.aisle)
   const targetY = AISLE_TOP + (AISLE_BOTTOM - AISLE_TOP) * location.alongAisle
 
   return (
     <div
       data-kiosk-surface
-      className="relative aspect-[100/38] w-full overflow-hidden rounded-[8px] border border-[var(--rule)] bg-secondary"
+      className={cn(
+        'relative aspect-[100/38] w-full overflow-hidden rounded-[8px] border border-[var(--rule)] bg-secondary',
+        className,
+      )}
     >
       <svg
         viewBox="0 0 100 38"
@@ -114,23 +125,40 @@ function Marker({
   const Icon = isStart ? MapPin : Book
   const bg = isStart ? 'var(--primary)' : 'var(--live-ink)'
 
+  /**
+   * A pin low on the plan hangs its label off the bottom edge. The kiosk never showed it —
+   * at 1280px wide the map is ~490px tall and the walkway marker at 82% still has room
+   * underneath — but the same map in a phone column is ~150px tall, and "Kiosk" was cut in
+   * half. Below 70% the label goes under the pin; below that it goes above it.
+   */
+  const labelAbove = y > 70
+
+  /*
+   * The pin is centred on (x, y); the label is positioned off the pin. The two used to be
+   * one centred stack, which put the *pair's* midpoint on the coordinate and left the pin
+   * itself sitting half a label below where the route line ends — invisible on a 490px
+   * kiosk map, obvious once the same map is 150px tall on a phone and the pin drops
+   * through the bottom edge.
+   */
   return (
-    <div
-      className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1"
-      style={{ left: `${x}%`, top: `${y}%` }}
-    >
-      <span
-        className="grid size-9 place-items-center rounded-full text-white shadow-[var(--lift-2)]"
-        style={{ backgroundColor: bg }}
-      >
-        <Icon className="size-4.5" strokeWidth={2.5} aria-hidden />
-      </span>
-      <span
-        className="whitespace-nowrap rounded-[6px] px-2 py-0.5 font-heading font-bold text-white"
-        style={{ backgroundColor: bg, fontSize: 'var(--text-eyebrow)' }}
-      >
-        {label}
-      </span>
+    <div className="absolute" style={{ left: `${x}%`, top: `${y}%` }}>
+      <div className="relative -translate-x-1/2 -translate-y-1/2">
+        <span
+          className="grid size-9 place-items-center rounded-full text-white shadow-[var(--lift-2)]"
+          style={{ backgroundColor: bg }}
+        >
+          <Icon className="size-4.5" strokeWidth={2.5} aria-hidden />
+        </span>
+        <span
+          className={cn(
+            'absolute left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[6px] px-2 py-0.5 font-heading font-bold text-white',
+            labelAbove ? 'bottom-full mb-1' : 'top-full mt-1',
+          )}
+          style={{ backgroundColor: bg, fontSize: 'var(--text-eyebrow)' }}
+        >
+          {label}
+        </span>
+      </div>
     </div>
   )
 }

@@ -6,7 +6,7 @@ import { SlipCard } from '@/components/mobile/SlipCard'
 import { accountSlips, closedSlips, openSlips } from '@/lib/accountSlips'
 import { MOBILE_ACCOUNT_CARD } from './account'
 
-export function PhieuMuonPage() {
+export function LoanSlipsPage() {
   const slips = accountSlips(MOBILE_ACCOUNT_CARD)
   const open = openSlips(slips)
   const closed = closedSlips(slips)

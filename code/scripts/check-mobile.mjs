@@ -12,7 +12,7 @@ const PHONES = [
   ['iPhone 14 Pro Max', 430, 932],
 ]
 
-const ROUTES = ['/mobile', '/mobile/phieu-muon']
+const ROUTES = ['/mobile', '/mobile/qr', '/mobile/location?book=cormen-algorithms', '/mobile/phieu-muon']
 
 const browser = await chromium.launch()
 let failures = 0
@@ -66,6 +66,20 @@ for (const [name, width, height] of PHONES) {
         )
       }).length
 
+      // A screen whose whole job is one action must not hide that action below the fold.
+      // The QR screen did exactly that on a 667px phone: an empty scanner window filled
+      // the view and "Mở chỉ dẫn" sat underneath it, unseen.
+      //
+      // Measured against the scrolling <main>, not against innerHeight. The pinned footer
+      // occupies the bottom of the viewport, so a button clipped by the scroll region's
+      // own edge still sits "within" the window — the first version of this check passed
+      // while the screenshot plainly showed the button cut in half.
+      const main = document.querySelector('main')
+      const submit = main?.querySelector('button[type="submit"]')
+      const submitOffscreen = submit
+        ? submit.getBoundingClientRect().bottom > main.getBoundingClientRect().bottom + 1
+        : false
+
       return {
         overflowX: de.scrollWidth > de.clientWidth + 1,
         wide,
@@ -73,16 +87,23 @@ for (const [name, width, height] of PHONES) {
         backOffscreen,
         chevronSpread,
         unnamed,
+        submitOffscreen,
       }
     })
 
     const ok =
-      !r.overflowX && r.small.length === 0 && !r.backOffscreen && r.chevronSpread <= 1 && r.unnamed === 0
+      !r.overflowX &&
+      r.small.length === 0 &&
+      !r.backOffscreen &&
+      r.chevronSpread <= 1 &&
+      r.unnamed === 0 &&
+      !r.submitOffscreen
     if (!ok) failures++
     console.log(
       `  ${name.padEnd(18)} ${route.padEnd(8)} overflow-x=${String(r.overflowX).padEnd(5)}` +
         ` touch<48px=${r.small.length} back-offscreen=${String(r.backOffscreen).padEnd(5)}` +
         ` chevron-lệch=${r.chevronSpread}px align-items-thiếu=${r.unnamed}` +
+        ` submit-khuất=${String(r.submitOffscreen).padEnd(5)}` +
         `  ${ok ? 'ok' : 'BROKEN'}`,
     )
     if (r.wide.length) console.log(`      wide: ${r.wide.join(', ')}`)

@@ -7,13 +7,13 @@ import { clearSavedSlips, saveSlip } from '@/lib/loanSlips'
 import { accountSlips, closedSlips, openSlips } from '@/lib/accountSlips'
 import { books, findStudentByCard } from '@/mocks'
 import { MOBILE_ACCOUNT_CARD } from './account'
-import { PhieuMuonPage } from './PhieuMuonPage'
+import { LoanSlipsPage } from './LoanSlipsPage'
 
 function renderSlips() {
   return render(
     <MemoryRouter initialEntries={['/mobile/phieu-muon']}>
       <Routes>
-        <Route path="/mobile/phieu-muon" element={<PhieuMuonPage />} />
+        <Route path="/mobile/phieu-muon" element={<LoanSlipsPage />} />
         <Route path="/mobile" element={<p>Màn trang chủ</p>} />
       </Routes>
     </MemoryRouter>,

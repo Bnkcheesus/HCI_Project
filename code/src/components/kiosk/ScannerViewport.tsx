@@ -50,8 +50,11 @@ export function ScannerViewport({
         />
       )}
 
+      {/* shrink-0: an svg is a flex item like any other, and in a short column — the phone
+          gives this component 192px where the kiosk gives it 224 — it is the item flex
+          chooses to compress, collapsing a 56px glyph to a speck. */}
       <Icon
-        className={cn('size-14', done ? 'text-[var(--live-ink)]' : 'text-muted-foreground')}
+        className={cn('size-14 shrink-0', done ? 'text-[var(--live-ink)]' : 'text-muted-foreground')}
         strokeWidth={1.5}
         aria-hidden
       />
