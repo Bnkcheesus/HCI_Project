@@ -53,6 +53,14 @@ export const students: Student[] = [
     faculty: 'Khoa Công nghệ Thông tin',
     expiresAt: isoDaysFromNow(150),
   },
+  {
+    // The persona this whole project is built for (persona.md).
+    cardCode: '25215012',
+    name: 'Lê Trang Anh',
+    studentId: '25215012',
+    faculty: 'Khoa Công nghệ Thông tin',
+    expiresAt: isoDaysFromNow(400),
+  },
 ]
 
 export function findStudentByCard(cardCode: string): Student | undefined {
