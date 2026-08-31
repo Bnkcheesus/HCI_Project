@@ -135,19 +135,37 @@ function StepCard({
   title: string
   body: string
 }) {
+  /*
+   * Sized to the shortest screen this runs on, not to the roomiest.
+   *
+   * The card used to be a fixed 322px stack — p-8, a 48px numeral, a 64px glyph and three
+   * 16px gaps — which fitted at 900px and pushed the page into scrolling at 720, and at 768
+   * once accessibility mode scaled the type up by a quarter. A kiosk has no scrollbar to
+   * grab, so that is not a cosmetic loss.
+   *
+   * The glyph is the shock absorber: it is decoration, so it gives up its height first.
+   * clamp() ties it to the viewport, holding 64px where there is room and shrinking to 40px
+   * where there is not — the type never shrinks, since the persona's whole problem is text
+   * that is too small.
+   */
   return (
     <section
       data-kiosk-surface
-      className="flex flex-col items-center justify-center gap-4 rounded-[8px] border border-[var(--rule)] bg-card p-8 text-center"
+      className="flex min-h-0 flex-col items-center justify-center gap-2 rounded-[8px] border border-[var(--rule)] bg-card p-5 text-center"
     >
       <span
-        className="grid size-12 place-items-center rounded-full bg-primary font-heading font-bold text-primary-foreground"
-        style={{ fontSize: 'var(--text-tab)' }}
+        className="grid size-10 shrink-0 place-items-center rounded-full bg-primary font-heading font-bold text-primary-foreground"
+        style={{ fontSize: 'var(--text-body)' }}
         aria-hidden
       >
         {index}
       </span>
-      <Icon className="size-16 text-[var(--live-ink)]" strokeWidth={1.5} aria-hidden />
+      <Icon
+        className="shrink-0 text-[var(--live-ink)]"
+        style={{ width: 'clamp(2.5rem, 7vh, 4rem)', height: 'clamp(2.5rem, 7vh, 4rem)' }}
+        strokeWidth={1.5}
+        aria-hidden
+      />
       <h2
         className="font-heading font-bold text-foreground"
         style={{ fontSize: 'var(--text-section)' }}
@@ -155,7 +173,10 @@ function StepCard({
         <span className="sr-only">Bước {index}: </span>
         {title}
       </h2>
-      <p className="max-w-md text-muted-foreground" style={{ fontSize: 'var(--text-meta)' }}>
+      {/* Capped in ch, not rem: a fixed 28rem cap keeps its pixel width while accessibility
+          mode grows the type a quarter, so the same sentence gains a line exactly when
+          height is scarcest. A ch cap holds the line length steady instead. */}
+      <p className="max-w-[56ch] text-muted-foreground" style={{ fontSize: 'var(--text-meta)' }}>
         {body}
       </p>
     </section>

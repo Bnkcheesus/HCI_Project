@@ -1,9 +1,11 @@
 // Implements Job 2 / Pain Reliever 2 / Product-Service 2 — book detail with shelf
 // location, the hand-off point to the self-checkout flow.
 // Figma frame: kiosk-book-info (19:243).
-import { ArrowLeft, Navigation, ScanLine } from 'lucide-react'
+import { ArrowLeft, Navigation, ScanLine, ZoomIn } from 'lucide-react'
+import { useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { AvailabilityChip } from '@/components/kiosk/AvailabilityChip'
+import { CoverLightbox } from '@/components/kiosk/CoverLightbox'
 import { KioskFooter } from '@/components/kiosk/KioskFooter'
 import { KioskHeader } from '@/components/kiosk/KioskHeader'
 import { LocationQr } from '@/components/kiosk/LocationQr'
@@ -25,6 +27,8 @@ export function BookInfoPage() {
   // Named routerLocation because `location` below is the book's shelf location.
   // Both hooks must run before the not-found early return.
   const routerLocation = useLocation()
+  // Before the not-found early return: hooks cannot be called conditionally.
+  const [coverOpen, setCoverOpen] = useState(false)
 
   const book = books.find((b) => b.id === bookId)
   if (!book) return <NotFound onBack={() => navigate('/kiosk/search/results')} />
@@ -70,14 +74,36 @@ export function BookInfoPage() {
           </h1>
 
           <div className="flex gap-5">
-            <div
-              data-kiosk-surface
-              className="relative aspect-[3/4] w-40 shrink-0 overflow-hidden rounded-[8px] border border-[var(--rule)] bg-secondary"
-            >
-              {book.coverUrl && (
+            {book.coverUrl ? (
+              /*
+               * The cover opens enlarged — see CoverLightbox. A <button>, not an <img> with
+               * a click handler: this is a control, and a reader on the keyboard has to be
+               * able to reach it.
+               *
+               * A tappable image announces nothing on its own, so the magnifier badge is
+               * the affordance. Without it the feature exists and nobody finds it.
+               */
+              <button
+                type="button"
+                onClick={() => setCoverOpen(true)}
+                data-kiosk-surface
+                aria-label={`Xem bìa sách ${book.title} phóng to`}
+                className="group relative aspect-[3/4] w-40 shrink-0 overflow-hidden rounded-[8px] border border-[var(--rule)] bg-secondary transition-colors hover:border-primary"
+              >
                 <img src={book.coverUrl} alt="" className="size-full object-cover" />
-              )}
-            </div>
+                <span
+                  aria-hidden
+                  className="absolute bottom-2 right-2 grid size-10 place-items-center rounded-[6px] bg-[var(--ink)]/80 text-white shadow-[var(--lift-2)] transition-colors group-hover:bg-primary"
+                >
+                  <ZoomIn className="size-5" />
+                </span>
+              </button>
+            ) : (
+              <div
+                data-kiosk-surface
+                className="aspect-[3/4] w-40 shrink-0 overflow-hidden rounded-[8px] border border-[var(--rule)] bg-secondary"
+              />
+            )}
 
             <div className="flex min-w-0 flex-col gap-3">
               <AvailabilityChip bookId={book.id} className="self-start" />
@@ -242,6 +268,14 @@ export function BookInfoPage() {
       </div>
 
       <KioskFooter />
+
+      {coverOpen && book.coverUrl && (
+        <CoverLightbox
+          src={book.coverUrl}
+          title={book.title}
+          onClose={() => setCoverOpen(false)}
+        />
+      )}
     </div>
   )
 }

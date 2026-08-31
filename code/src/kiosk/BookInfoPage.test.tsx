@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -51,6 +51,67 @@ describe('Kiosk BookInfoPage', () => {
     const isbn = books.find((b) => b.id === BOOK)!.isbn
     expect(screen.getByText(isbn)).toBeInTheDocument()
     expect(findBookByCode(isbn)?.id).toBe(BOOK)
+  })
+
+  /**
+   * Product/Service 5 / Pain Reliever 5. The thumbnail is 160px wide; a reader with thị
+   * lực kém cannot read an edition or a volume number off it, and Job 2 asks them to
+   * confirm the book before walking to the shelf.
+   */
+  describe('enlarging the cover', () => {
+    const openCover = () => screen.getByRole('button', { name: /Xem bìa sách .* phóng to/ })
+
+    it('opens the cover in a modal dialog', async () => {
+      const user = userEvent.setup()
+      renderBook(BOOK)
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+      await user.click(openCover())
+
+      const dialog = screen.getByRole('dialog')
+      expect(dialog).toHaveAttribute('aria-modal', 'true')
+      const book = books.find((b) => b.id === BOOK)!
+      expect(within(dialog).getByRole('img', { name: `Bìa sách ${book.title}` })).toHaveAttribute(
+        'src',
+        book.coverUrl,
+      )
+    })
+
+    it('closes on the button and hands focus back to the cover', async () => {
+      const user = userEvent.setup()
+      renderBook(BOOK)
+
+      await user.click(openCover())
+      await user.click(screen.getByRole('button', { name: 'Đóng' }))
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      // Back where the reader was, not at the top of the document — a keyboard user who
+      // loses their place here has to tab through the whole screen again.
+      expect(openCover()).toHaveFocus()
+    })
+
+    // A kiosk has a keyboard attached; Escape is the reflex for anyone who uses one.
+    it('closes on Escape', async () => {
+      const user = userEvent.setup()
+      renderBook(BOOK)
+
+      await user.click(openCover())
+      await user.keyboard('{Escape}')
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+
+    // Tapping the dim is how people dismiss a lightbox without aiming at anything.
+    it('closes on the backdrop but not on the image itself', async () => {
+      const user = userEvent.setup()
+      renderBook(BOOK)
+
+      await user.click(openCover())
+      await user.click(screen.getByRole('img', { name: /^Bìa sách/ }))
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+      await user.click(screen.getByRole('dialog'))
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
   })
 
   /**
