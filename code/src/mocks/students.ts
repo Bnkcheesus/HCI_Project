@@ -5,21 +5,24 @@
 // borrow for concrete reasons; the prototype only ever showed "Thẻ thư viện hợp lệ",
 // so these exist to make each refusal demonstrable at the kiosk.
 
-export interface Student {
-  /** The number printed on the card and typed on the numeric keypad. */
-  cardCode: string
-  name: string
-  studentId: string
-  faculty: string
-  /** ISO date the card stops being valid. */
-  expiresAt: string
-}
+import { isoDate } from '@/shared/borrowRules'
+import type { Student } from '@/shared/types'
 
-/** Days from today as an ISO date — keeps the demo data correct whenever it is run. */
+export type { Student } from '@/shared/types'
+
+/**
+ * Days from today as an ISO date — keeps the demo data correct whenever it is run.
+ *
+ * Local date, via the shared `isoDate`, not `toISOString().slice(0, 10)`. In UTC+7 those
+ * two disagree for the last seven hours of every day, so a card seeded at 9pm got an
+ * expiry dated tomorrow while the eligibility check compared it against today. Harmless
+ * while both halves guessed the same way; not harmless once the dates are columns in a
+ * database read back by a server that may run in a different zone.
+ */
 export function isoDaysFromNow(days: number, now = new Date()): string {
   const date = new Date(now)
   date.setDate(date.getDate() + days)
-  return date.toISOString().slice(0, 10)
+  return isoDate(date)
 }
 
 export const students: Student[] = [

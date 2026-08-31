@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.server.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "skipLibCheck": true,
+
+    // Bundler resolution, matching tsconfig.app.json — not `nodenext`. The server shares
+    // src/shared and src/mocks with the frontend, and those files use extensionless
+    // relative imports that `nodenext` refuses. tsx (which actually runs this code) and
+    // vitest both resolve the bundler way, so this is the setting that makes the
+    // typecheck agree with the runtime rather than the other way round.
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  // The server reads two things out of src/: the shared domain layer, and the mock
+  // modules the seeder loads. Nothing else — a server file importing a component would
+  // be a mistake, and leaving the rest of src/ out of the program makes it a type error
+  // rather than a code review note.
+  "include": ["server", "src/shared", "src/mocks"]
+}

@@ -1,16 +1,10 @@
 // Mock library-wide live status — reinforces Gain Creator 4 (dữ liệu theo thời gian thực)
 // at the whole-collection level, and gives the persona the opening-hours context they
 // need when squeezing a visit between classes (scenario.md: "chỉ có 15 phút").
+import type { LibraryStatus } from '@/shared/types'
 import { books } from './catalog'
 
-export interface LibraryStatus {
-  isOpen: boolean
-  opensAt: string
-  closesAt: string
-  titlesTotal: number
-  titlesAvailable: number
-  supportPhone: string
-}
+export type { LibraryStatus } from '@/shared/types'
 
 export const libraryStatus: LibraryStatus = {
   isOpen: true,

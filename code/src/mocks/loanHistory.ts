@@ -2,35 +2,21 @@
 // (ứng dụng di động đồng bộ tình trạng sách và lịch sử mượn/hạn trả), and the
 // eligibility check the self-checkout runs before letting a card borrow anything.
 // Maps to the "Phone-PhieuMuon" screens in the Figma prototype.
+import { isoDate, slipIdFor } from '@/shared/borrowRules'
+import type { LoanRecord } from '@/shared/types'
 import { isoDaysFromNow } from './students'
 
-export interface LoanRecord {
-  id: string
-  /**
-   * The slip this book went out on. Books borrowed in one visit share it — that is what
-   * makes a four-book loan one slip rather than four coincidences with matching dates.
-   *
-   * A real field rather than something inferred from borrowedAt + dueAt: two separate
-   * visits on the same day would collapse into one slip under that guess, and a slip with
-   * no id of its own cannot be shown to the reader alongside one the kiosk printed.
-   */
-  slipId: string
-  /** Card the loan sits against — see students.ts. */
-  studentId: string
-  bookId: string
-  borrowedAt: string // ISO date
-  dueAt: string // ISO date
-  returnedAt: string | null
-}
+export type { LoanRecord } from '@/shared/types'
 
 /**
- * Slip number in the same shape createLoanSlip() prints at the kiosk, so a slip from the
- * seeded history and one filed today are indistinguishable to a reader.
+ * Slip number in the same shape the kiosk prints, so a slip from the seeded history and
+ * one filed today are indistinguishable to a reader — and, more to the point, resolve the
+ * same way when one arrives as a slip id in a QR code.
+ *
+ * One implementation, in `@/shared/borrowRules`. This used to be a second copy of the
+ * format string sitting next to the first.
  */
-export function historySlipId(borrowedAt: string, studentId: string): string {
-  const [year, month, day] = borrowedAt.split('-')
-  return `SLIP-${year}-${month}${day}-${studentId.slice(-4)}`
-}
+export const historySlipId = slipIdFor
 
 /**
  * Dates are generated relative to today rather than hardcoded, so "quá hạn" stays
@@ -152,6 +138,7 @@ export function openLoansFor(studentId: string): LoanRecord[] {
 }
 
 export function overdueLoansFor(studentId: string, now = new Date()): LoanRecord[] {
-  const today = now.toISOString().slice(0, 10)
+  // Local date, matching how the seeded dates were generated — see isoDaysFromNow.
+  const today = isoDate(now)
   return openLoansFor(studentId).filter((l) => l.dueAt < today)
 }

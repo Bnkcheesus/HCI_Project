@@ -16,5 +16,10 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.ts',
+    // The server suite has its own config (vitest.server.config.ts) because it needs a
+    // node environment and a live database. Without this exclusion vitest's default glob
+    // sweeps it up into the frontend run, where it fails on a missing DATABASE_URL and
+    // reports a red suite that has nothing to do with the frontend.
+    exclude: ['**/node_modules/**', '**/dist/**', 'server/**'],
   },
 })

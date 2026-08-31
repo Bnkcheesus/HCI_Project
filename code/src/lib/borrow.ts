@@ -1,19 +1,31 @@
 /**
- * Self-checkout rules — Job 3 / Pain Reliever 3 / Product-Service 3 ("quy trình tự mượn
- * tại kiosk, không cần chờ thủ thư"), behind kiosk-book-scan-* and kiosk-borrow-complete.
+ * Self-checkout rules as the *browser* sees them — Job 3 / Pain Reliever 3 /
+ * Product-Service 3 ("quy trình tự mượn tại kiosk, không cần chờ thủ thư"), behind
+ * kiosk-book-scan-* and kiosk-borrow-complete.
  *
- * The Figma prototype scanned exactly one book and showed a flat "Thẻ thư viện hợp lệ".
- * A real library decides on more than that, so the rules live here — pure functions, no
- * React — and the screens only render what they return.
+ * The rules themselves now live in `@/shared/borrowRules`, where the server reads them
+ * too. What is left here is the browser's half: the same judgements, wired to the data
+ * this side happens to have. The kiosk checks eligibility so it can refuse *early* and
+ * explain why; the server checks it again inside the borrow transaction, because that is
+ * the only check a reader cannot get around.
  *
  * The borrowing terms are not invented here: the AI librarian already tells readers
- * "mượn tối đa 5 cuốn trong 14 ngày" (see lib/librarian.ts), so the checkout has to
- * enforce exactly that or the app contradicts itself.
+ * "mượn tối đa 5 cuốn trong 14 ngày", so the checkout has to enforce exactly that or the
+ * app contradicts itself.
  */
-import { availability, books, openLoansFor, overdueLoansFor, type Book, type Student } from '@/mocks'
+import { availability, books, openLoansFor } from '@/mocks'
+import type { Book, LoanSlip, Student } from '@/shared/types'
+import {
+  checkEligibility as checkEligibilityRules,
+  dueDateFrom,
+  isoDate,
+  MAX_BOOKS_PER_LOAN,
+  normalizeIsbn,
+  slipIdFor,
+} from '@/shared/borrowRules'
 
-export const MAX_BOOKS_PER_LOAN = 5
-export const LOAN_DAYS = 14
+export { formatDate, LOAN_DAYS, MAX_BOOKS_PER_LOAN, normalizeIsbn } from '@/shared/borrowRules'
+export type { BlockCode, BorrowBlock, LoanSlip } from '@/shared/types'
 
 /* ------------------------------------------------------------------ scanning a book */
 
@@ -27,16 +39,6 @@ export const SCAN_FAILURE_MESSAGE: Record<ScanFailure, string> = {
 }
 
 export type ScanResult = { ok: true; book: Book } | { ok: false; failure: ScanFailure }
-
-/**
- * How an ISBN is printed versus how it is keyed: the spaces and dashes on a back cover are
- * decoration. Exported so the scanner, the search box and the phone's fallback field all
- * agree on what a code is — three spellings of "strip the punctuation" would drift, and the
- * failure would be a reader typing a valid ISBN that one screen accepts and another does not.
- */
-export function normalizeIsbn(code: string): string {
-  return code.replace(/[\s-]/g, '')
-}
 
 /** Look a book up the way the scanner does: by ISBN, ignoring spaces and dashes. */
 export function findBookByCode(code: string): Book | undefined {
@@ -58,96 +60,38 @@ export function scanBook(code: string, cartIds: string[]): ScanResult {
 
 /* -------------------------------------------------------------- checking the card */
 
-export type BlockCode = 'card-expired' | 'overdue' | 'limit'
-
-export interface BorrowBlock {
-  code: BlockCode
-  message: string
-  /** What the reader can actually do about it — a refusal without a way out is a dead end. */
-  hint: string
-}
-
 /**
- * Every reason this card cannot borrow right now. Returns an array because they stack:
- * an expired card can also have overdue books, and hiding the second problem until the
- * first is fixed sends the reader to the desk twice.
+ * Every reason this card cannot borrow right now, resolved against the loans this side
+ * knows about. The judgement is `@/shared/borrowRules`; all this adds is the data.
  */
-export function checkEligibility(
-  student: Student,
-  cartSize: number,
-  now = new Date(),
-): BorrowBlock[] {
-  const blocks: BorrowBlock[] = []
-  const today = now.toISOString().slice(0, 10)
-
-  if (student.expiresAt < today) {
-    blocks.push({
-      code: 'card-expired',
-      message: `Thẻ thư viện đã hết hạn ngày ${formatDate(student.expiresAt)}.`,
-      hint: 'Bạn gia hạn thẻ tại quầy thủ thư hoặc trong ứng dụng LibAssist rồi quay lại nhé.',
-    })
-  }
-
-  const overdue = overdueLoansFor(student.studentId, now)
-  if (overdue.length > 0) {
-    const titles = overdue.map((l) => bookTitle(l.bookId)).join(', ')
-    blocks.push({
-      code: 'overdue',
-      message: `Bạn đang có ${overdue.length} cuốn quá hạn trả: ${titles}.`,
-      hint: 'Vui lòng trả những cuốn này trước khi mượn thêm.',
-    })
-  }
-
-  const open = openLoansFor(student.studentId).length
-  if (open + cartSize > MAX_BOOKS_PER_LOAN) {
-    const room = Math.max(0, MAX_BOOKS_PER_LOAN - open)
-    blocks.push({
-      code: 'limit',
-      message: `Bạn đang mượn ${open} cuốn, giới hạn là ${MAX_BOOKS_PER_LOAN} cuốn cùng lúc.`,
-      hint:
-        room === 0
-          ? 'Hãy trả bớt sách trước khi mượn thêm.'
-          : `Lượt này bạn chỉ mượn thêm được ${room} cuốn — hãy bỏ bớt khỏi phiếu.`,
-    })
-  }
-
-  return blocks
+export function checkEligibility(student: Student, cartSize: number, now = new Date()) {
+  return checkEligibilityRules(
+    {
+      student,
+      cartSize,
+      openLoans: openLoansFor(student.studentId),
+      titleOf: bookTitle,
+    },
+    now,
+  )
 }
 
 /* ------------------------------------------------------------------- the loan slip */
 
-export interface LoanSlip {
-  id: string
-  studentName: string
-  studentId: string
-  bookIds: string[]
-  borrowedAt: string
-  dueAt: string
-}
-
 export function createLoanSlip(student: Student, bookIds: string[], now = new Date()): LoanSlip {
-  const due = new Date(now)
-  due.setDate(due.getDate() + LOAN_DAYS)
+  const borrowedAt = isoDate(now)
 
   return {
-    id: `SLIP-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}${String(
-      now.getDate(),
-    ).padStart(2, '0')}-${student.studentId.slice(-4)}`,
+    id: slipIdFor(borrowedAt, student.studentId),
     studentName: student.name,
     studentId: student.studentId,
     bookIds,
-    borrowedAt: now.toISOString().slice(0, 10),
-    dueAt: due.toISOString().slice(0, 10),
+    borrowedAt,
+    dueAt: dueDateFrom(now),
   }
 }
 
 /* ------------------------------------------------------------------------ helpers */
-
-/** ISO date to the dd/mm/yyyy the slip and the refusals are written in. */
-export function formatDate(iso: string): string {
-  const [y, m, d] = iso.split('-')
-    return `${d}/${m}/${y}`
-}
 
 export function bookTitle(bookId: string): string {
   return books.find((b) => b.id === bookId)?.title ?? bookId

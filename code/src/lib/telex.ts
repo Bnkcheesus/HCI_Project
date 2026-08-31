@@ -210,19 +210,11 @@ export function telex(input: string): string {
 }
 
 /**
- * Fold Vietnamese diacritics for matching, so a query typed without tones still
- * finds the book ("giai tich" -> "Giải tích 1"). Telex is how you *enter* tones;
- * this makes entering them optional rather than required.
+ * Diacritic folding moved to `@/shared/text` when the catalogue went into a database —
+ * the seeder and the search endpoint fold text with the same two functions, and a second
+ * copy here would be free to drift from the one the `search_text` column was built with.
+ *
+ * Re-exported rather than relocated at the call sites: this is where they have always
+ * been imported from, and the move is not what any of those files are about.
  */
-export function removeDiacritics(input: string): string {
-  return input
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/đ/g, 'd')
-    .replace(/Đ/g, 'D')
-}
-
-/** Case- and diacritic-insensitive "does the haystack contain the query" test. */
-export function vietnameseIncludes(haystack: string, query: string): boolean {
-  return removeDiacritics(haystack).toLowerCase().includes(removeDiacritics(query).toLowerCase())
-}
+export { removeDiacritics, vietnameseIncludes } from '@/shared/text'
