@@ -10,6 +10,7 @@ import {
   searchCatalog,
   sortResults,
 } from './search'
+import { books } from '@/mocks'
 
 describe('searchCatalog', () => {
   it('matches on subject as well as title', () => {
@@ -28,6 +29,53 @@ describe('searchCatalog', () => {
 
   it('returns nothing for a blank query', () => {
     expect(searchCatalog('   ')).toEqual([])
+  })
+})
+
+/**
+ * The search field has always advertised ISBN ("Nhập tên sách, tác giả hoặc mã ISBN..."),
+ * and for a long time did not match on it. These lock the promise to the behaviour.
+ */
+describe('searchCatalog — by ISBN', () => {
+  const book = books.find((b) => b.id === 'cormen-algorithms')!
+
+  it('finds the book from its full ISBN', () => {
+    expect(searchCatalog(book.isbn).map((b) => b.id)).toEqual([book.id])
+  })
+
+  // Printed with dashes on the cover, keyed without them — normalizeIsbn is shared with
+  // the scanner so both screens accept the same spellings.
+  it('ignores the dashes and spaces a cover prints', () => {
+    const printed = `${book.isbn.slice(0, 3)}-${book.isbn.slice(3, 8)} ${book.isbn.slice(8)}`
+    expect(searchCatalog(printed).map((b) => b.id)).toEqual([book.id])
+  })
+
+  it('narrows as the reader keys the code in, matching a partial run', () => {
+    const ids = searchCatalog(book.isbn.slice(0, 9)).map((b) => b.id)
+    expect(ids).toContain(book.id)
+  })
+
+  /**
+   * The guard that makes this safe. Every ISBN-13 starts "978" and years are four digits,
+   * so a short run of digits must stay ordinary text — otherwise "2022" returns every book
+   * whose code happens to contain it, and the results screen fills with noise.
+   */
+  it.each([
+    ['978', 'the prefix every ISBN-13 shares'],
+    [book.isbn.slice(4, 8), 'four digits taken from a real code'],
+  ])('does not treat %s as a code (%s)', (short) => {
+    // Taken from the catalogue rather than made up: the run provably sits inside at least
+    // one ISBN, so if the guard were missing this query would drag those books in.
+    expect(books.some((b) => b.isbn.includes(short))).toBe(true)
+
+    const matchedByText = books.filter(
+      (b) => b.title.includes(short) || b.author.includes(short) || b.subject.includes(short),
+    )
+    expect(searchCatalog(short)).toEqual(matchedByText)
+  })
+
+  it('finds nothing for a code no book carries', () => {
+    expect(searchCatalog('0000000000000')).toEqual([])
   })
 })
 

@@ -108,6 +108,19 @@ export function ResultCard({ book, onSelect }: ResultCardProps) {
           {book.author}
         </p>
 
+        {/*
+          The ISBN, at eyebrow size so it adds a line without pushing the card taller than
+          the home screen's no-scroll budget allows. It earns the space twice: the search
+          box accepts an ISBN, so this is what a code query matched on; and it is the code
+          the checkout asks for when a barcode will not scan.
+        */}
+        <p
+          className="truncate tabular-nums text-muted-foreground"
+          style={{ fontSize: 'var(--text-eyebrow)' }}
+        >
+          ISBN {book.isbn}
+        </p>
+
         <p
           className="mt-auto flex items-center gap-2 pt-1.5 font-medium"
           style={{ fontSize: 'var(--text-meta)' }}

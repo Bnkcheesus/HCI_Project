@@ -90,6 +90,20 @@ export function BookInfoPage() {
               <p className="text-muted-foreground" style={{ fontSize: 'var(--text-body)' }}>
                 {book.author}
               </p>
+
+              {/*
+                Up here with the title rather than down in the metadata grid, because it is
+                not a fact about the edition — it is the code the reader has to carry: step 1
+                of the checkout asks them to key it in when a barcode will not scan, and the
+                phone's QR screen falls back to the same digits. tabular-nums so a 13-digit
+                run can be read off in groups.
+              */}
+              <p
+                className="tabular-nums text-muted-foreground"
+                style={{ fontSize: 'var(--text-meta)' }}
+              >
+                ISBN: <span className="font-semibold text-foreground">{book.isbn}</span>
+              </p>
             </div>
           </div>
 

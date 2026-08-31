@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { books } from '@/mocks'
+import { findBookByCode } from '@/lib/borrow'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 import { BookInfoPage } from './BookInfoPage'
 
@@ -36,6 +37,20 @@ describe('Kiosk BookInfoPage', () => {
     // re-running scripts/fetch-catalog.mjs can legitimately pick up a newer edition.
     expect(screen.getByText(String(books.find((b) => b.id === BOOK)!.year))).toBeInTheDocument()
     expect(screen.getByText('2 còn / 3 tổng')).toBeInTheDocument()
+  })
+
+  /**
+   * The ISBN is the one field here that has to survive being copied. Step 1 of the
+   * checkout asks the reader to key it in when a barcode will not scan, and the phone's
+   * QR screen falls back to the same code — both resolve it through `findBookByCode`,
+   * so the digits shown here have to be the digits that lookup accepts.
+   */
+  it('shows an ISBN the checkout would actually accept', () => {
+    renderBook(BOOK)
+
+    const isbn = books.find((b) => b.id === BOOK)!.isbn
+    expect(screen.getByText(isbn)).toBeInTheDocument()
+    expect(findBookByCode(isbn)?.id).toBe(BOOK)
   })
 
   /**

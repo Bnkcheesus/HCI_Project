@@ -4,6 +4,7 @@
  */
 import { availability, books, type Book, type DocumentType, type Language } from '@/mocks'
 import { vietnameseIncludes } from './telex'
+import { normalizeIsbn } from './borrow'
 
 /** Stock facet in the advanced filter — "Còn sách" / "Hết sách". */
 export type StockState = 'available' | 'out'
@@ -61,12 +62,38 @@ export const SORT_LABEL: Record<SortMode, string> = {
   title: 'Tên A → Z',
 }
 
-/** Free-text match across title, author and subject, diacritic-insensitive. */
+/**
+ * The shortest run of digits treated as an ISBN rather than as ordinary text.
+ *
+ * Every ISBN-13 in the catalogue starts "978", so a three-digit query would match the whole
+ * shelf, and four digits would make every year — "2022" — return books whose *code* happens
+ * to contain it. Six is past both: long enough that a digit run is a deliberate code, short
+ * enough that a reader keying one off a back cover starts seeing it narrow well before the end.
+ */
+const MIN_ISBN_QUERY = 6
+
+/** The query read as a code, or null if it is not one. */
+function asIsbnQuery(query: string): string | null {
+  const digits = normalizeIsbn(query)
+  return /^\d+$/.test(digits) && digits.length >= MIN_ISBN_QUERY ? digits : null
+}
+
+/**
+ * Free-text match across title, author and subject, diacritic-insensitive — plus the ISBN,
+ * which the search field has always claimed to accept ("Nhập tên sách, tác giả hoặc mã
+ * ISBN...") without ever matching on it.
+ *
+ * Matched as a substring rather than exactly, so it narrows as the reader keys the code in
+ * and still finds the book from the middle chunk of a number they are reading off a cover.
+ */
 export function searchCatalog(query: string): Book[] {
   const q = query.trim()
   if (!q) return []
+  const code = asIsbnQuery(q)
+
   return books.filter(
     (b) =>
+      (code !== null && b.isbn.includes(code)) ||
       vietnameseIncludes(b.title, q) ||
       vietnameseIncludes(b.author, q) ||
       vietnameseIncludes(b.subject, q),

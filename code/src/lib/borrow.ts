@@ -28,9 +28,19 @@ export const SCAN_FAILURE_MESSAGE: Record<ScanFailure, string> = {
 
 export type ScanResult = { ok: true; book: Book } | { ok: false; failure: ScanFailure }
 
+/**
+ * How an ISBN is printed versus how it is keyed: the spaces and dashes on a back cover are
+ * decoration. Exported so the scanner, the search box and the phone's fallback field all
+ * agree on what a code is — three spellings of "strip the punctuation" would drift, and the
+ * failure would be a reader typing a valid ISBN that one screen accepts and another does not.
+ */
+export function normalizeIsbn(code: string): string {
+  return code.replace(/[\s-]/g, '')
+}
+
 /** Look a book up the way the scanner does: by ISBN, ignoring spaces and dashes. */
 export function findBookByCode(code: string): Book | undefined {
-  const digits = code.replace(/[\s-]/g, '')
+  const digits = normalizeIsbn(code)
   if (!digits) return undefined
   return books.find((b) => b.isbn === digits)
 }
