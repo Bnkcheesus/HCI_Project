@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5.2. Các Luồng Người dùng Quan trọng (Key User Flows) — LibAssist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   DESIGN TOKENS — MATCHES DIAGRAM DRAWING SKILL
+   ========================================================== */
+:root {
+  --page-bg: #E5E5E5;         /* Outer Stage Background */
+  --frame: #000000;           /* Solid Black Framing */
+  
+  --card-bg: #12151C;         /* Dark Base Card */
+  --card-subtle: #171B24;     /* Sub-card Slate */
+  
+  --cyan: #22D3EE;            /* Neon Cyan Accent */
+  --cyan-dim: rgba(34, 211, 238, 0.25);
+  
+  --white: #F5F7FA;
+  --text-muted: #93A0B4;
+  --text-dark: #000000;
+
+  --danger-bg: rgba(255, 107, 107, 0.12);
+  --danger-border: #FF6B6B;
+  --danger-text: #FF8E8E;
+
+  --amber: #FBBF24;
+  --amber-dim: rgba(251, 191, 36, 0.20);
+
+  --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Mono', monospace;
+
+  --r: 0px;
+}
+
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+  border-radius: var(--r) !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--page-bg);
+  font-family: var(--font-main);
+  color: var(--white);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* EXPORT BUTTON */
+#export-btn {
+  display: block;
+  margin: 20px auto 0;
+  padding: 10px 24px;
+  background: var(--frame);
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border: 2px solid var(--frame);
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+#export-btn:hover { background: var(--cyan); color: var(--frame); }
+
+/* STAGE CANVAS */
+.stage {
+  width: 1400px;
+  margin: 20px auto;
+  padding: 44px 48px;
+  background: var(--card-bg);
+  border: 3px solid var(--frame);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+/* HEADER */
+.sys-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--cyan-dim);
+  margin-bottom: 36px;
+}
+
+.brand-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.main-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.sub-title {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* FLOWS CONTAINER */
+.flows-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.flow-card {
+  background: var(--card-subtle);
+  border: 1fr solid rgba(255,255,255,0.08);
+  padding: 28px;
+  position: relative;
+}
+
+.flow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.flow-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cyan);
+  background: var(--cyan-dim);
+  padding: 4px 10px;
+  border: 1px solid var(--cyan);
+}
+
+.flow-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--white);
+  text-transform: uppercase;
+}
+
+/* HORIZONTAL STEPS FLOW */
+.horizontal-flow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 8px 0;
+}
+
+.step-node {
+  flex: 1;
+  min-width: 180px;
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 14px 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.step-node-start {
+  border: 2px solid var(--cyan);
+  background: var(--cyan-dim);
+}
+
+.step-node-end {
+  border: 2px solid var(--cyan);
+  background: rgba(52, 211, 153, 0.12);
+}
+
+.step-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--cyan);
+  margin-bottom: 6px;
+}
+
+.step-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.step-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.arrow-r {
+  color: var(--cyan);
+  font-size: 18px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+/* BRANCH BOXES */
+.branch-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+  margin-top: 14px;
+}
+
+.branch-item {
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.branch-succ {
+  background: rgba(34, 211, 238, 0.08);
+  border-color: rgba(34, 211, 238, 0.3);
+}
+
+.branch-fail {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+}
+
+.branch-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: inline-block;
+}
+
+.branch-succ .branch-tag { color: var(--cyan); }
+.branch-fail .branch-tag { color: var(--danger-text); }
+
+/* FOOTER */
+.footer {
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+</style>
+</head>
+
+<body>
+
+<button id="export-btn" onclick="exportPNG()">⬇ Xuất user_flows.png</button>
+
+<div class="stage" id="flow-canvas">
+
+  <!-- HEADER -->
+  <header class="sys-header">
+    <div>
+      <div class="brand-tag">Section 5.2 // LibAssist System Specification</div>
+      <h1 class="main-title">Các Luồng Người dùng Quan trọng (Key User Flows)</h1>
+      <p class="sub-title">Sơ đồ tổng hợp 4 luồng thao tác cốt lõi trong hệ thống tìm kiếm & mượn sách thông minh</p>
+    </div>
+    <div class="header-badges">
+      <span class="badge badge-cyan" style="font-family: var(--font-mono); font-weight:700; background:var(--cyan-dim); color:var(--cyan); padding:6px 14px; border:1px solid var(--cyan);">4 Key User Flows</span>
+    </div>
+  </header>
+
+  <!-- FLOWS GRID -->
+  <div class="flows-grid">
+
+    <!-- FLOW 1: SEARCH & LOCATION -->
+    <div class="flow-card">
+      <div class="flow-header">
+        <span class="flow-title">1. Luồng Tra cứu & Định vị Kệ sách (Book Search & Indoor Location Flow)</span>
+        <span class="flow-num">FLOW 01</span>
+      </div>
+
+      <div class="horizontal-flow">
+        <div class="step-node step-node-start">
+          <span class="step-badge">BẮT ĐẦU</span>
+          <span class="step-text">Trang chủ Kiosk</span>
+          <span class="step-sub">Chọn Tìm kiếm sách</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node">
+          <span class="step-badge">BƯỚC 1</span>
+          <span class="step-text">Nhập Từ khóa / Giọng nói</span>
+          <span class="step-sub">Fuzzy search + Bộ lọc</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node">
+          <span class="step-badge">BƯỚC 2</span>
+          <span class="step-text">Danh sách Kết quả</span>
+          <span class="step-sub">Hiển thị Call Number & Tình trạng</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node">
+          <span class="step-badge">BƯỚC 3</span>
+          <span class="step-text">Xem Sơ đồ 2D Kệ sách</span>
+          <span class="step-sub">Trực quan hóa vị trí sách</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node step-node-end">
+          <span class="step-badge">HOÀN TẤT</span>
+          <span class="step-text">Quét QR xem Mobile / In sơ đồ</span>
+          <span class="step-sub">Đi thẳng đến đúng kệ sách</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLOW 2: AI CHATBOT RECOMMENDATION -->
+    <div class="flow-card">
+      <div class="flow-header">
+        <span class="flow-title">2. Luồng Trò chuyện & Gợi ý Sách thông minh qua AI (AI Recommendation Flow)</span>
+        <span class="flow-num">FLOW 02</span>
+      </div>
+
+      <div class="horizontal-flow">
+        <div class="step-node step-node-start">
+          <span class="step-badge">BẮT ĐẦU</span>
+          <span class="step-text">Chọn Trợ lý AI Chatbot</span>
+          <span class="step-sub">Màn hình /kiosk/ai-chat</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node">
+          <span class="step-badge">BƯỚC 1</span>
+          <span class="step-text">Nhập Nhu cầu / Cảm xúc</span>
+          <span class="step-sub">Chat trực tiếp hoặc chọn gợi ý</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node">
+          <span class="step-badge">BƯỚC 2</span>
+          <span class="step-text">AI Phân tích & Gợi ý</span>
+          <span class="step-sub">Trả về danh sách đầu sách phù hợp</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node">
+          <span class="step-badge">BƯỚC 3</span>
+          <span class="step-text">Chọn Sách quan tâm</span>
+          <span class="step-sub">Chuyển sang trang Chi tiết sách</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node step-node-end">
+          <span class="step-badge">HOÀN TẤT</span>
+          <span class="step-text">Xem Vị trí & Tiến hành Mượn</span>
+          <span class="step-sub">Khám phá sách nhanh chóng</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLOW 3: SELF CHECKOUT SCAN -->
+    <div class="flow-card">
+      <div class="flow-header">
+        <span class="flow-title">3. Luồng Quy trình Tự Mượn sách tại Kiosk (Self-Checkout Scan Flow)</span>
+        <span class="flow-num">FLOW 03</span>
+      </div>
+
+      <div class="horizontal-flow">
+        <div class="step-node step-node-start">
+          <span class="step-badge">BẮT ĐẦU</span>
+          <span class="step-text">Đến Trạm Kiosk</span>
+          <span class="step-sub">Chọn Tự mượn sách</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node">
+          <span class="step-badge">BƯỚC 1</span>
+          <span class="step-text">Quét Mã vạch Sách</span>
+          <span class="step-sub">Đưa gáy sách vào máy quét</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node">
+          <span class="step-badge">BƯỚC 2</span>
+          <span class="step-text">Quét Thẻ Sinh viên</span>
+          <span class="step-sub">Xác thực người dùng</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node step-node-end">
+          <span class="step-badge">HOÀN TẤT</span>
+          <span class="step-text">In Phiếu Mượn Tự động</span>
+          <span class="step-sub">Hoàn thành mượn trong 30s</span>
+        </div>
+      </div>
+
+      <div class="branch-split">
+        <div class="branch-item branch-succ">
+          <span class="branch-tag">✓ Nhánh Thành công</span>
+          <div style="font-size:12px; color:var(--white);">Quét hợp lệ ➔ Hệ thống ghi nhận phiếu mượn & in phiếu tự động.</div>
+        </div>
+        <div class="branch-item branch-fail">
+          <span class="branch-tag">✕ Nhánh Lỗi</span>
+          <div style="font-size:12px; color:var(--danger-text);">Mã vạch không đọc được / Thẻ không hợp lệ ➔ Hiển thị Modal báo lỗi & hướng dẫn thử lại.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLOW 4: MOBILE SYNC & MANAGEMENT -->
+    <div class="flow-card">
+      <div class="flow-header">
+        <span class="flow-title">4. Luồng Đồng bộ & Quản lý Phiếu mượn trên Mobile (Mobile Loan Management Flow)</span>
+        <span class="flow-num">FLOW 04</span>
+      </div>
+
+      <div class="horizontal-flow">
+        <div class="step-node step-node-start">
+          <span class="step-badge">BẮT ĐẦU</span>
+          <span class="step-text">Mở App Mobile</span>
+          <span class="step-sub">Trang chủ di động</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node">
+          <span class="step-badge">BƯỚC 1</span>
+          <span class="step-text">Quét mã QR từ Kiosk</span>
+          <span class="step-sub">Camera quét mã QR Kiosk</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node">
+          <span class="step-badge">BƯỚC 2</span>
+          <span class="step-text">Đồng bộ Dữ liệu</span>
+          <span class="step-sub">Tải bản đồ hoặc phiếu mượn</span>
+        </div>
+
+        <span class="arrow-r">➔</span>
+
+        <div class="step-node step-node-end">
+          <span class="step-badge">HOÀN TẤT</span>
+          <span class="step-text">Theo dõi Hạn trả & Thông báo</span>
+          <span class="step-sub">Nhận cảnh báo nhắc trả sách</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="footer">
+    <span>LibAssist · Section 5.2 User Flow Diagram</span>
+    <span>Dựa trên hệ thống thiết kế Kiosk & Mobile Navigation</span>
+  </footer>
+
+</div>
+
+<!-- EXPORT SCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+async function exportPNG() {
+  const btn = document.getElementById('export-btn');
+  btn.textContent = '⏳ Đang xuất ảnh...';
+  btn.disabled = true;
+
+  try {
+    if (document.fonts) await document.fonts.ready;
+    const target = document.getElementById('flow-canvas');
+    const canvas = await html2canvas(target, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#E5E5E5',
+      width: target.scrollWidth,
+      height: target.scrollHeight,
+      windowWidth: target.scrollWidth,
+      logging: false
+    });
+
+    const link = document.createElement('a');
+    link.download = 'user_flows.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(e) {
+    alert('Xuất ảnh thất bại: ' + e.message);
+  } finally {
+    btn.textContent = '⬇ Xuất user_flows.png';
+    btn.disabled = false;
+  }
+}
+</script>
+
+</body>
+</html>

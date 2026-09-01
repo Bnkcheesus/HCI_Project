@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cấu trúc Điều hướng LibAssist (Navigation Structure — Kiosk & Mobile)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   DESIGN TOKENS — FROM DIAGRAM DRAWING SKILL
+   ========================================================== */
+:root {
+  --page-bg: #E5E5E5;         /* Outer Stage Background */
+  --frame: #000000;           /* Solid Black Framing */
+  
+  --card-bg: #12151C;         /* Dark Base Card */
+  --card-subtle: #171B24;     /* Sub-card Slate */
+  
+  --cyan: #22D3EE;            /* Neon Cyan Accent */
+  --cyan-dim: rgba(34, 211, 238, 0.25);
+  
+  --white: #F5F7FA;
+  --text-muted: #93A0B4;
+  --text-dark: #000000;
+
+  --danger-bg: rgba(255, 107, 107, 0.12);
+  --danger-border: #FF6B6B;
+  --danger-text: #FF8E8E;
+
+  --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Mono', monospace;
+
+  --r: 0px;
+}
+
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+  border-radius: var(--r) !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--page-bg);
+  font-family: var(--font-main);
+  color: var(--white);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* EXPORT BUTTON */
+#export-btn {
+  display: block;
+  margin: 20px auto 0;
+  padding: 10px 24px;
+  background: var(--frame);
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border: 2px solid var(--frame);
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+#export-btn:hover { background: var(--cyan); color: var(--frame); }
+
+/* STAGE CANVAS */
+.stage {
+  width: 1480px;
+  margin: 20px auto;
+  padding: 44px 48px;
+  background: var(--card-bg);
+  border: 3px solid var(--frame);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+/* HEADER */
+.sys-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--cyan-dim);
+  margin-bottom: 36px;
+}
+
+.brand-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.main-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.sub-title {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.header-badges {
+  display: flex;
+  gap: 10px;
+}
+
+.badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border: 1px solid var(--frame);
+  text-transform: uppercase;
+}
+
+.badge-cyan { background: var(--cyan-dim); color: var(--cyan); border-color: var(--cyan); }
+.badge-sub  { background: var(--card-subtle); color: var(--white); border-color: var(--border-line); }
+
+/* GRID LAYOUT FOR KIOSK & MOBILE */
+.nav-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.nav-section {
+  background: var(--card-subtle);
+  border: 1fr solid rgba(255,255,255,0.08);
+  padding: 28px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 24px;
+}
+
+.section-icon {
+  font-size: 20px;
+  background: var(--cyan-dim);
+  color: var(--cyan);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--cyan);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--white);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.section-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--cyan);
+}
+
+/* TREE / NODE BLOCKS */
+.tree-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.root-node {
+  background: var(--cyan-dim);
+  border: 2px solid var(--cyan);
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.node-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--white);
+}
+
+.node-route {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--cyan);
+  background: rgba(0,0,0,0.4);
+  padding: 3px 8px;
+}
+
+.branches-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-left: 20px;
+  border-left: 2px dashed var(--cyan-dim);
+  margin-left: 14px;
+}
+
+.branch-group {
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 16px;
+}
+
+.group-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cyan);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sub-nodes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sub-node {
+  background: var(--card-subtle);
+  padding: 10px 14px;
+  border-left: 3px solid var(--cyan);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sub-node-fail {
+  border-left-color: var(--danger-border);
+  background: var(--danger-bg);
+}
+
+.sub-node-fail .node-route {
+  color: var(--danger-text);
+}
+
+.sub-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.sub-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--white);
+}
+
+.sub-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* FOOTER */
+.footer {
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+</style>
+</head>
+
+<body>
+
+<button id="export-btn" onclick="exportPNG()">⬇ Xuất navigation_structure.png</button>
+
+<div class="stage" id="flow-canvas">
+
+  <!-- HEADER -->
+  <header class="sys-header">
+    <div>
+      <div class="brand-tag">LibAssist System Architecture</div>
+      <h1 class="main-title">Sơ đồ Cấu trúc Điều hướng (Navigation Structure)</h1>
+      <p class="sub-title">Cấu trúc phân nhánh màn hình & tuyến đường (Routes) cho Kiosk và Mobile Companion</p>
+    </div>
+    <div class="header-badges">
+      <span class="badge badge-cyan">Kiosk Surface (/kiosk/*)</span>
+      <span class="badge badge-sub">Mobile Surface (/mobile/*)</span>
+    </div>
+  </header>
+
+  <!-- NAVIGATION GRID -->
+  <div class="nav-grid">
+
+    <!-- SECTION 1: KIOSK NAVIGATION STRUCTURE -->
+    <div class="nav-section">
+      <div class="section-header">
+        <div class="section-icon">🖥️</div>
+        <div>
+          <div class="section-title">Kiosk Navigation Tree</div>
+          <div class="section-sub">Màn hình cảm ứng lớn · Mounted at /kiosk/*</div>
+        </div>
+      </div>
+
+      <div class="tree-container">
+        <!-- ROOT -->
+        <div class="root-node">
+          <div>
+            <div class="node-title">Trang chủ Kiosk (HomePage)</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Màn hình chờ & 3 lối vào chính</div>
+          </div>
+          <span class="node-route">/kiosk</span>
+        </div>
+
+        <div class="branches-wrapper">
+
+          <!-- BRANCH 1: SEARCH & BOOK DETAIL -->
+          <div class="branch-group">
+            <div class="group-title">🔍 Luồng Tra cứu & Chi tiết Sách</div>
+            <div class="sub-nodes">
+              <div class="sub-node">
+                <div class="sub-info">
+                  <span class="sub-title">SearchPage (Trang Tìm kiếm)</span>
+                  <span class="sub-desc">Tìm từ khóa, giọng nói (VoiceSearch), bộ lọc nâng cao</span>
+                </div>
+                <span class="node-route">/kiosk/search</span>
+              </div>
+
+              <div class="sub-node">
+                <div class="sub-info">
+                  <span class="sub-title">SearchResultsPage (Kết quả tìm kiếm)</span>
+                  <span class="sub-desc">Danh sách kết quả, trạng thái Còn/Hết sách, bộ lọc đã chọn</span>
+                </div>
+                <span class="node-route">/kiosk/search/results</span>
+              </div>
+
+              <div class="sub-node">
+                <div class="sub-info">
+                  <span class="sub-title">BookInfoPage (Chi tiết sách)</span>
+                  <span class="sub-desc">Thông tin sách, Call Number, Sơ đồ 2D kệ sách, Quét QR, In bản đồ</span>
+                </div>
+                <span class="node-route">/kiosk/books/:bookId</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BRANCH 2: AI CHATBOT -->
+          <div class="branch-group">
+            <div class="group-title">🤖 Luồng AI Chatbot Trợ lý</div>
+            <div class="sub-nodes">
+              <div class="sub-node">
+                <div class="sub-info">
+                  <span class="sub-title">AiChatPage (Trợ lý AI Chatbot)</span>
+                  <span class="sub-desc">Hỏi đáp tư vấn, gợi ý sách theo cảm xúc/chủ đề ➔ Dẫn về BookInfo</span>
+                </div>
+                <span class="node-route">/kiosk/ai-chat</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BRANCH 3: SELF CHECKOUT SCAN -->
+          <div class="branch-group">
+            <div class="group-title">⚡ Luồng Quy trình Tự Mượn sách</div>
+            <div class="sub-nodes">
+              <div class="sub-node">
+                <div class="sub-info">
+                  <span class="sub-title">ScanInstructionPage (Hướng dẫn mượn)</span>
+                  <span class="sub-desc"> Hướng dẫn vị trí đặt sách và thẻ sinh viên</span>
+                </div>
+                <span class="node-route">/kiosk/scan</span>
+              </div>
+
+              <div class="sub-node">
+                <div class="sub-info">
+                  <span class="sub-title">ScanStep1Page (Quét mã vạch sách)</span>
+                  <span class="sub-desc">Bước 1: Quét mã vạch sách (Barcode scanner)</span>
+                </div>
+                <span class="node-route">/kiosk/scan/step-1</span>
+              </div>
+
+              <div class="sub-node sub-node-fail">
+                <div class="sub-info">
+                  <span class="sub-title">Step1 Fail State (Lỗi quét sách)</span>
+                  <span class="sub-desc">Hiển thị màn hình báo lỗi khi mã sách không hợp lệ</span>
+                </div>
+                <span class="node-route">Modal Fail</span>
+              </div>
+
+              <div class="sub-node">
+                <div class="sub-info">
+                  <span class="sub-title">ScanStep2Page (Quét thẻ sinh viên)</span>
+                  <span class="sub-desc">Bước 2: Quét thẻ sinh viên (RFID / Barcode reader)</span>
+                </div>
+                <span class="node-route">/kiosk/scan/step-2</span>
+              </div>
+
+              <div class="sub-node">
+                <div class="sub-info">
+                  <span class="sub-title">BorrowCompletePage (Hoàn tất mượn)</span>
+                  <span class="sub-desc">Thông báo mượn thành công, in phiếu mượn tự động</span>
+                </div>
+                <span class="node-route">/kiosk/borrow-complete</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: MOBILE NAVIGATION STRUCTURE -->
+    <div class="nav-section">
+      <div class="section-header">
+        <div class="section-icon">📱</div>
+        <div>
+          <div class="section-title">Mobile Navigation Tree</div>
+          <div class="section-sub">Ứng dụng di động đồng hành · Mounted at /mobile/*</div>
+        </div>
+      </div>
+
+      <div class="tree-container">
+        <!-- ROOT -->
+        <div class="root-node">
+          <div>
+            <div class="node-title">Trang chủ Mobile (HomePage)</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Tổng quan, phím tắt tính năng chính</div>
+          </div>
+          <span class="node-route">/mobile</span>
+        </div>
+
+        <div class="branches-wrapper">
+
+          <!-- BRANCH 1: SCAN QR -->
+          <div class="branch-group">
+            <div class="group-title">📷 Luồng Quét mã QR Kiosk</div>
+            <div class="sub-nodes">
+              <div class="sub-node">
+                <div class="sub-info">
+                  <span class="sub-title">QrPage (Quét mã QR)</span>
+                  <span class="sub-desc">Camera quét QR hiển thị từ màn hình Kiosk ➔ Đồng bộ bản đồ/phiếu mượn</span>
+                </div>
+                <span class="node-route">/mobile/qr</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BRANCH 2: LOCATION MAP -->
+          <div class="branch-group">
+            <div class="group-title">🗺️ Luồng Bản đồ Định vị Kệ sách</div>
+            <div class="sub-nodes">
+              <div class="sub-node">
+                <div class="sub-info">
+                  <span class="sub-title">LocationPage (Bản đồ Dẫn đường)</span>
+                  <span class="sub-desc">Hiển thị vị trí thực tế kệ sách, chỉ đường từng bước (turn-by-turn)</span>
+                </div>
+                <span class="node-route">/mobile/location</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BRANCH 3: LOAN SLIPS -->
+          <div class="branch-group">
+            <div class="group-title">📄 Luồng Quản lý Phiếu mượn</div>
+            <div class="sub-nodes">
+              <div class="sub-node">
+                <div class="sub-info">
+                  <span class="sub-title">LoanSlipsPage (Phiếu mượn của tôi)</span>
+                  <span class="sub-desc">Danh sách sách đang mượn, theo dõi hạn trả, thông báo nhắc hạn</span>
+                </div>
+                <span class="node-route">/mobile/phieu-muon</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="footer">
+    <span>LibAssist · Navigation Structure Diagram</span>
+    <span>Hệ thiết kế dựa trên Figma Wireframes & React Router Trees</span>
+  </footer>
+
+</div>
+
+<!-- EXPORT SCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+async function exportPNG() {
+  const btn = document.getElementById('export-btn');
+  btn.textContent = '⏳ Đang xuất ảnh...';
+  btn.disabled = true;
+
+  try {
+    if (document.fonts) await document.fonts.ready;
+    const target = document.getElementById('flow-canvas');
+    const canvas = await html2canvas(target, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#E5E5E5',
+      width: target.scrollWidth,
+      height: target.scrollHeight,
+      windowWidth: target.scrollWidth,
+      logging: false
+    });
+
+    const link = document.createElement('a');
+    link.download = 'navigation_structure.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(e) {
+    alert('Xuất ảnh thất bại: ' + e.message);
+  } finally {
+    btn.textContent = '⬇ Xuất navigation_structure.png';
+    btn.disabled = false;
+  }
+}
+</script>
+
+</body>
+</html>
