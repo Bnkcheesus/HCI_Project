@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sơ đồ Luồng Tra cứu & Mượn sách Hiện tại (Current Flowchart)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   DESIGN TOKENS & STYLING
+   ========================================================== */
+:root {
+  --page-bg:     #E5E5E5;
+  --frame:       #000000;
+
+  --card-bg:     #0F1117;
+  --card-sub:    #161B27;
+  --card-row:    #1C2333;
+
+  --cyan:        #22D3EE;
+  --cyan-dim:    rgba(34, 211, 238, 0.15);
+  --cyan-glow:   rgba(34, 211, 238, 0.08);
+
+  --red:         #F87171;
+  --red-dim:     rgba(248, 113, 113, 0.12);
+  --red-border:  rgba(248, 113, 113, 0.40);
+
+  --amber:       #FBBF24;
+  --amber-dim:   rgba(251, 191, 36, 0.15);
+  --amber-border:rgba(251, 191, 36, 0.40);
+
+  --white:       #F5F7FA;
+  --muted:       #8B97AA;
+  --border-line: rgba(255, 255, 255, 0.1);
+
+  --font-head:   'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono:   'Space Mono', monospace;
+
+  --r:           0px;
+}
+
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+  border-radius: var(--r) !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--page-bg);
+  font-family: var(--font-head);
+  color: var(--white);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* EXPORT BUTTON */
+#export-btn {
+  display: block;
+  margin: 20px auto 0;
+  padding: 10px 24px;
+  background: var(--frame);
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border: 2px solid var(--frame);
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+#export-btn:hover { background: var(--cyan); color: var(--frame); }
+
+/* MAIN CANVAS */
+.stage {
+  width: 1080px;
+  margin: 20px auto;
+  padding: 40px;
+  background: var(--card-bg);
+  border: 3px solid var(--frame);
+  box-shadow: 0 16px 36px rgba(0,0,0,0.25);
+}
+
+/* HEADER */
+.sys-header {
+  text-align: center;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-line);
+  margin-bottom: 32px;
+}
+
+.brand-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.main-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.sub-title {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* FLOWCHART CONTAINER */
+.flowchart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* NODE TYPES */
+.flow-node {
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--card-sub);
+  border: 1px solid var(--border-line);
+  text-align: center;
+  position: relative;
+}
+
+.node-start, .node-end {
+  background: var(--cyan-dim);
+  border: 2px solid var(--cyan);
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  max-width: 320px;
+}
+
+.node-action {
+  background: var(--card-sub);
+  border-left: 4px solid var(--cyan);
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.node-action .title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.node-action .desc {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* DECISION & BRANCHING */
+.branch-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 4px 0;
+}
+
+.branch-box {
+  padding: 14px 16px;
+  border: 1px solid var(--border-line);
+}
+
+.branch-succ {
+  background: rgba(34, 211, 238, 0.05);
+  border-color: rgba(34, 211, 238, 0.3);
+}
+
+.branch-fail {
+  background: var(--red-dim);
+  border-color: var(--red-border);
+}
+
+.branch-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+.branch-succ .branch-tag { background: var(--cyan-dim); color: var(--cyan); }
+.branch-fail .branch-tag { background: var(--red-dim); color: var(--red); border: 1px solid var(--red-border); }
+
+.branch-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.branch-fail .branch-title { color: var(--red); }
+
+/* ARROWS */
+.arrow-v {
+  width: 2px;
+  height: 20px;
+  background: var(--cyan);
+  position: relative;
+}
+.arrow-v::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -4px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--cyan);
+}
+
+/* FOOTER */
+.footer {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-line);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+</style>
+</head>
+
+<body>
+
+<button id="export-btn" onclick="exportPNG()">⬇ Xuất currentflow.png</button>
+
+<div class="stage" id="flow-canvas">
+
+  <!-- HEADER -->
+  <header class="sys-header">
+    <div class="brand-tag">LibAssist // General Library Workflow</div>
+    <h1 class="main-title">Sơ đồ Luồng Tra cứu & Mượn sách Hiện tại</h1>
+    <p class="sub-title">Flowchart quy trình tổng quát (dựa trên currentflow.txt)</p>
+  </header>
+
+  <!-- FLOWCHART -->
+  <div class="flowchart">
+
+    <!-- BẮT ĐẦU -->
+    <div class="flow-node node-start">
+      [Bắt đầu]
+    </div>
+
+    <div class="arrow-v"></div>
+
+    <!-- BƯỚC 1 -->
+    <div class="flow-node node-action">
+      <div>
+        <div class="title">[Đến máy OPAC] ──► [Nhập chính xác Tên/Tác giả]</div>
+        <div class="desc">Tra cứu thông tin tài liệu trên máy OPAC tĩnh tại thư viện</div>
+      </div>
+    </div>
+
+    <div class="arrow-v"></div>
+
+    <!-- RẼ NHÁNH 1 -->
+    <div class="branch-container">
+      <div class="branch-box branch-succ">
+        <span class="branch-tag">✓ Nhập đúng</span>
+        <div class="branch-title">[Tìm thấy sách & Ghi lại Mã số Call Number]</div>
+      </div>
+      <div class="branch-box branch-fail">
+        <span class="branch-tag">✕ Gõ sai / Không nhớ rõ</span>
+        <div class="branch-title">[Hệ thống báo 0 kết quả] ──► [Thất bại / Thử lại]</div>
+      </div>
+    </div>
+
+    <div class="arrow-v"></div>
+
+    <!-- BƯỚC 2 -->
+    <div class="flow-node node-action">
+      <div>
+        <div class="title">[Đến xem Bảng sơ đồ tĩnh] ──► [Dò tìm vị trí khu vực]</div>
+        <div class="desc">Đối chiếu mã Call Number với sơ đồ dán tường để xác định khu vực kệ</div>
+      </div>
+    </div>
+
+    <div class="arrow-v"></div>
+
+    <!-- BƯỚC 3 -->
+    <div class="flow-node node-action">
+      <div>
+        <div class="title">[Đi đến dãy kệ sách vật lý] ──► [Tìm kiếm gáy sách]</div>
+        <div class="desc">Di chuyển đến kệ sách vật lý và kiểm tra gáy sách theo mã phân loại</div>
+      </div>
+    </div>
+
+    <div class="arrow-v"></div>
+
+    <!-- RẼ NHÁNH 2 -->
+    <div class="branch-container">
+      <div class="branch-box branch-succ">
+        <span class="branch-tag">✓ Có sách trên kệ</span>
+        <div class="branch-title">[Lấy được sách trên kệ]</div>
+      </div>
+      <div class="branch-box branch-fail">
+        <span class="branch-tag">✕ Sách bị mượn / mất</span>
+        <div class="branch-title">[Không thấy sách trên kệ] ──► [Mất thời gian / Bỏ cuộc]</div>
+      </div>
+    </div>
+
+    <div class="arrow-v"></div>
+
+    <!-- BƯỚC 4 -->
+    <div class="flow-node node-action">
+      <div>
+        <div class="title">[Đi đến quầy Thủ thư] ──► [Xếp hàng] ──► [Giao tiếp] ──► [Quét thẻ & Nhận sách]</div>
+        <div class="desc">Thực hiện thủ tục mượn sách trực tiếp với cán bộ thư viện tại quầy</div>
+      </div>
+    </div>
+
+    <div class="arrow-v"></div>
+
+    <!-- HOÀN TẤT -->
+    <div class="flow-node node-end">
+      [Hoàn tất]
+    </div>
+
+  </div>
+
+  <footer class="footer">
+    LibAssist · Current Library User Flowchart · currentflow.txt
+  </footer>
+
+</div>
+
+<!-- EXPORT SCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+async function exportPNG() {
+  const btn = document.getElementById('export-btn');
+  btn.textContent = '⏳ Đang xuất ảnh...';
+  btn.disabled = true;
+
+  try {
+    if (document.fonts) await document.fonts.ready;
+    const target = document.getElementById('flow-canvas');
+    const canvas = await html2canvas(target, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#E5E5E5',
+      width: target.scrollWidth,
+      height: target.scrollHeight,
+      windowWidth: target.scrollWidth,
+      logging: false
+    });
+
+    const link = document.createElement('a');
+    link.download = 'currentflow.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(e) {
+    alert('Xuất ảnh thất bại: ' + e.message);
+  } finally {
+    btn.textContent = '⬇ Xuất currentflow.png';
+    btn.disabled = false;
+  }
+}
+</script>
+
+</body>
+</html>
