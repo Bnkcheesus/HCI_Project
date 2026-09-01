@@ -10,13 +10,8 @@ import { KioskFooter } from '@/components/kiosk/KioskFooter'
 import { KioskHeader } from '@/components/kiosk/KioskHeader'
 import { LocationQr } from '@/components/kiosk/LocationQr'
 import { ShelfRouteMap } from '@/components/kiosk/ShelfRouteMap'
-import {
-  availability,
-  books,
-  DOCUMENT_TYPE_LABEL,
-  LANGUAGE_LABEL,
-  shelfLocations,
-} from '@/mocks'
+import { useBookDetail } from '@/api/queries'
+import { DOCUMENT_TYPE_LABEL, LANGUAGE_LABEL } from '@/shared/types'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 
 export function BookInfoPage() {
@@ -30,12 +25,22 @@ export function BookInfoPage() {
   // Before the not-found early return: hooks cannot be called conditionally.
   const [coverOpen, setCoverOpen] = useState(false)
 
-  const book = books.find((b) => b.id === bookId)
-  if (!book) return <NotFound onBack={() => navigate('/kiosk/search/results')} />
+  /*
+   * One request for the book, its copy count and its route to the shelf.
+   *
+   * This is the screen where the reader decides whether to walk across the building, so
+   * the three facts arrive together rather than filling in one at a time — a page that
+   * settles in stages is a page they give up on halfway.
+   */
+  const { data, isPending } = useBookDetail(bookId)
 
-  const stock = availability[book.id]
+  if (isPending) return <Loading />
+  // `null` means the id names nothing in the catalogue — a stale link or a mistyped URL,
+  // not a failure worth an error screen.
+  if (!data) return <NotFound onBack={() => navigate('/kiosk/search/results')} />
+
+  const { book, availability: stock, shelf: location } = data
   const isAvailable = (stock?.copiesAvailable ?? 0) > 0
-  const location = shelfLocations[book.shelfCode]
 
   /**
    * Where "Quay về" goes, as a named route rather than navigate(-1).
@@ -48,11 +53,11 @@ export function BookInfoPage() {
   const backTarget = cameFrom ?? (searchQuery ? '/kiosk/search/results' : '/kiosk')
 
   function startBorrow() {
-    selectBook(book!.id)
+    selectBook(book.id)
     // `from` is where the checkout should return to (here); `fromOrigin` is where this
     // screen itself came from, so the way out still works after that return.
     navigate('/kiosk/scan', {
-      state: { from: `/kiosk/books/${book!.id}`, fromOrigin: cameFrom },
+      state: { from: `/kiosk/books/${book.id}`, fromOrigin: cameFrom },
     })
   }
 
@@ -106,7 +111,7 @@ export function BookInfoPage() {
             )}
 
             <div className="flex min-w-0 flex-col gap-3">
-              <AvailabilityChip bookId={book.id} className="self-start" />
+              <AvailabilityChip availability={stock} className="self-start" />
               <h2
                 className="font-heading font-bold leading-tight text-foreground"
                 style={{ fontSize: 'var(--text-section)' }}
@@ -285,6 +290,28 @@ function Field({ label, value }: { label: string; value: string }) {
     <div className="flex flex-col gap-0.5">
       <dt className="text-muted-foreground">{label}</dt>
       <dd className="font-heading font-semibold text-foreground">{value}</dd>
+    </div>
+  )
+}
+
+/**
+ * The gap between arriving and having the book.
+ *
+ * Chrome and a line, not a skeleton of the whole layout: this screen has a cover, a map
+ * and a metadata table, and a grey mock-up of all three flashing before the real thing is
+ * more unsettling than a moment of quiet — especially for a reader with poor eyesight,
+ * who has to re-find their place once the real content lands.
+ */
+function Loading() {
+  return (
+    <div className="flex h-screen flex-col overflow-hidden">
+      <KioskHeader statusLabel="Thông tin tài liệu" />
+      <main className="grid min-h-0 flex-1 place-items-center">
+        <p className="text-muted-foreground" style={{ fontSize: 'var(--text-body)' }}>
+          Đang tải thông tin sách…
+        </p>
+      </main>
+      <KioskFooter />
     </div>
   )
 }

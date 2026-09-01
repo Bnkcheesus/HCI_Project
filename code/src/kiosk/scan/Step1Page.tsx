@@ -13,10 +13,12 @@ import { NumericKeypad } from '@/components/kiosk/NumericKeypad'
 import { ScanCart } from '@/components/kiosk/ScanCart'
 import { ScannerViewport } from '@/components/kiosk/ScannerViewport'
 import { ScanSteps } from '@/components/kiosk/ScanSteps'
-import { MAX_BOOKS_PER_LOAN, SCAN_FAILURE_MESSAGE, scanBook } from '@/lib/borrow'
+import { evaluateScan, MAX_BOOKS_PER_LOAN, SCAN_FAILURE_MESSAGE } from '@/lib/borrow'
 import { IDLE_SECONDS, IDLE_WARN_AT } from '@/lib/kioskSession'
 import { useKioskIdle } from '@/lib/useKioskIdle'
-import { availability, books } from '@/mocks'
+import { useBooksByIds, useBorrowableBooks } from '@/api/queries'
+import { apiGetOrNull } from '@/api/client'
+import type { Availability, Book } from '@/shared/types'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 
 export function ScanStep1Page() {
@@ -43,9 +45,30 @@ export function ScanStep1Page() {
   })
 
   const isFull = scannedBookIds.length >= MAX_BOOKS_PER_LOAN
+  const { data: borrowable } = useBorrowableBooks()
 
-  function submit(rawCode: string) {
-    const result = scanBook(rawCode, scannedBookIds)
+  /*
+   * Catalogue records for the scanned books. The cart holds ids — the server has never
+   * seen this cart — so the titles and cover art come back in one request for the set.
+   */
+  const { data: cartSet } = useBooksByIds(scannedBookIds)
+  const cartBooksById = Object.fromEntries((cartSet?.books ?? []).map((b) => [b.id, b]))
+
+
+  /**
+   * Resolve the code, then judge it.
+   *
+   * The lookup is the server's — the browser no longer holds the catalogue — and it goes
+   * through the same ISBN endpoint a real scanner's read would, punctuation and all. Only
+   * the cart rules are decided here, because the cart is the one thing the server has not
+   * seen.
+   */
+  async function submit(rawCode: string) {
+    const found = await apiGetOrNull<{ book: Book; availability: Availability | undefined }>(
+      `/api/books/by-isbn/${encodeURIComponent(rawCode)}`,
+    ).catch(() => null)
+
+    const result = evaluateScan(found?.book ?? null, found?.availability, scannedBookIds)
 
     if (!result.ok) {
       setError(SCAN_FAILURE_MESSAGE[result.failure])
@@ -61,14 +84,16 @@ export function ScanStep1Page() {
 
   /**
    * Stand-in for the barcode camera: picks the next book that could legitimately be
-   * scanned right now, so the demo exercises the real `scanBook` path rather than
-   * bypassing it.
+   * scanned right now and feeds its ISBN through `submit`, so the demo exercises the real
+   * lookup-and-judge path rather than bypassing it.
+   *
+   * The candidates come from `/api/books/borrowable`, which is filtered on live copy
+   * counts — a demo that "scanned" a book with none left would be refused by the very
+   * checkout it exists to show.
    */
   function simulateScan() {
-    const next = books.find(
-      (b) => !scannedBookIds.includes(b.id) && (availability[b.id]?.copiesAvailable ?? 0) > 0,
-    )
-    if (next) submit(next.isbn)
+    const next = (borrowable?.books ?? []).find((b) => !scannedBookIds.includes(b.id))
+    if (next) void submit(next.isbn)
   }
 
   return (
@@ -116,7 +141,7 @@ export function ScanStep1Page() {
             </p>
 
             <div className="min-h-0 flex-1 overflow-hidden">
-              <ScanCart bookIds={scannedBookIds} onRemove={removeScannedBook} />
+              <ScanCart bookIds={scannedBookIds} booksById={cartBooksById} onRemove={removeScannedBook} />
             </div>
           </div>
 

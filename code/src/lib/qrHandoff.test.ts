@@ -34,23 +34,32 @@ describe('resolveHandoff — a QR painted by the kiosk', () => {
   })
 
   it('rejects a URL naming a book that does not exist', () => {
-    expect(resolveHandoff('https://x.test/mobile/location?book=khong-co-cuon-nay')).toEqual({
-      ok: false,
-      failure: 'not-found',
+    /*
+     * An id the catalogue does not carry is *not* rejected here any more. Checking that
+     * would need the catalogue, which lives on the server now — and the location screen
+     * already handles an id it cannot find, with a way back to the scanner. The resolver
+     * still decides the part that matters on its own: whether the URL is one of ours.
+     */
+    expect(resolveHandoff('https://x.test/mobile/location?book=khong-co-cuon-nay')).toMatchObject({
+      ok: true,
+      kind: 'location',
+      bookId: 'khong-co-cuon-nay',
     })
   })
 })
 
 describe('resolveHandoff — codes typed by hand', () => {
   it('accepts an ISBN off the back of the book', () => {
-    expect(resolveHandoff(book.isbn)).toMatchObject({ ok: true, bookId: book.id })
+    // A typed code comes back as an ISBN for the caller to resolve — turning it into a
+    // book takes a catalogue lookup, and this module stays free of the network.
+    expect(resolveHandoff(book.isbn)).toEqual({ ok: true, kind: 'isbn', isbn: book.isbn })
   })
 
   // findBookByCode strips spaces and dashes; sharing it means the kiosk and the phone
   // cannot disagree about what counts as a valid ISBN.
   it('accepts the same ISBN spaced or hyphenated, as the kiosk does', () => {
     const spaced = `${book.isbn.slice(0, 3)}-${book.isbn.slice(3, 6)} ${book.isbn.slice(6)}`
-    expect(resolveHandoff(spaced)).toMatchObject({ ok: true, bookId: book.id })
+    expect(resolveHandoff(spaced)).toEqual({ ok: true, kind: 'isbn', isbn: book.isbn })
   })
 
   it('accepts a slip number in the printed format, in either case', () => {
@@ -67,7 +76,12 @@ describe('resolveHandoff — codes typed by hand', () => {
   })
 
   it('reports an unknown code as not found', () => {
-    expect(resolveHandoff('0000000000')).toEqual({ ok: false, failure: 'not-found' })
+    // Ten digits is a well-formed code, so it resolves to an ISBN; whether any book
+    // carries it is the lookup's answer, and QrPage renders 'not-found' when it comes
+    // back empty. What this asserts is that a *malformed* code never gets that far.
+    expect(resolveHandoff('0000000000')).toEqual({ ok: true, kind: 'isbn', isbn: '0000000000' })
+    expect(resolveHandoff('12345')).toEqual({ ok: false, failure: 'not-found' })
+    expect(resolveHandoff('khong-phai-ma')).toEqual({ ok: false, failure: 'not-found' })
   })
 })
 

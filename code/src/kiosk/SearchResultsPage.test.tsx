@@ -1,14 +1,16 @@
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
+import { renderSettled } from '@/test/renderWithQuery'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { PAGE_SIZE, searchCatalog } from '@/lib/search'
+import { PAGE_SIZE } from '@/lib/search'
+import { expectedResults } from '@/test/expectedResults'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 import { SearchResultsPage } from './SearchResultsPage'
 
-function renderResults(query = 'machine learning') {
+async function renderResults(query = 'machine learning') {
   useBorrowSessionStore.getState().setSearchQuery(query)
-  return render(
+  return renderSettled(
     <MemoryRouter initialEntries={['/kiosk/search/results']}>
       <SearchResultsPage />
     </MemoryRouter>,
@@ -26,16 +28,16 @@ describe('Kiosk SearchResultsPage', () => {
     useBorrowSessionStore.getState().reset()
   })
 
-  it('lists the matching titles for the current query', () => {
-    renderResults()
+  it('lists the matching titles for the current query', async () => {
+    await renderResults()
     const titles = cardTitles().join(' ')
     expect(titles).toContain('An Introduction to Statistical Learning')
     expect(titles).toContain('Hands-On Machine Learning')
   })
 
   // Pain Reliever 2: a book that is out shows when it comes back, not a shelf to walk to.
-  it('shows the shelf for available books and the return date for borrowed ones', () => {
-    renderResults()
+  it('shows the shelf for available books and the return date for borrowed ones', async () => {
+    await renderResults()
     const titles = cardTitles()
     expect(titles.find((t) => t.includes('Statistical Learning'))).toContain('Kệ A3')
     expect(titles.find((t) => t.includes('Pattern Recognition'))).toContain('Chờ trả: 25/11')
@@ -43,7 +45,7 @@ describe('Kiosk SearchResultsPage', () => {
 
   it('narrows results with the document-type filter', async () => {
     const user = userEvent.setup()
-    renderResults()
+    await renderResults()
 
     await user.click(screen.getByRole('tab', { name: /Tạp chí/ }))
 
@@ -54,7 +56,7 @@ describe('Kiosk SearchResultsPage', () => {
 
   it('sorts books that are on the shelf to the front', async () => {
     const user = userEvent.setup()
-    renderResults()
+    await renderResults()
 
     // The borrowed ones are on the shelf's back pages now, so the visible effect is that
     // the first page holds nothing the reader would walk to and not find. The ordering
@@ -68,11 +70,11 @@ describe('Kiosk SearchResultsPage', () => {
     expect(cardTitles()[0]).not.toContain('Pattern Recognition')
   })
 
-  it('reports the visible range', () => {
-    renderResults()
+  it('reports the visible range', async () => {
+    await renderResults()
     // Derived from the catalogue: the shelf grows every time the mock data is refreshed,
     // and a hardcoded total would only ever record when this test was last edited.
-    const total = searchCatalog('machine learning').length
+    const total = expectedResults('machine learning').length
     const shown = Math.min(PAGE_SIZE, total)
     expect(
       screen.getByText(new RegExp(`Hiển thị 1–${shown} trong ${total} kết quả`)),
@@ -80,7 +82,7 @@ describe('Kiosk SearchResultsPage', () => {
   })
 
   it('offers a way back to search when nothing matches', async () => {
-    renderResults('zzzz')
+    await renderResults('zzzz')
     expect(screen.getByText(/Không tìm thấy tài liệu nào/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Tìm lại' })).toBeInTheDocument()
   })
@@ -93,7 +95,7 @@ describe('Advanced filter popover', () => {
 
   it('opens from the toolbar button and closes on Escape', async () => {
     const user = userEvent.setup()
-    renderResults()
+    await renderResults()
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /Bộ lọc nâng cao/ }))
@@ -106,7 +108,7 @@ describe('Advanced filter popover', () => {
   // Applies live: ticking a box must change the grid behind the panel immediately.
   it('filters the grid the moment a box is ticked, and counts it on the button', async () => {
     const user = userEvent.setup()
-    renderResults()
+    await renderResults()
     const before = cardTitles().length
 
     await user.click(screen.getByRole('button', { name: /Bộ lọc nâng cao/ }))
@@ -118,7 +120,7 @@ describe('Advanced filter popover', () => {
 
   it('restores everything with Đặt lại', async () => {
     const user = userEvent.setup()
-    renderResults()
+    await renderResults()
     const before = cardTitles().length
 
     await user.click(screen.getByRole('button', { name: /Bộ lọc nâng cao/ }))
@@ -130,7 +132,7 @@ describe('Advanced filter popover', () => {
 
   it('offers a way out when the filters exclude every result', async () => {
     const user = userEvent.setup()
-    renderResults()
+    await renderResults()
 
     await user.click(screen.getByRole('button', { name: /Bộ lọc nâng cao/ }))
     // Vietnamese + out of stock matches nothing in this result set.
@@ -143,7 +145,7 @@ describe('Advanced filter popover', () => {
 
   it('exposes both slider handles to assistive tech', async () => {
     const user = userEvent.setup()
-    renderResults()
+    await renderResults()
     await user.click(screen.getByRole('button', { name: /Bộ lọc nâng cao/ }))
 
     expect(screen.getByLabelText('Năm xuất bản từ')).toBeInTheDocument()

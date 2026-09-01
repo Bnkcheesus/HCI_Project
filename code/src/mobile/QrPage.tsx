@@ -6,8 +6,10 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MobileFrame } from '@/components/mobile/MobileFrame'
 import { ScannerViewport } from '@/components/kiosk/ScannerViewport'
-import { HANDOFF_FAILURE_MESSAGE, resolveHandoff } from '@/lib/qrHandoff'
-import { availability, books } from '@/mocks'
+import { HANDOFF_FAILURE_MESSAGE, locationPath, resolveHandoff } from '@/lib/qrHandoff'
+import { apiGetOrNull } from '@/api/client'
+import { useBorrowableBooks } from '@/api/queries'
+import type { Book } from '@/shared/types'
 
 /**
  * The Figma frame is a single static tile: a grey QR glyph over "Quét mã QR trên màn hình
@@ -25,14 +27,35 @@ export function QrPage() {
   const navigate = useNavigate()
   const [code, setCode] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const { data: borrowable } = useBorrowableBooks()
 
   /** Everything a scan or a typed code funnels through, so both take the same route out. */
-  function open(raw: string) {
+  async function open(raw: string) {
     const result = resolveHandoff(raw)
     if (!result.ok) {
       setError(HANDOFF_FAILURE_MESSAGE[result.failure])
       return
     }
+
+    /*
+     * A typed ISBN is the one code the resolver cannot finish on its own: turning it into
+     * a book needs the catalogue, which lives on the server now. A scanned kiosk URL
+     * already carries the book id and never gets here.
+     */
+    if (result.kind === 'isbn') {
+      const found = await apiGetOrNull<{ book: Book }>(
+        `/api/books/by-isbn/${encodeURIComponent(result.isbn)}`,
+      ).catch(() => null)
+
+      if (!found) {
+        setError(HANDOFF_FAILURE_MESSAGE['not-found'])
+        return
+      }
+      setError(null)
+      navigate(locationPath(found.book.id))
+      return
+    }
+
     setError(null)
     navigate(result.path)
   }
@@ -41,15 +64,18 @@ export function QrPage() {
    * Stands in for the camera. Builds the *same URL string* `LocationQr` encodes rather
    * than jumping straight to the path, so the simulated scan exercises the real resolver:
    * if the two ever drift apart, this is where it shows.
+   *
+   * The book it "reads" is one with a copy on the shelf, so the screen it opens is the
+   * useful one — walking a demo to a shelf with nothing on it proves nothing.
    */
   function simulateScan() {
-    const target = books.find((b) => (availability[b.id]?.copiesAvailable ?? 0) > 0) ?? books[0]
-    if (target) open(`${window.location.origin}/mobile/location?book=${target.id}`)
+    const target = borrowable?.books[0]
+    if (target) void open(`${window.location.origin}/mobile/location?book=${target.id}`)
   }
 
   function submit(event: FormEvent) {
     event.preventDefault()
-    open(code)
+    void open(code)
   }
 
   return (

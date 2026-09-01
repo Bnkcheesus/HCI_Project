@@ -2,17 +2,35 @@
  * The kiosk's AI librarian — Gain Creator 1 / Product-Service 1 ("bộ gợi ý sách theo
  * từ khoá/môn học/sở thích"), reached from the kiosk-ai-chat screen (Figma 5:779).
  *
- * There is no backend, so this is a deterministic intent matcher over the real mock
- * catalog rather than a language model. That is a deliberate trade: every answer it
- * gives is *true* about the data the rest of the app shows — shelf codes, floors and
- * copy counts all come from `src/mocks/`, so the chat can never promise a book the
- * book-info screen then contradicts. Swap this module for a real API client later; keep
- * `askLibrarian`'s shape.
+ * A deterministic intent matcher over the real catalogue rather than a language model.
+ * That is a deliberate trade: every answer it gives is *true* about the data the rest of
+ * the app shows — shelf codes, floors and copy counts come from the same rows the
+ * book-info screen renders, so the chat can never promise a book the next screen
+ * contradicts.
  *
- * Kept free of React so the whole conversation engine is testable without rendering.
+ * It takes the catalogue as an argument rather than importing it. That is what let the
+ * whole engine move server-side when the data went into a database: the route hands it
+ * rows read from SQL, the frontend test hands it `src/mocks/`, and the matching logic —
+ * every alias, every word-boundary rule — is one implementation serving both. Answering
+ * questions about the catalogue is not something a browser can do once it no longer holds
+ * the catalogue.
+ *
+ * Kept free of React and of any database so the whole conversation engine is testable
+ * without rendering anything or connecting to anything.
  */
-import { availability, books, libraryStatus, shelfLocations, type Book } from '@/mocks'
-import { removeDiacritics } from './telex'
+import type { Availability, Book, LibraryStatus, ShelfLocation } from './types'
+import { removeDiacritics } from './text'
+
+/**
+ * Everything the librarian needs to know to answer. Assembled by the caller — from mock
+ * modules in a test, from repositories in the route.
+ */
+export interface LibraryCorpus {
+  books: Book[]
+  availability: Record<string, Availability>
+  shelfLocations: Record<string, ShelfLocation>
+  libraryStatus: LibraryStatus
+}
 
 export type LibrarianIntent =
   | 'greeting'
@@ -129,21 +147,21 @@ const HOURS_WORDS = ['may gio', 'mo cua', 'dong cua', 'gio mo', 'gio giac', 'gio
 const BORROWING_WORDS = ['gia han', 'the thu vien', 'han tra', 'tra sach', 'muon bao lau', 'phat']
 const GREETING_WORDS = ['xin chao', 'chao ban', 'hello', 'ban oi']
 
-function copiesFree(bookId: string): number {
-  return availability[bookId]?.copiesAvailable ?? 0
+function copiesFree(corpus: LibraryCorpus, bookId: string): number {
+  return corpus.availability[bookId]?.copiesAvailable ?? 0
 }
 
 /** Books whose subject, title or author the question mentions. */
-function matchBooks(question: string): Book[] {
+function matchBooks(corpus: LibraryCorpus, question: string): Book[] {
   const q = normalize(question)
   // Pad so a word-boundary alias like " ai " can match at the very start or end.
   const padded = ` ${q} `
 
   const subjects = matchSubjects(padded)
-  const bySubject = books.filter((b) => subjects.includes(b.subject))
+  const bySubject = corpus.books.filter((b) => subjects.includes(b.subject))
 
   // Free-text fallback: a title or author named directly ("Giải tích 1", "Goodfellow").
-  const byText = books.filter((b) => titleOrAuthorMentioned(b, q))
+  const byText = corpus.books.filter((b) => titleOrAuthorMentioned(b, q))
 
   // Title/author hits lead: "Giải tích 1 nằm ở kệ nào" also matches the whole Toán học
   // subject, and the answer must be about the book that was actually named.
@@ -211,10 +229,10 @@ function countPhrase(list: Book[]): string {
   return `${list.length} ${noun}`
 }
 
-function answerLocation(list: Book[]): LibrarianReply {
+function answerLocation(corpus: LibraryCorpus, list: Book[]): LibrarianReply {
   const book = list[0]
-  const place = shelfLocations[book.shelfCode]
-  const free = copiesFree(book.id)
+  const place = corpus.shelfLocations[book.shelfCode]
+  const free = copiesFree(corpus, book.id)
 
   const where = place
     ? `kệ ${place.shelfCode}, tầng ${place.floor} — ${place.zone}, cách kiosk khoảng ${place.distanceMetres}m`
@@ -235,14 +253,18 @@ function answerLocation(list: Book[]): LibrarianReply {
 
 const TAP_HINT = 'Danh sách nằm ở cột bên phải — chạm vào một cuốn để xem vị trí kệ và mượn ngay.'
 
-function answerBooks(list: Book[], wantsAvailableOnly: boolean): LibrarianReply {
-  const inStock = list.filter((b) => copiesFree(b.id) > 0)
+function answerBooks(
+  corpus: LibraryCorpus,
+  list: Book[],
+  wantsAvailableOnly: boolean,
+): LibrarianReply {
+  const inStock = list.filter((b) => copiesFree(corpus, b.id) > 0)
 
   // Nothing on the shelf is worth saying up front whether or not availability was asked
   // about — the persona's worst pain is walking to a shelf only to find the book gone.
   if (inStock.length === 0) {
     const soonest = list
-      .map((b) => availability[b.id]?.dueBack)
+      .map((b) => corpus.availability[b.id]?.dueBack)
       .filter((d): d is string => Boolean(d))
       .sort()[0]
     return {
@@ -277,7 +299,8 @@ function answerBooks(list: Book[], wantsAvailableOnly: boolean): LibrarianReply 
   }
 }
 
-export function askLibrarian(question: string): LibrarianReply {
+export function askLibrarian(question: string, corpus: LibraryCorpus): LibrarianReply {
+  const { libraryStatus } = corpus
   const q = normalize(question.trim())
   const padded = ` ${q} `
 
@@ -303,11 +326,11 @@ export function askLibrarian(question: string): LibrarianReply {
     }
   }
 
-  const matched = matchBooks(question)
+  const matched = matchBooks(corpus, question)
 
   if (matched.length > 0) {
-    if (hasAny(q, LOCATION_WORDS)) return answerLocation(matched)
-    return answerBooks(matched, hasAny(padded, AVAILABILITY_WORDS))
+    if (hasAny(q, LOCATION_WORDS)) return answerLocation(corpus, matched)
+    return answerBooks(corpus, matched, hasAny(padded, AVAILABILITY_WORDS))
   }
 
   // Only greet when there is nothing else to answer — "chào bạn, tìm giúp mình sách

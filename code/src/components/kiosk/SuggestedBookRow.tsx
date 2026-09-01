@@ -1,7 +1,7 @@
 import { ChevronRight } from 'lucide-react'
 import { AvailabilityChip } from '@/components/kiosk/AvailabilityChip'
 import { cn } from '@/lib/utils'
-import type { Book } from '@/mocks'
+import type { Availability, Book } from '@/shared/types'
 
 /**
  * Compact book row in the AI chat side panel — Figma BookCard1/BookCard2 in
@@ -21,10 +21,12 @@ const SPINE_COLOR: Record<Book['spine'], string> = {
 
 interface SuggestedBookRowProps {
   book: Book
+  /** Copy counts for this book, from the same response the book came in. */
+  availability: Availability | undefined
   onSelect: (bookId: string) => void
 }
 
-export function SuggestedBookRow({ book, onSelect }: SuggestedBookRowProps) {
+export function SuggestedBookRow({ book, availability, onSelect }: SuggestedBookRowProps) {
   return (
     <button
       type="button"
@@ -68,7 +70,7 @@ export function SuggestedBookRow({ book, onSelect }: SuggestedBookRowProps) {
           >
             Kệ {book.shelfCode} · Tầng {book.floor}
           </span>
-          <AvailabilityChip bookId={book.id} />
+          <AvailabilityChip availability={availability} />
         </span>
       </span>
 

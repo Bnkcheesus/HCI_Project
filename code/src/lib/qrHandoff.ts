@@ -14,11 +14,13 @@
  * Pure on purpose: no router, no DOM. The screen decides how to *show* a failure; this
  * decides what the code *is*, and that is the part worth testing on its own.
  */
-import { findBookByCode } from './borrow'
-import { books } from '@/mocks'
+import { normalizeIsbn } from '@/shared/borrowRules'
 
-/** Printed by `createLoanSlip` and `historySlipId` — e.g. SLIP-2026-0824-5012. */
-const SLIP_PATTERN = /^SLIP-\d{4}-\d{4}-\d{4}$/i
+/**
+ * Printed by `slipIdFor` — e.g. SLIP-2026-0824-5012, or SLIP-2026-0824-5012-2 for a
+ * second visit by the same card on the same day.
+ */
+const SLIP_PATTERN = /^SLIP-\d{4}-\d{4}-\d{4}(-\d+)?$/i
 
 export type HandoffFailure =
   /** Nothing to resolve — an empty field, or a scan that read no payload. */
@@ -36,15 +38,27 @@ export const HANDOFF_FAILURE_MESSAGE: Record<HandoffFailure, string> = {
 }
 
 export type Handoff =
+  /** A scanned kiosk URL, or a typed ISBN already resolved to a book. */
   | { ok: true; kind: 'location'; bookId: string; path: string }
   | { ok: true; kind: 'slip'; slipId: string; path: string }
+  /**
+   * A well-formed ISBN. Which book it is takes a catalogue the browser no longer holds,
+   * so the caller resolves it — this module stays pure, and the security-relevant part
+   * (deciding whether a scanned *URL* is ours) stays testable without a network.
+   */
+  | { ok: true; kind: 'isbn'; isbn: string }
   | { ok: false; failure: HandoffFailure }
+
+/** The route a book id opens on the phone — the destination of the kiosk's QR. */
+export function locationPath(bookId: string): string {
+  return `/mobile/location?book=${encodeURIComponent(bookId)}`
+}
 
 const toLocation = (bookId: string): Handoff => ({
   ok: true,
   kind: 'location',
   bookId,
-  path: `/mobile/location?book=${encodeURIComponent(bookId)}`,
+  path: locationPath(bookId),
 })
 
 const toSlip = (slipId: string): Handoff => ({
@@ -74,9 +88,13 @@ function fromUrl(raw: string): Handoff | null {
   if (path === '/mobile/location') {
     const bookId = url.searchParams.get('book')?.trim()
     if (!bookId) return { ok: false, failure: 'not-found' }
-    return books.some((b) => b.id === bookId)
-      ? toLocation(bookId)
-      : { ok: false, failure: 'not-found' }
+    /*
+     * Whether the id names a real book is not checked here any more — that needs the
+     * catalogue. The location screen already handles an id it cannot find, with a way
+     * back to the scanner, so the check would only duplicate an answer the destination
+     * gives better.
+     */
+    return toLocation(bookId)
   }
 
   if (path === '/mobile/phieu-muon') {
@@ -98,8 +116,11 @@ export function resolveHandoff(raw: string): Handoff {
 
   if (SLIP_PATTERN.test(input)) return toSlip(input.toUpperCase())
 
-  // Reuses the kiosk's own ISBN lookup, spaces and dashes and all, so a code that works at
-  // the kiosk works here — two spellings of "valid ISBN" would be a bug waiting to happen.
-  const book = findBookByCode(input)
-  return book ? toLocation(book.id) : { ok: false, failure: 'not-found' }
+  // Normalised the same way the kiosk's scanner normalises a code, spaces and dashes and
+  // all — two spellings of "valid ISBN" would be a bug waiting to happen.
+  const digits = normalizeIsbn(input)
+  if (/^\d{10,13}$/.test(digits)) return { ok: true, kind: 'isbn', isbn: digits }
+
+  return { ok: false, failure: 'not-found' }
 }
+

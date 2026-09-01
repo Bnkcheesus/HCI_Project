@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { renderSettled } from '@/test/renderWithQuery'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -7,8 +8,8 @@ import { useAccessibilityStore } from '@/state/useAccessibilityStore'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 import { HomePage } from './HomePage'
 
-function renderHome() {
-  return render(
+async function renderHome() {
+  return renderSettled(
     <MemoryRouter initialEntries={['/kiosk']}>
       <HomePage />
     </MemoryRouter>,
@@ -25,17 +26,17 @@ describe('Kiosk HomePage', () => {
    * Reaching home ends the previous session. On a kiosk in a public hallway the next
    * person must not walk up to whatever a stranger was searching for.
    */
-  it('clears a leftover search when the home screen is reached', () => {
+  it('clears a leftover search when the home screen is reached', async () => {
     useBorrowSessionStore.getState().setSearchQuery('giải tích')
 
-    renderHome()
+    await renderHome()
 
     expect(screen.getByRole('searchbox')).toHaveValue('')
     expect(useBorrowSessionStore.getState().searchQuery).toBe('')
   })
 
-  it('lists the four suggested books', () => {
-    renderHome()
+  it('lists the four suggested books', async () => {
+    await renderHome()
     // Read from the mocks: which four books are featured is a curation decision that can
     // change, and this test is about the home screen showing all of them, not about the
     // titles themselves.
@@ -45,15 +46,15 @@ describe('Kiosk HomePage', () => {
     }
   })
 
-  it('exposes an accessible search field', () => {
-    renderHome()
+  it('exposes an accessible search field', async () => {
+    await renderHome()
     expect(screen.getByRole('searchbox', { name: /tìm sách/i })).toBeInTheDocument()
   })
 
   // Pain Reliever 2 / Gain Creator 4 — the persona must not have to walk to the shelf
   // to discover a book is gone, so availability is on the card itself.
-  it('shows live availability on every suggested book', () => {
-    renderHome()
+  it('shows live availability on every suggested book', async () => {
+    await renderHome()
     for (const book of suggestedBooks) {
       const stock = availability[book.id]
       const label = stock.copiesAvailable > 0 ? `Còn ${stock.copiesAvailable} cuốn` : 'Đã mượn hết'
@@ -76,8 +77,8 @@ describe('Kiosk HomePage', () => {
     expect(labels).toContain('Đã mượn hết')
   })
 
-  it('offers one-tap subject shortcuts and the library status bar', () => {
-    renderHome()
+  it('offers one-tap subject shortcuts and the library status bar', async () => {
+    await renderHome()
     expect(screen.getByRole('button', { name: 'Công nghệ thông tin' })).toBeInTheDocument()
     expect(screen.getByText(/thư viện đang mở cửa/i)).toBeInTheDocument()
   })
@@ -85,7 +86,7 @@ describe('Kiosk HomePage', () => {
   // Product/Service 5 — the toggle must actually flip the document-level a11y flag.
   it('toggles accessibility mode from the header', async () => {
     const user = userEvent.setup()
-    renderHome()
+    await renderHome()
 
     const toggle = screen.getByRole('button', { name: /trợ năng/i })
     expect(toggle).toHaveAttribute('aria-pressed', 'false')

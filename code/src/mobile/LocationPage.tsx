@@ -6,7 +6,8 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { MobileFrame } from '@/components/mobile/MobileFrame'
 import { AvailabilityChip } from '@/components/kiosk/AvailabilityChip'
 import { ShelfRouteMap } from '@/components/kiosk/ShelfRouteMap'
-import { books, shelfLocations, type Book } from '@/mocks'
+import { useBookDetail } from '@/api/queries'
+import type { Availability, Book } from '@/shared/types'
 
 /**
  * Three things the Figma frame does not have, each added for a reason in the value
@@ -26,9 +27,22 @@ import { books, shelfLocations, type Book } from '@/mocks'
 export function LocationPage() {
   const [params] = useSearchParams()
   const bookId = params.get('book')?.trim()
-  const book = bookId ? books.find((b) => b.id === bookId) : undefined
+  const { data, isPending } = useBookDetail(bookId)
 
-  if (!book) {
+  if (bookId && isPending) {
+    return (
+      <MobileFrame title="Bản đồ chỉ dẫn" backTo="/mobile">
+        <p className="py-10 text-center text-muted-foreground" style={{ fontSize: 'var(--text-body)' }}>
+          Đang tải chỉ dẫn…
+        </p>
+      </MobileFrame>
+    )
+  }
+
+  // No `?book=` at all, or one naming a book the catalogue does not have. Both are dead
+  // ends for the reader, and both get the empty state with a way back to the scanner —
+  // this screen is reached by scanning, so a blank page would strand them mid-walk.
+  if (!data) {
     return (
       <MobileFrame title="Bản đồ chỉ dẫn" backTo="/mobile">
         <EmptyState missing={!bookId} />
@@ -36,11 +50,11 @@ export function LocationPage() {
     )
   }
 
-  const location = shelfLocations[book.shelfCode]
+  const { book, availability, shelf: location } = data
 
   return (
     <MobileFrame title="Bản đồ chỉ dẫn" backTo="/mobile">
-      <BookHeader book={book} />
+      <BookHeader book={book} availability={availability} />
 
       {location ? (
         <>
@@ -92,7 +106,13 @@ export function LocationPage() {
 }
 
 /** Which book this route is for — cover included, because that is what identifies it at the shelf. */
-function BookHeader({ book }: { book: Book }) {
+function BookHeader({
+  book,
+  availability,
+}: {
+  book: Book
+  availability: Availability | undefined
+}) {
   return (
     <div
       data-kiosk-surface
@@ -129,7 +149,7 @@ function BookHeader({ book }: { book: Book }) {
           </span>
         </p>
 
-        <AvailabilityChip bookId={book.id} className="self-start" />
+        <AvailabilityChip availability={availability} className="self-start" />
       </div>
     </div>
   )

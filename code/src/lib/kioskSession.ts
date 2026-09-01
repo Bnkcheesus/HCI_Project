@@ -13,3 +13,12 @@ export const IDLE_SECONDS = 90
  * holding a stack of books — a five-second warning on a kiosk is just a jump scare.
  */
 export const IDLE_WARN_AT = 25
+
+/**
+ * The card the "Mô phỏng quét thẻ" button reads.
+ *
+ * The persona's own number (persona.md), named here rather than reached for as
+ * `students[0]` — the browser no longer holds the card table, and a demo control should
+ * name the thing it is demonstrating anyway.
+ */
+export const DEMO_CARD_CODE = '20215012'

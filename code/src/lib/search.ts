@@ -2,9 +2,7 @@
  * Search, filter, sort and paginate the catalog — the logic behind the results screen.
  * Kept out of the components so it can be tested without rendering anything.
  */
-import { availability, books, type Book, type DocumentType, type Language } from '@/mocks'
-import { vietnameseIncludes } from './telex'
-import { normalizeIsbn } from './borrow'
+import type { Availability, Book, DocumentType, Language } from '@/shared/types'
 
 /** Stock facet in the advanced filter — "Còn sách" / "Hết sách". */
 export type StockState = 'available' | 'out'
@@ -22,31 +20,48 @@ export interface AdvancedFilters {
   stock: StockState[]
 }
 
-export const YEAR_MIN = Math.min(...books.map((b) => b.year))
-export const YEAR_MAX = Math.max(...books.map((b) => b.year))
+/**
+ * The catalogue's real publication span, which used to be computed here from the whole
+ * book list at import time.
+ *
+ * With the catalogue in a database there is no list to compute from, so the bounds arrive
+ * with the library status and are threaded in. A slider whose ends do not match the data
+ * either hides books at one end or offers years nothing was published in at the other.
+ */
+export interface YearBounds {
+  min: number
+  max: number
+}
 
-export const DEFAULT_FILTERS: AdvancedFilters = {
-  yearFrom: YEAR_MIN,
-  yearTo: YEAR_MAX,
-  languages: [],
-  stock: [],
+/** Where the slider sits before the reader touches it: the whole span, nothing excluded. */
+export function defaultFilters(years: YearBounds): AdvancedFilters {
+  return { yearFrom: years.min, yearTo: years.max, languages: [], stock: [] }
 }
 
 /** How many facets the user has actually narrowed — drives the badge on the button. */
-export function activeFilterCount(f: AdvancedFilters): number {
+export function activeFilterCount(f: AdvancedFilters, years: YearBounds): number {
   let n = 0
-  if (f.yearFrom > YEAR_MIN || f.yearTo < YEAR_MAX) n++
+  if (f.yearFrom > years.min || f.yearTo < years.max) n++
   if (f.languages.length > 0) n++
   if (f.stock.length > 0) n++
   return n
 }
 
-export function applyAdvancedFilters(results: Book[], f: AdvancedFilters): Book[] {
+/**
+ * Availability arrives as the map the search endpoint returns alongside the books, rather
+ * than being read from a global. That pairing is what keeps the stock facet honest: it is
+ * filtering on the same copy counts the chips on those cards are showing.
+ */
+export function applyAdvancedFilters(
+  results: Book[],
+  f: AdvancedFilters,
+  availability: Record<string, Availability>,
+): Book[] {
   return results.filter((b) => {
     if (b.year < f.yearFrom || b.year > f.yearTo) return false
     if (f.languages.length > 0 && !f.languages.includes(b.language)) return false
     if (f.stock.length > 0) {
-      const state: StockState = copiesAvailable(b.id) > 0 ? 'available' : 'out'
+      const state: StockState = copiesAvailable(availability, b.id) > 0 ? 'available' : 'out'
       if (!f.stock.includes(state)) return false
     }
     return true
@@ -62,45 +77,10 @@ export const SORT_LABEL: Record<SortMode, string> = {
   title: 'Tên A → Z',
 }
 
-/**
- * The shortest run of digits treated as an ISBN rather than as ordinary text.
- *
- * Every ISBN-13 in the catalogue starts "978", so a three-digit query would match the whole
- * shelf, and four digits would make every year — "2022" — return books whose *code* happens
- * to contain it. Six is past both: long enough that a digit run is a deliberate code, short
- * enough that a reader keying one off a back cover starts seeing it narrow well before the end.
- */
-const MIN_ISBN_QUERY = 6
-
-/** The query read as a code, or null if it is not one. */
-function asIsbnQuery(query: string): string | null {
-  const digits = normalizeIsbn(query)
-  return /^\d+$/.test(digits) && digits.length >= MIN_ISBN_QUERY ? digits : null
-}
-
-/**
- * Free-text match across title, author and subject, diacritic-insensitive — plus the ISBN,
- * which the search field has always claimed to accept ("Nhập tên sách, tác giả hoặc mã
- * ISBN...") without ever matching on it.
- *
- * Matched as a substring rather than exactly, so it narrows as the reader keys the code in
- * and still finds the book from the middle chunk of a number they are reading off a cover.
- */
-export function searchCatalog(query: string): Book[] {
-  const q = query.trim()
-  if (!q) return []
-  const code = asIsbnQuery(q)
-
-  return books.filter(
-    (b) =>
-      (code !== null && b.isbn.includes(code)) ||
-      vietnameseIncludes(b.title, q) ||
-      vietnameseIncludes(b.author, q) ||
-      vietnameseIncludes(b.subject, q),
-  )
-}
-
-export function copiesAvailable(bookId: string): number {
+export function copiesAvailable(
+  availability: Record<string, Availability>,
+  bookId: string,
+): number {
   return availability[bookId]?.copiesAvailable ?? 0
 }
 
@@ -108,14 +88,20 @@ export function filterByType(results: Book[], type: TypeFilter): Book[] {
   return type === 'all' ? results : results.filter((b) => b.type === type)
 }
 
-export function sortResults(results: Book[], mode: SortMode): Book[] {
+export function sortResults(
+  results: Book[],
+  mode: SortMode,
+  availability: Record<string, Availability> = {},
+): Book[] {
   const sorted = [...results]
   switch (mode) {
     case 'available':
       // Anything on the shelf outranks anything that is out — Pain Reliever 2:
       // the persona must not walk to a shelf that has nothing on it.
       return sorted.sort((a, b) => {
-        const diff = Math.sign(copiesAvailable(b.id)) - Math.sign(copiesAvailable(a.id))
+        const diff =
+          Math.sign(copiesAvailable(availability, b.id)) -
+          Math.sign(copiesAvailable(availability, a.id))
         return diff !== 0 ? diff : a.title.localeCompare(b.title, 'vi')
       })
     case 'title':

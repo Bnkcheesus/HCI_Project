@@ -10,7 +10,7 @@ import { ModeTabs, type KioskMode } from '@/components/kiosk/ModeTabs'
 import { SearchField } from '@/components/kiosk/SearchField'
 import { SubjectChips } from '@/components/kiosk/SubjectChips'
 import { useSpeechSearch } from '@/lib/useSpeechSearch'
-import { suggestedBooks } from '@/mocks'
+import { useSuggestedBooks } from '@/api/queries'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 
 export function HomePage() {
@@ -35,6 +35,17 @@ export function HomePage() {
     setSearchQuery('')
     selectBook(null)
   }, [setSearchQuery, selectBook])
+
+  /*
+   * The four curated books that greet a reader — Gain Creator 1.
+   *
+   * Which four is a curation decision the database now carries as an explicit rank: one
+   * per faculty, all with cover art, and four different availability states so the very
+   * first screen shows a green chip next to a black one.
+   */
+  const { data } = useSuggestedBooks()
+  const books = data?.books ?? []
+  const availability = data?.availability ?? {}
 
   function handleModeChange(mode: KioskMode) {
     navigate(mode === 'search' ? '/kiosk/search' : '/kiosk/scan')
@@ -144,13 +155,17 @@ export function HomePage() {
               lay the same four cards out over two or four rows.
             */}
             <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:min-h-0 lg:flex-1 lg:grid-cols-4 lg:grid-rows-1">
-              {suggestedBooks.map((book, i) => (
+              {books.map((book, i) => (
                 <li
                   key={book.id}
                   className="kiosk-rise min-w-0"
                   style={{ animationDelay: `${300 + i * 70}ms` }}
                 >
-                  <ResultCard book={book} onSelect={handleSelectBook} />
+                  <ResultCard
+                    book={book}
+                    availability={availability[book.id]}
+                    onSelect={handleSelectBook}
+                  />
                 </li>
               ))}
             </ul>

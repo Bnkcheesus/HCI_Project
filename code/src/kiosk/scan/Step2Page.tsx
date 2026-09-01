@@ -12,10 +12,11 @@ import { NumericKeypad } from '@/components/kiosk/NumericKeypad'
 import { ScanCart } from '@/components/kiosk/ScanCart'
 import { ScannerViewport } from '@/components/kiosk/ScannerViewport'
 import { ScanSteps } from '@/components/kiosk/ScanSteps'
-import { checkEligibility, createLoanSlip, formatDate, LOAN_DAYS } from '@/lib/borrow'
+import { useBooksByIds, useCardCheck, useCheckout } from '@/api/queries'
+import { formatDate, LOAN_DAYS } from '@/lib/borrow'
 import { IDLE_SECONDS, IDLE_WARN_AT } from '@/lib/kioskSession'
 import { useKioskIdle } from '@/lib/useKioskIdle'
-import { findStudentByCard, students } from '@/mocks'
+import { DEMO_CARD_CODE } from '@/lib/kioskSession'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 
 export function ScanStep2Page() {
@@ -47,29 +48,87 @@ export function ScanStep2Page() {
     },
   })
 
-  const student = studentCardCode ? findStudentByCard(studentCardCode) : undefined
-  const blocks = student ? checkEligibility(student, scannedBookIds.length) : []
-  const canConfirm = Boolean(student) && blocks.length === 0
+  /*
+   * The card and every reason it cannot borrow, in one answer.
+   *
+   * The two belong together: a screen that says "Thẻ hợp lệ" and only discovers a refusal
+   * on submit has told the reader something untrue. `cartSize` is part of the question
+   * because it changes the answer — the same card is fine for two books and refused for
+   * four.
+   */
+  const { data: card, isPending: checkingCard } = useCardCheck(
+    studentCardCode,
+    scannedBookIds.length,
+  )
+  const checkout = useCheckout()
+
+  /*
+   * Catalogue records for the scanned books. The cart holds ids — the server has never
+   * seen this cart — so the titles and cover art come back in one request for the set.
+   */
+  const { data: cartSet } = useBooksByIds(scannedBookIds)
+  const cartBooksById = Object.fromEntries((cartSet?.books ?? []).map((b) => [b.id, b]))
+
+
+  const student = card?.student
+  const blocks = card?.blocks ?? []
+
+  /*
+   * A number that came back as `null` is a card the library does not have.
+   *
+   * The refusal is derived from the answer rather than raised when the number is typed,
+   * so there is exactly one place that decides what a card code means — the same place
+   * that decides whether the card can borrow. The two used to be separate, and a card
+   * could be called valid by one and unknown by the other.
+   */
+  const unknownCard = Boolean(studentCardCode) && !checkingCard && card === null
+  const cardError =
+    error ??
+    (unknownCard
+      ? 'Mã thẻ không hợp lệ. Kiểm tra lại số in trên thẻ thư viện rồi thử lần nữa.'
+      : null)
+  const waitingOnCard = Boolean(studentCardCode) && checkingCard
+  const canConfirm = Boolean(student) && blocks.length === 0 && !checkout.isPending
 
   const dueDate = new Date()
   dueDate.setDate(dueDate.getDate() + LOAN_DAYS)
 
+  /**
+   * Reading a card is just recording the number; the server decides what it means.
+   *
+   * Validation happens in `useCardCheck` above rather than here, so the "invalid card"
+   * message and the eligibility refusals come from one place instead of two that could
+   * disagree.
+   */
   function submit(rawCode: string) {
-    const match = findStudentByCard(rawCode)
-    if (!match) {
-      setError('Mã thẻ không hợp lệ. Kiểm tra lại số in trên thẻ thư viện rồi thử lần nữa.')
-      setStudentCard(null)
-      return
-    }
+    const trimmed = rawCode.trim()
+    if (!trimmed) return
     setError(null)
-    setStudentCard(match.cardCode)
+    setStudentCard(trimmed)
     setCode('')
   }
 
-  function confirm() {
+  async function confirm() {
     if (!student || !canConfirm) return
-    completeBorrow(createLoanSlip(student, scannedBookIds))
-    navigate('/kiosk/borrow-complete')
+
+    try {
+      const { slip } = await checkout.mutateAsync({
+        cardCode: student.cardCode,
+        bookIds: scannedBookIds,
+      })
+      completeBorrow(slip)
+      navigate('/kiosk/borrow-complete')
+    } catch {
+      /*
+       * The server refused at the last moment — almost always because someone else took
+       * the last copy while this reader was finding their card. Sending them back to step
+       * 1 would be worse than saying so: the cart is still valid apart from that one book,
+       * and they can drop it and continue.
+       */
+      setError(
+        'Không hoàn tất được lượt mượn. Có thể một cuốn vừa được người khác mượn mất — hãy kiểm tra lại danh sách rồi thử lần nữa.',
+      )
+    }
   }
 
   return (
@@ -90,7 +149,11 @@ export function ScanStep2Page() {
         <div className="grid min-h-0 flex-1 grid-cols-2 gap-6 overflow-hidden">
           {/* Left: read the card, then say what it means. */}
           <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
-            {student ? (
+            {waitingOnCard ? (
+              <p className="text-muted-foreground" style={{ fontSize: 'var(--text-body)' }}>
+                Đang kiểm tra thẻ…
+              </p>
+            ) : student ? (
               <>
                 <StudentPanel
                   name={student.name}
@@ -117,7 +180,7 @@ export function ScanStep2Page() {
                 <div className="h-64 shrink-0">
                   <ScannerViewport
                     kind="card"
-                    onSimulate={() => submit(students[0].cardCode)}
+                    onSimulate={() => submit(DEMO_CARD_CODE)}
                     simulateLabel="Mô phỏng quét thẻ"
                   />
                 </div>
@@ -145,9 +208,13 @@ export function ScanStep2Page() {
 
           {/* Right: manual entry, or — once the card is read — what is being borrowed. */}
           <div className="flex min-h-0 flex-col gap-4 overflow-hidden">
-            {student ? (
+            {waitingOnCard ? (
+              <p className="text-muted-foreground" style={{ fontSize: 'var(--text-body)' }}>
+                Đang kiểm tra thẻ…
+              </p>
+            ) : student ? (
               <div className="min-h-0 flex-1 overflow-hidden">
-                <ScanCart bookIds={scannedBookIds} />
+                <ScanCart bookIds={scannedBookIds} booksById={cartBooksById} />
               </div>
             ) : (
               <>
@@ -160,7 +227,7 @@ export function ScanStep2Page() {
                   onSubmit={() => submit(code)}
                   label="Nhập mã thẻ thư viện"
                   placeholder="Ví dụ: 20215012"
-                  error={error}
+                  error={cardError}
                 />
                 <NumericKeypad
                   onKey={(digit) => {

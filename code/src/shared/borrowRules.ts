@@ -38,10 +38,20 @@ export function normalizeIsbn(code: string): string {
  * Both the kiosk's freshly printed slip and the seeded history rows are built from this,
  * so a slip filed today and one from six months ago are indistinguishable to a reader —
  * and, more importantly, a slip id in a QR code resolves the same way whichever produced it.
+ *
+ * `sequence` distinguishes two visits by the same card on the same day, and it has to
+ * exist: date + card is *not* unique. A reader borrowing in the morning and again after
+ * lunch produced the same number twice, which the database refused as a duplicate key —
+ * the borrow simply failed. Nothing caught it earlier because the seeded history has no
+ * card visiting twice in one day, and a demo never borrows twice.
+ *
+ * The suffix appears only from the second slip onward, so the number a reader normally
+ * sees is unchanged and every id already filed stays valid.
  */
-export function slipIdFor(borrowedAtIso: string, studentId: string): string {
+export function slipIdFor(borrowedAtIso: string, studentId: string, sequence = 1): string {
   const [year, month, day] = borrowedAtIso.split('-')
-  return `SLIP-${year}-${month}${day}-${studentId.slice(-4)}`
+  const base = `SLIP-${year}-${month}${day}-${studentId.slice(-4)}`
+  return sequence > 1 ? `${base}-${sequence}` : base
 }
 
 /** ISO date to the dd/mm/yyyy the slip and the refusals are written in. */

@@ -10,10 +10,11 @@ import { KioskFooter } from '@/components/kiosk/KioskFooter'
 import { KioskHeader } from '@/components/kiosk/KioskHeader'
 import { OnScreenKeyboard } from '@/components/kiosk/OnScreenKeyboard'
 import { SuggestedBookRow } from '@/components/kiosk/SuggestedBookRow'
-import { SUGGESTED_PROMPTS } from '@/lib/librarian'
+import { SUGGESTED_PROMPTS } from '@/shared/librarian'
 import { applyTelexKey } from '@/lib/telex'
 import { useSpeechSearch } from '@/lib/useSpeechSearch'
-import { books, shelfLocations } from '@/mocks'
+import { useBooksByIds } from '@/api/queries'
+import type { ShelfLocation } from '@/shared/types'
 import { useAccessibilityStore } from '@/state/useAccessibilityStore'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 import { useChatStore } from '@/state/useChatStore'
@@ -48,10 +49,18 @@ export function AiChatPage() {
 
   // The side panel follows the most recent answer that actually found something, so it
   // does not blank out when the reader then asks about opening hours.
-  const suggestedBooks = useMemo(() => {
-    const ids = [...messages].reverse().find((m) => m.bookIds.length > 0)?.bookIds ?? []
-    return ids.map((id) => books.find((b) => b.id === id)).filter((b) => b !== undefined)
-  }, [messages])
+  const suggestedIds = useMemo(
+    () => [...messages].reverse().find((m) => m.bookIds.length > 0)?.bookIds ?? [],
+    [messages],
+  )
+
+  /*
+   * The reply names book ids; the panel needs records. One request for the set, with the
+   * shelves those books sit on — the legend below turns the list into a list of *places*,
+   * which needs each shelf's zone and floor, not just its code.
+   */
+  const { data: suggested } = useBooksByIds(suggestedIds)
+  const suggestedBooks = useMemo(() => suggested?.books ?? [], [suggested])
 
   /**
    * Distinct shelves to walk to, with how many of the suggested books sit on each. The
@@ -65,10 +74,10 @@ export function AiChatPage() {
       counts.set(book.shelfCode, (counts.get(book.shelfCode) ?? 0) + 1)
     }
     return [...counts.entries()]
-      .map(([code, count]) => ({ place: shelfLocations[code], count }))
-      .filter((s) => s.place !== undefined)
+      .map(([code, count]) => ({ place: suggested?.shelves[code], count }))
+      .filter((s): s is { place: ShelfLocation; count: number } => s.place !== undefined)
       .sort((a, b) => b.count - a.count)
-  }, [suggestedBooks])
+  }, [suggestedBooks, suggested])
 
   const shownShelves = shelves.slice(0, MAX_SHELF_PINS)
   const hiddenShelves = shelves.length - shownShelves.length
@@ -233,7 +242,11 @@ export function AiChatPage() {
               <ul className="flex flex-col gap-3">
                 {suggestedBooks.map((book) => (
                   <li key={book.id}>
-                    <SuggestedBookRow book={book} onSelect={openBook} />
+                    <SuggestedBookRow
+                      book={book}
+                      availability={suggested?.availability[book.id]}
+                      onSelect={openBook}
+                    />
                   </li>
                 ))}
               </ul>

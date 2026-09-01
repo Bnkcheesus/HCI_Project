@@ -12,6 +12,19 @@ export default defineConfig({
       '@': path.resolve(import.meta.dirname, './src'),
     },
   },
+  server: {
+    /*
+     * The API is proxied rather than called cross-origin.
+     *
+     * Two things fall out of that, both worth keeping. The browser only ever talks to
+     * :5173, so there is no CORS configuration to get wrong — and every Playwright
+     * verification script in scripts/ still points at :5173 unchanged, including the ones
+     * that wait on `networkidle` and would otherwise never see the API's requests.
+     */
+    proxy: {
+      '/api': { target: 'http://127.0.0.1:3001', changeOrigin: true },
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,

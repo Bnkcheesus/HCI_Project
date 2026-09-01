@@ -5,6 +5,10 @@
 // `npm run test` and can only be seen in a browser.
 import { chromium } from 'playwright'
 
+// :5173, the port `npm run dev` serves — the same one check-chrome.mjs uses. This script
+// used to point at :5175, from when the kiosk and the phone were browsed from two dev
+// servers at once; there is one now, and it proxies /api to the backend.
+
 const PHONES = [
   ['iPhone SE', 375, 667],
   ['iPhone 14', 390, 844],
@@ -21,7 +25,7 @@ for (const [name, width, height] of PHONES) {
   const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 2 })
 
   for (const route of ROUTES) {
-    await page.goto(`http://localhost:5175${route}`, { waitUntil: 'networkidle' })
+    await page.goto(`http://localhost:5173${route}`, { waitUntil: 'networkidle' })
     await page.evaluate(() => document.fonts.ready)
     await page.waitForTimeout(350)
 
@@ -120,7 +124,7 @@ for (const [name, width, height] of PHONES) {
 console.log('\n— chế độ trợ năng —')
 {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 })
-  await page.goto('http://localhost:5175/mobile', { waitUntil: 'networkidle' })
+  await page.goto('http://localhost:5173/mobile', { waitUntil: 'networkidle' })
   await page.getByRole('button', { name: /Chế độ trợ năng/ }).click()
   await page.waitForTimeout(400)
 

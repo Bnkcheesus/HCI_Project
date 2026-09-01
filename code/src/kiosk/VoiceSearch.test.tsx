@@ -1,4 +1,5 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
+import { renderSettled } from '@/test/renderWithQuery'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -7,11 +8,10 @@ import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 import {
   FakeSpeechRecognition,
   installFakeSpeechRecognition,
-  removeSpeechRecognition,
-} from '@/test/fakeSpeechRecognition'
+  removeSpeechRecognition } from '@/test/fakeSpeechRecognition'
 
-function renderAt(path: string) {
-  return render(
+async function renderAt(path: string) {
+  return renderSettled(
     <MemoryRouter initialEntries={[path]}>
       <App />
     </MemoryRouter>,
@@ -31,7 +31,7 @@ describe('Voice search — when the browser supports it', () => {
 
   it('listens in place when the mic is tapped on the search screen', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/search')
+    await renderAt('/kiosk/search')
 
     await user.click(micButton())
 
@@ -43,7 +43,7 @@ describe('Voice search — when the browser supports it', () => {
 
   it('previews the partial transcript while the user is still speaking', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/search')
+    await renderAt('/kiosk/search')
     await user.click(micButton())
 
     act(() => FakeSpeechRecognition.last.emitInterim('giải'))
@@ -57,21 +57,23 @@ describe('Voice search — when the browser supports it', () => {
    */
   it('fills the field and updates the suggestions when speech settles', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/search')
+    await renderAt('/kiosk/search')
     await user.click(micButton())
 
     act(() => FakeSpeechRecognition.last.emitFinal('giải tích'))
 
     expect(screen.getByRole('searchbox')).toHaveValue('giải tích')
     expect(useBorrowSessionStore.getState().searchQuery).toBe('giải tích')
-    expect(screen.getByText('Giải tích 1')).toBeInTheDocument()
+    // The field fills the instant speech settles; the suggestions are a search away, so
+    // they arrive a moment later.
+    expect(await screen.findByText('Giải tích 1')).toBeInTheDocument()
     expect(screen.queryByText(/Đang nghe/)).not.toBeInTheDocument()
   })
 
   // A transcript is already accented; running it through Telex would eat the trailing s.
   it('does not re-encode an accented transcript through Telex', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/search')
+    await renderAt('/kiosk/search')
     await user.click(micButton())
 
     act(() => FakeSpeechRecognition.last.emitFinal('sách'))
@@ -81,7 +83,7 @@ describe('Voice search — when the browser supports it', () => {
 
   it('explains a denied microphone and points at the keyboard', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/search')
+    await renderAt('/kiosk/search')
     await user.click(micButton())
 
     act(() => FakeSpeechRecognition.last.emitError('not-allowed'))
@@ -92,7 +94,7 @@ describe('Voice search — when the browser supports it', () => {
 
   it('explains a network failure', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/search')
+    await renderAt('/kiosk/search')
     await user.click(micButton())
 
     act(() => FakeSpeechRecognition.last.emitError('network'))
@@ -102,7 +104,7 @@ describe('Voice search — when the browser supports it', () => {
 
   it('stops listening when the mic is tapped again', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/search')
+    await renderAt('/kiosk/search')
 
     await user.click(micButton())
     expect(micButton()).toHaveAttribute('aria-pressed', 'true')
@@ -114,7 +116,7 @@ describe('Voice search — when the browser supports it', () => {
   // The whole point of the request: the mic on the home screen must do both things.
   it('hands off from the home screen and starts listening on arrival', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk')
+    await renderAt('/kiosk')
 
     expect(screen.queryByRole('group', { name: 'Bàn phím ảo' })).not.toBeInTheDocument()
 
@@ -127,7 +129,7 @@ describe('Voice search — when the browser supports it', () => {
 
   it('does not listen when the search screen is opened by tapping the field', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk')
+    await renderAt('/kiosk')
 
     await user.click(screen.getByRole('searchbox'))
 
@@ -144,12 +146,12 @@ describe('Voice search — when the browser does not support it', () => {
   })
 
   // A dead mic button is worse than no button, so it is not rendered at all.
-  it('hides the mic on both screens', () => {
-    const { unmount } = renderAt('/kiosk/search')
+  it('hides the mic on both screens', async () => {
+    const { unmount } = await renderAt('/kiosk/search')
     expect(screen.queryByRole('button', { name: /giọng nói/ })).not.toBeInTheDocument()
     unmount()
 
-    renderAt('/kiosk')
+    await renderAt('/kiosk')
     expect(screen.queryByRole('button', { name: /giọng nói/ })).not.toBeInTheDocument()
   })
 })

@@ -12,7 +12,15 @@
  * `MERGE` — those are spelled differently on the two engines, and the whole point of this
  * codebase is that it does not branch on which database it is talking to.
  */
-import { availability, books, libraryStatus, loanHistory, shelfLocations, students } from '@/mocks'
+import {
+  availability,
+  books,
+  libraryStatus,
+  loanHistory,
+  shelfLocations,
+  students,
+  suggestedBooks,
+} from '@/mocks'
 import { buildSearchText } from '@/shared/text'
 import { createDb, currentDialect } from './dialect.ts'
 
@@ -32,6 +40,9 @@ if (missingShelves.length > 0) {
       'Chạy lại `npm run catalog:offline` để sinh lại libraryMap.ts.',
   )
 }
+
+/** The curated home-screen four, carried into the database as an explicit ordering. */
+const suggestedRank = new Map(suggestedBooks.map((b, index) => [b.id, index]))
 
 await db.transaction().execute(async (trx) => {
   // Children first — the reverse of the order they are inserted in below.
@@ -101,6 +112,8 @@ await db.transaction().execute(async (trx) => {
          * as a code, against its own column.
          */
         search_text: buildSearchText([b.title, b.author, b.subject]),
+        // The curated four, in the order they are listed — see the migration.
+        suggested_rank: suggestedRank.get(b.id) ?? null,
       })),
     )
     .execute()

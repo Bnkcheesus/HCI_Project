@@ -1,91 +1,29 @@
 /**
- * One view of everything a reader has borrowed — Job 4 / Pain 4 / Pain Reliever 4.
+ * Reading a reader's borrowing record — Job 4 / Pain 4 / Pain Reliever 4.
  *
- * The account is fed by two sources that have to be shown as one list:
+ * The *assembly* of that record moved to the server: `GET /api/accounts/:card/slips`
+ * groups loan rows into slips, because grouping is a join and the database is where the
+ * rows are. What is left here is the part that was always presentation — which slips are
+ * still open, in what order, and which books inside them are still out.
  *
- *   1. `loanHistory` — the seeded mock, standing in for what a server would already know
- *      about this card before the app was opened.
- *   2. `savedSlips()` — slips filed by the kiosk during this session (lib/loanSlips.ts).
- *      The receipt screen tells the reader "đã lưu vào ứng dụng LibAssist"; if the app did
- *      not then show them, that message would be a lie.
+ * Two comments that used to live at the top of this file are gone because they stopped
+ * being true, and that is the point of the whole exercise:
  *
- * Both are reshaped into the same thing: a *slip*, which is what the Figma card actually
- * models — borrow date and due date at the top, the books that went out together beneath.
- * The frame only ever draws a one-book slip, but the kiosk lends up to MAX_BOOKS_PER_LOAN
- * at once and Pain 4 is explicitly about "nhiều đầu sách cùng lúc", so grouping is the
- * shape that serves both.
- *
- * Known divergence, deliberate: `checkEligibility` at the kiosk counts only `loanHistory`,
- * not the slips filed this session. Without a backend the mock cannot be written to, and
- * making the borrowing limit shift mid-demo would be worse than a count that is stable.
+ *   - It used to merge two sources, seeded history and slips the kiosk had written into
+ *     `localStorage`, and warn that the merge was a stand-in for syncing. There is one
+ *     source now.
+ *   - It used to record a "known divergence, deliberate": the kiosk's borrowing limit
+ *     counted only the seeded history and ignored slips filed during the session, because
+ *     the mock could not be written to. The server counts real rows, so the limit is now
+ *     simply correct.
  */
-import { loanHistory, type LoanRecord } from '@/mocks'
-import { savedSlips } from './loanSlips'
+import type { AccountSlip } from '@/shared/types'
 
-export interface AccountSlipBook {
-  bookId: string
-  /** ISO date, or null while the book is still out. */
-  returnedAt: string | null
-}
-
-export interface AccountSlip {
-  id: string
-  borrowedAt: string
-  dueAt: string
-  books: AccountSlipBook[]
-  /** Where the slip came from. Both carry a real slip number; only the display differs. */
-  source: 'history' | 'kiosk'
-}
+export type { AccountSlip, AccountSlipBook } from '@/shared/types'
 
 /** A slip is still open while any book on it has not come back. */
 export function isSlipOpen(slip: AccountSlip): boolean {
   return slip.books.some((book) => book.returnedAt === null)
-}
-
-/**
- * History rows are per book; rows sharing a slipId went out on the same slip. That is what
- * makes a three-book loan render as one card instead of three cards repeating identical
- * dates.
- *
- * Grouped on the field rather than on borrowedAt + dueAt: two separate visits on one day
- * would collapse into a single slip under that guess, and the slip would have no number of
- * its own to show.
- */
-function groupHistory(records: LoanRecord[]): AccountSlip[] {
-  const groups = new Map<string, AccountSlip>()
-
-  for (const record of records) {
-    const existing = groups.get(record.slipId)
-    if (existing) {
-      existing.books.push({ bookId: record.bookId, returnedAt: record.returnedAt })
-      continue
-    }
-    groups.set(record.slipId, {
-      id: record.slipId,
-      borrowedAt: record.borrowedAt,
-      dueAt: record.dueAt,
-      books: [{ bookId: record.bookId, returnedAt: record.returnedAt }],
-      source: 'history',
-    })
-  }
-
-  return [...groups.values()]
-}
-
-export function accountSlips(cardCode: string): AccountSlip[] {
-  const history = groupHistory(loanHistory.filter((l) => l.studentId === cardCode))
-
-  const kiosk: AccountSlip[] = savedSlips()
-    .filter((slip) => slip.studentId === cardCode)
-    .map((slip) => ({
-      id: slip.id,
-      borrowedAt: slip.borrowedAt,
-      dueAt: slip.dueAt,
-      books: slip.bookIds.map((bookId) => ({ bookId, returnedAt: null })),
-      source: 'kiosk' as const,
-    }))
-
-  return [...kiosk, ...history]
 }
 
 /** Open slips, soonest due first — an overdue one therefore leads. */

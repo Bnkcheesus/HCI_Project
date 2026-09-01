@@ -64,6 +64,16 @@ export async function up(db: Kysely<unknown>): Promise<void> {
     .addColumn('year', 'integer', (c) => c.notNull())
     .addColumn('language', t.str(8), (c) => c.notNull())
     .addColumn('search_text', t.str(700), (c) => c.notNull())
+    /*
+     * Position on the kiosk home screen, or null for the other 112 books.
+     *
+     * A column rather than `SELECT TOP 4` off the front of the table: which four books
+     * greet a reader is a curation decision — one per faculty, all with real cover art,
+     * and deliberately four *different* availability states so the very first screen
+     * shows a green chip next to a black one. Ordering by id or by year would throw that
+     * away, and the four would silently change every time the catalogue is regenerated.
+     */
+    .addColumn('suggested_rank', 'integer')
     .execute()
 
   await db.schema.createIndex('books_subject_idx').on('books').column('subject').execute()

@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { renderSettled } from '@/test/renderWithQuery'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useSearchParams } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
@@ -11,8 +12,8 @@ function LocationStub() {
   return <p>Định vị: {params.get('book')}</p>
 }
 
-function renderQr() {
-  return render(
+async function renderQr() {
+  return renderSettled(
     <MemoryRouter initialEntries={['/mobile/qr']}>
       <Routes>
         <Route path="/mobile/qr" element={<QrPage />} />
@@ -31,15 +32,15 @@ describe('Mobile QR handoff', () => {
    * rather than drawing a fake feed, and that honesty has to survive onto the phone —
    * a demo that implies a working camera is a demo that lies.
    */
-  it('says the scan is simulated instead of implying a live camera', () => {
-    renderQr()
+  it('says the scan is simulated instead of implying a live camera', async () => {
+    await renderQr()
     expect(screen.getByRole('button', { name: /Mô phỏng quét/ })).toBeInTheDocument()
     expect(screen.getByText(/chưa nối camera/i)).toBeInTheDocument()
   })
 
   it('takes a simulated scan straight to the shelf directions', async () => {
     const user = userEvent.setup()
-    renderQr()
+    await renderQr()
 
     await user.click(screen.getByRole('button', { name: /Mô phỏng quét/ }))
     expect(screen.getByText(/^Định vị:/)).toBeInTheDocument()
@@ -47,7 +48,7 @@ describe('Mobile QR handoff', () => {
 
   it('opens the same screen from an ISBN typed by hand', async () => {
     const user = userEvent.setup()
-    renderQr()
+    await renderQr()
 
     await user.type(screen.getByLabelText(/nhập mã ISBN/i), book.isbn)
     await user.click(screen.getByRole('button', { name: 'Mở chỉ dẫn' }))
@@ -57,7 +58,7 @@ describe('Mobile QR handoff', () => {
 
   it('explains a bad code and stays put', async () => {
     const user = userEvent.setup()
-    renderQr()
+    await renderQr()
 
     await user.type(screen.getByLabelText(/nhập mã ISBN/i), '0000000000')
     await user.click(screen.getByRole('button', { name: 'Mở chỉ dẫn' }))
@@ -68,7 +69,7 @@ describe('Mobile QR handoff', () => {
 
   it('clears the error once the reader starts correcting it', async () => {
     const user = userEvent.setup()
-    renderQr()
+    await renderQr()
 
     const field = screen.getByLabelText(/nhập mã ISBN/i)
     await user.type(field, '1')
@@ -81,7 +82,7 @@ describe('Mobile QR handoff', () => {
 
   it('returns to the home screen', async () => {
     const user = userEvent.setup()
-    renderQr()
+    await renderQr()
 
     await user.click(screen.getByRole('button', { name: /Quay về/ }))
     expect(screen.getByText('Màn trang chủ')).toBeInTheDocument()

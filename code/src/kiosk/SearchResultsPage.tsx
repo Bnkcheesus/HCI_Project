@@ -4,6 +4,7 @@
 import { SearchX, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useLibraryInfo, useSearchBooks } from '@/api/queries'
 import { AdvancedFilterPanel } from '@/components/kiosk/AdvancedFilterPanel'
 import { KioskFooter } from '@/components/kiosk/KioskFooter'
 import { KioskHeader } from '@/components/kiosk/KioskHeader'
@@ -15,10 +16,9 @@ import {
   activeFilterCount,
   applyAdvancedFilters,
   countByType,
-  DEFAULT_FILTERS,
+  defaultFilters,
   filterByType,
   paginate,
-  searchCatalog,
   sortResults,
   type AdvancedFilters,
   type SortMode,
@@ -35,17 +35,44 @@ export function SearchResultsPage() {
   const [type, setType] = useState<TypeFilter>('all')
   const [sort, setSort] = useState<SortMode>('relevance')
   const [page, setPage] = useState(1)
-  const [filters, setFilters] = useState<AdvancedFilters>(DEFAULT_FILTERS)
   const [advancedOpen, setAdvancedOpen] = useState(false)
 
-  const matches = useMemo(() => searchCatalog(searchQuery), [searchQuery])
+  /*
+   * The server finds; the reader narrows.
+   *
+   * Only the text match crosses the network. Type chips, sorting, the year range and the
+   * stock facet all run here over the result set already in hand — they are pure
+   * functions with their own tests, the catalogue is 116 titles, and a round trip per
+   * chip tap would make the filters feel slower than the search that produced them.
+   */
+  const { data, isPending } = useSearchBooks(searchQuery)
+  const { data: library } = useLibraryInfo()
+
+  const matches = useMemo(() => data?.books ?? [], [data])
+  const availability = useMemo(() => data?.availability ?? {}, [data])
+
+  // Until the bounds arrive there is nothing to filter anyway; the placeholder keeps the
+  // slider from rendering an inverted range on the first paint.
+  const years = useMemo(
+    () => ({ min: library?.yearMin ?? 0, max: library?.yearMax ?? 0 }),
+    [library],
+  )
+
+  const [rawFilters, setFilters] = useState<AdvancedFilters | null>(null)
+  // Defaults depend on data that arrives asynchronously, so "untouched" is represented as
+  // null and resolved against the bounds — not seeded once with numbers that were wrong.
+  const filters = rawFilters ?? defaultFilters(years)
+
   // Advanced filters bite before the type chips, so their counts reflect what is
   // actually reachable rather than promising results the filters have already excluded.
-  const narrowed = useMemo(() => applyAdvancedFilters(matches, filters), [matches, filters])
+  const narrowed = useMemo(
+    () => applyAdvancedFilters(matches, filters, availability),
+    [matches, filters, availability],
+  )
   const counts = useMemo(() => countByType(narrowed), [narrowed])
   const visible = useMemo(
-    () => sortResults(filterByType(narrowed, type), sort),
-    [narrowed, type, sort],
+    () => sortResults(filterByType(narrowed, type), sort, availability),
+    [narrowed, type, sort, availability],
   )
   const current = paginate(visible, page)
 
@@ -123,12 +150,13 @@ export function SearchResultsPage() {
             sort={sort}
             onSortChange={changeSort}
             advancedOpen={advancedOpen}
-            advancedCount={activeFilterCount(filters)}
+            advancedCount={activeFilterCount(filters, years)}
             onToggleAdvanced={() => setAdvancedOpen((open) => !open)}
             advancedPanel={
               advancedOpen && (
                 <AdvancedFilterPanel
                   filters={filters}
+                  years={years}
                   onChange={changeFilters}
                   onClose={() => setAdvancedOpen(false)}
                 />
@@ -143,10 +171,18 @@ export function SearchResultsPage() {
           max-width and centring live on the track inside it. See HomePage for the why. */}
         <main className="w-full overflow-y-auto">
           <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-4 px-10 py-4">
-          {matches.length === 0 ? (
+          {isPending ? (
+            /* No skeleton grid: the reader arrives here from a screen they just typed on,
+               and a flash of eight grey cards followed by real ones reads as the results
+               changing under them. A quiet moment is calmer and, on a local network,
+               shorter than the animation would be. */
+            <p className="py-16 text-center text-muted-foreground" style={{ fontSize: 'var(--text-body)' }}>
+              Đang tìm sách…
+            </p>
+          ) : matches.length === 0 ? (
             <EmptyState query={searchQuery} onRetry={openSearch} />
           ) : current.items.length === 0 ? (
-            <NoMatchForFilters onReset={() => changeFilters(DEFAULT_FILTERS)} />
+            <NoMatchForFilters onReset={() => changeFilters(defaultFilters(years))} />
           ) : (
             <section className="flex flex-col gap-4">
               <h1
@@ -159,7 +195,11 @@ export function SearchResultsPage() {
               <ul className="grid grid-cols-2 gap-5 lg:grid-cols-4">
                 {current.items.map((book) => (
                   <li key={book.id} className="min-w-0">
-                    <ResultCard book={book} onSelect={handleSelectBook} />
+                    <ResultCard
+                      book={book}
+                      availability={availability[book.id]}
+                      onSelect={handleSelectBook}
+                    />
                   </li>
                 ))}
               </ul>

@@ -1,5 +1,5 @@
 import { Book, MapPin } from 'lucide-react'
-import { AISLE_COUNT, type ShelfLocation } from '@/mocks'
+import { AISLE_COUNT, type ShelfLocation } from '@/shared/types'
 import { cn } from '@/lib/utils'
 
 /**

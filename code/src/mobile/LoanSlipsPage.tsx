@@ -3,13 +3,27 @@
 // Figma frame: Phone-PhieuMuon (49:122), with its three status variants.
 import { MobileFrame } from '@/components/mobile/MobileFrame'
 import { SlipCard } from '@/components/mobile/SlipCard'
-import { accountSlips, closedSlips, openSlips } from '@/lib/accountSlips'
+import { useAccount, useBooksByIds } from '@/api/queries'
+import { closedSlips, openSlips } from '@/lib/accountSlips'
+import type { Book } from '@/shared/types'
 import { MOBILE_ACCOUNT_CARD } from './account'
 
 export function LoanSlipsPage() {
-  const slips = accountSlips(MOBILE_ACCOUNT_CARD)
+  const { data: account } = useAccount(MOBILE_ACCOUNT_CARD)
+  const slips = account?.slips ?? []
   const open = openSlips(slips)
   const closed = closedSlips(slips)
+
+  /*
+   * Every book across every slip, in one request.
+   *
+   * A slip holds ids; the card needs titles, authors and cover art. Fetching from inside
+   * `SlipCard` would mean one request per book per card — a reader with six slips would
+   * open a dozen connections to draw one screen.
+   */
+  const bookIds = [...new Set(slips.flatMap((s) => s.books.map((b) => b.bookId)))]
+  const { data: bookSet } = useBooksByIds(bookIds)
+  const booksById = Object.fromEntries((bookSet?.books ?? []).map((b) => [b.id, b]))
 
   return (
     <MobileFrame title="Danh sách phiếu mượn" backTo="/mobile">
@@ -35,6 +49,7 @@ export function LoanSlipsPage() {
             count={open.length}
             empty="Bạn không còn cuốn nào chưa trả."
             slips={open}
+            booksById={booksById}
           />
           <SlipSection
             id="returned"
@@ -42,6 +57,7 @@ export function LoanSlipsPage() {
             count={closed.length}
             empty="Chưa có phiếu nào hoàn tất."
             slips={closed}
+            booksById={booksById}
           />
         </>
       )}
@@ -61,9 +77,11 @@ interface SlipSectionProps {
   count: number
   empty: string
   slips: ReturnType<typeof openSlips>
+  /** Catalogue records for every book on these slips, fetched once by the page. */
+  booksById: Record<string, Book>
 }
 
-function SlipSection({ id, title, count, empty, slips }: SlipSectionProps) {
+function SlipSection({ id, title, count, empty, slips, booksById }: SlipSectionProps) {
   return (
     <section className="flex flex-col gap-3" aria-labelledby={`slips-${id}`}>
       <h2
@@ -79,7 +97,7 @@ function SlipSection({ id, title, count, empty, slips }: SlipSectionProps) {
           {empty}
         </p>
       ) : (
-        slips.map((slip) => <SlipCard key={slip.id} slip={slip} />)
+        slips.map((slip) => <SlipCard key={slip.id} slip={slip} booksById={booksById} />)
       )}
     </section>
   )

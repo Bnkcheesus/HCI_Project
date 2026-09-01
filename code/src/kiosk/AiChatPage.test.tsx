@@ -1,4 +1,5 @@
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
+import { renderSettled } from '@/test/renderWithQuery'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -9,11 +10,10 @@ import { useChatStore } from '@/state/useChatStore'
 import {
   FakeSpeechRecognition,
   installFakeSpeechRecognition,
-  removeSpeechRecognition,
-} from '@/test/fakeSpeechRecognition'
+  removeSpeechRecognition } from '@/test/fakeSpeechRecognition'
 
-function renderChat() {
-  return render(
+async function renderChat() {
+  return renderSettled(
     <MemoryRouter initialEntries={['/kiosk/ai-chat']}>
       <App />
     </MemoryRouter>,
@@ -58,8 +58,8 @@ beforeEach(() => {
 })
 
 describe('AI chat — the empty state', () => {
-  it('invites the reader and offers one-tap starters', () => {
-    renderChat()
+  it('invites the reader and offers one-tap starters', async () => {
+    await renderChat()
 
     expect(screen.getByText('Trò chuyện với chatbot để tìm sách')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: ASK_AI_BOOKS })).toBeInTheDocument()
@@ -68,7 +68,7 @@ describe('AI chat — the empty state', () => {
 
   it('cannot send an empty question', async () => {
     const user = userEvent.setup()
-    renderChat()
+    await renderChat()
 
     await user.click(sendKey())
 
@@ -81,7 +81,7 @@ describe('AI chat — the empty state', () => {
 describe('AI chat — asking a question', () => {
   it('answers a tapped starter and keeps both turns in the transcript', async () => {
     const user = userEvent.setup()
-    renderChat()
+    await renderChat()
 
     await user.click(screen.getByRole('button', { name: ASK_HOURS }))
 
@@ -91,7 +91,7 @@ describe('AI chat — asking a question', () => {
 
   it('answers a typed question', async () => {
     const user = userEvent.setup()
-    renderChat()
+    await renderChat()
 
     await user.type(composer(), 'sach vaatj lys')
     // Physical-keyboard input is routed through Telex, same as the search screen.
@@ -111,7 +111,7 @@ describe('AI chat — asking a question', () => {
    */
   it('sends on Enter from a physical keyboard', async () => {
     const user = userEvent.setup()
-    renderChat()
+    await renderChat()
 
     await user.type(composer(), 'sach vaatj lys{Enter}')
 
@@ -122,7 +122,7 @@ describe('AI chat — asking a question', () => {
   /** A silent gap after sending reads as a broken kiosk. */
   it('shows a thinking indicator, then replaces it with the answer', async () => {
     const user = userEvent.setup()
-    renderChat()
+    await renderChat()
 
     await user.click(screen.getByRole('button', { name: ASK_HOURS }))
 
@@ -133,14 +133,14 @@ describe('AI chat — asking a question', () => {
   })
 
   // The persona has low vision: a new answer has to be announced, not merely drawn.
-  it('publishes the transcript as a live region', () => {
-    renderChat()
+  it('publishes the transcript as a live region', async () => {
+    await renderChat()
     expect(screen.getByRole('log')).toHaveAttribute('aria-live', 'polite')
   })
 
   it('sends from the on-screen keyboard', async () => {
     const user = userEvent.setup()
-    renderChat()
+    await renderChat()
 
     const keyboard = within(screen.getByRole('group', { name: 'Bàn phím ảo' }))
     // The enter key must say what it does here — "Tìm kiếm" would promise a search.
@@ -158,38 +158,45 @@ describe('AI chat — asking a question', () => {
 describe('AI chat — the suggestion panel', () => {
   it('lists the answered books with shelf and availability', async () => {
     const user = userEvent.setup()
-    renderChat()
+    await renderChat()
 
     await user.click(screen.getByRole('button', { name: ASK_AI_BOOKS }))
     await findAnswer(ANSWER_BOOKS)
 
-    const row = sidePanel().getByRole('button', { name: /Hands-On Machine Learning/ })
+    /*
+     * `findBy`, not `getBy`. The reply names book *ids*; the panel then fetches the
+     * records for them, so the list fills a beat after the answer text appears. That gap
+     * is real on the kiosk too — this is the assertion noticing it, not working around it.
+     */
+    const row = await sidePanel().findByRole('button', { name: /Hands-On Machine Learning/ })
     expect(row).toHaveTextContent('Kệ A4')
     expect(row).toHaveTextContent(`Còn ${availability['hands-on-ml'].copiesAvailable} cuốn`)
   })
 
   it('marks the answered shelves on the floor map legend', async () => {
     const user = userEvent.setup()
-    renderChat()
+    await renderChat()
 
     expect(screen.getByText(/Kệ sách sẽ được đánh dấu ở đây/)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: ASK_LOCATION }))
     await findAnswer(ANSWER_LOCATION)
 
-    expect(sidePanel().getByText(/Kệ MA-101 — Khu Toán đại cương, tầng 1/)).toBeInTheDocument()
+    // The legend is drawn from the shelves that come back with the suggested books, so
+    // it lands a moment after the reply text.
+    expect(await sidePanel().findByText(/Kệ MA-101 — Khu Toán đại cương, tầng 1/)).toBeInTheDocument()
   })
 
   it('opens a suggested book on the detail screen', async () => {
     const user = userEvent.setup()
-    renderChat()
+    await renderChat()
 
     await user.click(screen.getByRole('button', { name: ASK_LOCATION }))
     await findAnswer(ANSWER_LOCATION)
 
-    await user.click(sidePanel().getByRole('button', { name: /Giải tích 1/ }))
+    await user.click(await sidePanel().findByRole('button', { name: /Giải tích 1/ }))
 
-    expect(screen.getByRole('button', { name: /Mượn sách|Đã mượn hết/ })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: /Mượn sách|Đã mượn hết/ })).toBeInTheDocument()
     expect(useBorrowSessionStore.getState().selectedBookId).toBe('giai-tich-1')
   })
 
@@ -199,7 +206,7 @@ describe('AI chat — the suggestion panel', () => {
    */
   it('keeps the last real suggestions when a later answer has no books', async () => {
     const user = userEvent.setup()
-    renderChat()
+    await renderChat()
 
     await user.click(screen.getByRole('button', { name: ASK_LOCATION }))
     await findAnswer(ANSWER_LOCATION)
@@ -209,7 +216,7 @@ describe('AI chat — the suggestion panel', () => {
     await user.click(sendKey())
     await findAnswer(ANSWER_HOURS)
 
-    expect(sidePanel().getByRole('button', { name: /Giải tích 1/ })).toBeInTheDocument()
+    expect(await sidePanel().findByRole('button', { name: /Giải tích 1/ })).toBeInTheDocument()
   })
 })
 
@@ -220,13 +227,13 @@ describe('AI chat — the conversation survives a detour', () => {
    */
   it('still has the transcript after visiting a book and returning', async () => {
     const user = userEvent.setup()
-    renderChat()
+    await renderChat()
 
     await user.click(screen.getByRole('button', { name: ASK_LOCATION }))
     await findAnswer(ANSWER_LOCATION)
 
-    await user.click(sidePanel().getByRole('button', { name: /Giải tích 1/ }))
-    await user.click(screen.getByRole('button', { name: /^Quay về$/ }))
+    await user.click(await sidePanel().findByRole('button', { name: /Giải tích 1/ }))
+    await user.click(await screen.findByRole('button', { name: /^Quay về$/ }))
 
     expect(screen.getByRole('log')).toHaveTextContent(ASK_LOCATION)
   })
@@ -241,7 +248,7 @@ describe('AI chat — voice input', () => {
 
   it('fills the question box from speech without re-encoding it through Telex', async () => {
     const user = userEvent.setup()
-    renderChat()
+    await renderChat()
 
     await user.click(screen.getByRole('button', { name: 'Hỏi bằng giọng nói' }))
     expect(FakeSpeechRecognition.last.lang).toBe('vi-VN')
@@ -255,8 +262,8 @@ describe('AI chat — voice input', () => {
 describe('AI chat — when the browser has no speech support', () => {
   beforeEach(() => removeSpeechRecognition())
 
-  it('hides the mic rather than showing a dead button', () => {
-    renderChat()
+  it('hides the mic rather than showing a dead button', async () => {
+    await renderChat()
     expect(screen.queryByRole('button', { name: 'Hỏi bằng giọng nói' })).not.toBeInTheDocument()
     expect(sendKey()).toBeInTheDocument()
   })

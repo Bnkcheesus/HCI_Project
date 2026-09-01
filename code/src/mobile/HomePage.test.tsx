@@ -1,4 +1,5 @@
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
+import { renderSettled } from '@/test/renderWithQuery'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -8,8 +9,8 @@ import { useAccessibilityStore } from '@/state/useAccessibilityStore'
 import { MOBILE_ACCOUNT_CARD } from './account'
 import { MobileHomePage } from './HomePage'
 
-function renderHome() {
-  return render(
+async function renderHome() {
+  return renderSettled(
     <MemoryRouter initialEntries={['/mobile']}>
       <Routes>
         <Route path="/mobile" element={<MobileHomePage />} />
@@ -29,8 +30,8 @@ beforeEach(() => {
 })
 
 describe('Mobile home', () => {
-  it('greets the account holder by name', () => {
-    renderHome()
+  it('greets the account holder by name', async () => {
+    await renderHome()
     expect(screen.getByRole('heading', { name: findStudentByCard(MOBILE_ACCOUNT_CARD)!.name })).toBeInTheDocument()
   })
 
@@ -39,14 +40,14 @@ describe('Mobile home', () => {
    * scenario.md has the reader glance at the app on their way out and see the reminder
    * without tapping — Pain Reliever 4 promises the app *nhắc*, not merely stores.
    */
-  it('shows the nearest due date without the reader tapping anything', () => {
-    renderHome()
+  it('shows the nearest due date without the reader tapping anything', async () => {
+    await renderHome()
     expect(screen.getByText(urgentBook.title)).toBeInTheDocument()
     expect(screen.getByText(dueCountdown(urgent.dueAt))).toBeInTheDocument()
   })
 
-  it('leads with the loan that runs out of time first', () => {
-    renderHome()
+  it('leads with the loan that runs out of time first', async () => {
+    await renderHome()
     // Derived, not hardcoded: the seeded loans move with today's date.
     const soonest = [...openLoans].sort((a, b) => a.dueAt.localeCompare(b.dueAt))[0]
     expect(soonest.id).toBe(urgent.id)
@@ -55,7 +56,7 @@ describe('Mobile home', () => {
 
   it('offers the two actions the design specifies', async () => {
     const user = userEvent.setup()
-    renderHome()
+    await renderHome()
 
     const nav = within(screen.getByRole('navigation', { name: 'Chức năng chính' }))
     await user.click(nav.getByRole('button', { name: /Quét QR/ }))
@@ -64,7 +65,7 @@ describe('Mobile home', () => {
 
   it('opens the loan list from the reminder as well as from the menu', async () => {
     const user = userEvent.setup()
-    renderHome()
+    await renderHome()
 
     await user.click(screen.getByText(urgentBook.title))
     expect(screen.getByText('Màn phiếu mượn')).toBeInTheDocument()
@@ -77,7 +78,7 @@ describe('Mobile home', () => {
    */
   it('carries the accessibility toggle', async () => {
     const user = userEvent.setup()
-    renderHome()
+    await renderHome()
 
     const toggle = screen.getByRole('button', { name: /Chế độ trợ năng/ })
     expect(toggle).toHaveAttribute('aria-pressed', 'false')

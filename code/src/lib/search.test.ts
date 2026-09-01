@@ -1,87 +1,47 @@
+/**
+ * Narrowing a result set — the half of search that stayed in the browser.
+ *
+ * The *finding* moved to the server: `searchCatalog` is gone, and the cases that covered
+ * it (subject and author matches, an unaccented Vietnamese query, a full and a partial
+ * ISBN, and the guard that keeps "2022" from being read as a code) now live in
+ * `server/test/api.spec.ts`, where they run against real SQL. Nothing was dropped.
+ *
+ * What is tested here is what still runs on the reader's own screen: type chips, sorting,
+ * pagination and the advanced filters. They take the result set and its copy counts as
+ * arguments now — the same pair the search endpoint returns together — so a fixture
+ * stands in for what the server would have sent.
+ */
 import { describe, expect, it } from 'vitest'
 import {
   activeFilterCount,
   applyAdvancedFilters,
   copiesAvailable,
-  DEFAULT_FILTERS,
   countByType,
+  defaultFilters,
   filterByType,
   paginate,
-  searchCatalog,
   sortResults,
 } from './search'
-import { books } from '@/mocks'
-
-describe('searchCatalog', () => {
-  it('matches on subject as well as title', () => {
-    const ids = searchCatalog('machine learning').map((b) => b.id)
-    expect(ids).toContain('statistical-learning')
-    expect(ids).toContain('pattern-recognition')
-  })
-
-  it('matches a Vietnamese query typed without tones', () => {
-    expect(searchCatalog('giai tich').map((b) => b.id)).toContain('giai-tich-1')
-  })
-
-  it('matches on author', () => {
-    expect(searchCatalog('Géron').map((b) => b.id)).toEqual(['hands-on-ml'])
-  })
-
-  it('returns nothing for a blank query', () => {
-    expect(searchCatalog('   ')).toEqual([])
-  })
-})
+import { availability, books } from '@/mocks'
+import { buildSearchText } from '@/shared/text'
 
 /**
- * The search field has always advertised ISBN ("Nhập tên sách, tác giả hoặc mã ISBN..."),
- * and for a long time did not match on it. These lock the promise to the behaviour.
+ * Stands in for `GET /api/books?q=machine learning`, folded the same way the server folds
+ * it. Not a hand-picked list: a fixed set of ids would stop matching the catalogue the
+ * moment it is regenerated, and this is the same query the API tests use.
  */
-describe('searchCatalog — by ISBN', () => {
-  const book = books.find((b) => b.id === 'cormen-algorithms')!
+const results = books.filter((b) =>
+  buildSearchText([b.title, b.author, b.subject]).includes(buildSearchText(['machine learning'])),
+)
 
-  it('finds the book from its full ISBN', () => {
-    expect(searchCatalog(book.isbn).map((b) => b.id)).toEqual([book.id])
-  })
-
-  // Printed with dashes on the cover, keyed without them — normalizeIsbn is shared with
-  // the scanner so both screens accept the same spellings.
-  it('ignores the dashes and spaces a cover prints', () => {
-    const printed = `${book.isbn.slice(0, 3)}-${book.isbn.slice(3, 8)} ${book.isbn.slice(8)}`
-    expect(searchCatalog(printed).map((b) => b.id)).toEqual([book.id])
-  })
-
-  it('narrows as the reader keys the code in, matching a partial run', () => {
-    const ids = searchCatalog(book.isbn.slice(0, 9)).map((b) => b.id)
-    expect(ids).toContain(book.id)
-  })
-
-  /**
-   * The guard that makes this safe. Every ISBN-13 starts "978" and years are four digits,
-   * so a short run of digits must stay ordinary text — otherwise "2022" returns every book
-   * whose code happens to contain it, and the results screen fills with noise.
-   */
-  it.each([
-    ['978', 'the prefix every ISBN-13 shares'],
-    [book.isbn.slice(4, 8), 'four digits taken from a real code'],
-  ])('does not treat %s as a code (%s)', (short) => {
-    // Taken from the catalogue rather than made up: the run provably sits inside at least
-    // one ISBN, so if the guard were missing this query would drag those books in.
-    expect(books.some((b) => b.isbn.includes(short))).toBe(true)
-
-    const matchedByText = books.filter(
-      (b) => b.title.includes(short) || b.author.includes(short) || b.subject.includes(short),
-    )
-    expect(searchCatalog(short)).toEqual(matchedByText)
-  })
-
-  it('finds nothing for a code no book carries', () => {
-    expect(searchCatalog('0000000000000')).toEqual([])
-  })
-})
+const YEARS = {
+  min: Math.min(...books.map((b) => b.year)),
+  max: Math.max(...books.map((b) => b.year)),
+}
+const NONE = defaultFilters(YEARS)
+const copies = (id: string) => copiesAvailable(availability, id)
 
 describe('filterByType and countByType', () => {
-  const results = searchCatalog('machine learning')
-
   it('counts each document type', () => {
     const counts = countByType(results)
     expect(counts.all).toBe(results.length)
@@ -101,23 +61,22 @@ describe('filterByType and countByType', () => {
 
 describe('sortResults', () => {
   it('puts books with copies on the shelf ahead of ones that are out', () => {
-    const sorted = sortResults(searchCatalog('machine learning'), 'available')
-    const firstOutIndex = sorted.findIndex((b) => copiesAvailable(b.id) === 0)
+    const sorted = sortResults(results, 'available', availability)
+    const firstOutIndex = sorted.findIndex((b) => copies(b.id) === 0)
     const lastInStockIndex = sorted.reduce(
-      (acc, b, i) => (copiesAvailable(b.id) > 0 ? i : acc),
+      (acc, b, i) => (copies(b.id) > 0 ? i : acc),
       -1,
     )
     expect(lastInStockIndex).toBeLessThan(firstOutIndex)
   })
 
   it('sorts by title', () => {
-    const titles = sortResults(searchCatalog('machine learning'), 'title').map((b) => b.title)
+    const titles = sortResults(results, 'title', availability).map((b) => b.title)
     expect(titles).toEqual([...titles].sort((a, b) => a.localeCompare(b, 'vi')))
   })
 
   it('leaves order untouched for relevance', () => {
-    const results = searchCatalog('machine learning')
-    expect(sortResults(results, 'relevance')).toEqual(results)
+    expect(sortResults(results, 'relevance', availability)).toEqual(results)
   })
 })
 
@@ -147,41 +106,39 @@ describe('paginate', () => {
 })
 
 describe('advanced filters', () => {
-  const results = searchCatalog('machine learning')
-
   it('is inert by default', () => {
-    expect(applyAdvancedFilters(results, DEFAULT_FILTERS)).toHaveLength(results.length)
-    expect(activeFilterCount(DEFAULT_FILTERS)).toBe(0)
+    expect(applyAdvancedFilters(results, NONE, availability)).toHaveLength(results.length)
+    expect(activeFilterCount(NONE, YEARS)).toBe(0)
   })
 
   it('narrows by publication year', () => {
-    const recent = applyAdvancedFilters(results, { ...DEFAULT_FILTERS, yearFrom: 2022 })
+    const recent = applyAdvancedFilters(results, { ...NONE, yearFrom: 2022 }, availability)
     expect(recent.every((b) => b.year >= 2022)).toBe(true)
     expect(recent.map((b) => b.id)).not.toContain('pattern-recognition') // 2006
   })
 
   it('narrows by language', () => {
-    const vi = applyAdvancedFilters(results, { ...DEFAULT_FILTERS, languages: ['vi'] })
+    const vi = applyAdvancedFilters(results, { ...NONE, languages: ['vi'] }, availability)
     expect(vi.map((b) => b.id)).toEqual(['tia-sang-ai'])
   })
 
   it('narrows by stock state', () => {
-    const out = applyAdvancedFilters(results, { ...DEFAULT_FILTERS, stock: ['out'] })
-    expect(out.every((b) => copiesAvailable(b.id) === 0)).toBe(true)
+    const out = applyAdvancedFilters(results, { ...NONE, stock: ['out'] }, availability)
+    expect(out.every((b) => copies(b.id) === 0)).toBe(true)
     expect(out.length).toBeGreaterThan(0)
   })
 
   it('treats an empty facet as no restriction rather than excluding everything', () => {
-    expect(applyAdvancedFilters(results, { ...DEFAULT_FILTERS, languages: [], stock: [] })).toHaveLength(
+    expect(applyAdvancedFilters(results, { ...NONE, languages: [], stock: [] }, availability)).toHaveLength(
       results.length,
     )
   })
 
   it('counts each narrowed facet for the button badge', () => {
-    expect(activeFilterCount({ ...DEFAULT_FILTERS, languages: ['vi'] })).toBe(1)
-    expect(activeFilterCount({ ...DEFAULT_FILTERS, languages: ['vi'], stock: ['out'] })).toBe(2)
+    expect(activeFilterCount({ ...NONE, languages: ['vi'] }, YEARS)).toBe(1)
+    expect(activeFilterCount({ ...NONE, languages: ['vi'], stock: ['out'] }, YEARS)).toBe(2)
     expect(
-      activeFilterCount({ ...DEFAULT_FILTERS, yearFrom: 2020, languages: ['vi'], stock: ['out'] }),
+      activeFilterCount({ ...NONE, yearFrom: 2020, languages: ['vi'], stock: ['out'] }, YEARS),
     ).toBe(3)
   })
 })

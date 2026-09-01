@@ -1,6 +1,5 @@
 import { create } from 'zustand'
-import type { LoanSlip } from '@/lib/borrow'
-import { saveSlip } from '@/lib/loanSlips'
+import type { LoanSlip } from '@/shared/types'
 
 // Cross-screen session state for the search -> locate -> scan -> borrow flow.
 // Backs Job 1–4 / Product-Service 1–4 across kiosk-search-results, kiosk-book-info,
@@ -62,12 +61,15 @@ export const useBorrowSessionStore = create<BorrowSessionState>((set) => ({
 
   setStudentCard: (studentCardCode) => set({ studentCardCode }),
 
-  // Syncing happens here rather than on the receipt screen because this is the single
-  // moment a borrow becomes real — a caller cannot confirm a loan and forget to file it.
-  completeBorrow: (slip) => {
-    saveSlip(slip)
-    set({ slip, scanStep: 'complete' })
-  },
+  /*
+   * Records the slip the server just filed, for the receipt screen to render.
+   *
+   * It used to also write the slip into `localStorage`, which was the closest thing to
+   * "đồng bộ app" available without a backend — and which only ever worked when the kiosk
+   * and the phone were the same browser. The loan is now a row the phone can read from
+   * anywhere, so the copy here is nothing more than what to draw on the next screen.
+   */
+  completeBorrow: (slip) => set({ slip, scanStep: 'complete' }),
 
   resetCheckout: () => set({ ...EMPTY_CHECKOUT }),
 

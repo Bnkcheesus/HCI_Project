@@ -88,6 +88,15 @@ export interface ShelfLocation {
   directions: string[]
 }
 
+/**
+ * Number of shelf runs drawn on the floor plan.
+ *
+ * Geometry rather than data, which is why it is a constant here and not a column: the map
+ * component draws this many aisles, and the catalogue generator places shelves into them.
+ * The two have to agree or a shelf lands outside the drawing.
+ */
+export const AISLE_COUNT = 5
+
 /* --------------------------------------------------------------------- library card */
 
 export interface Student {

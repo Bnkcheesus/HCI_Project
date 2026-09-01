@@ -1,7 +1,7 @@
 import { BookMarked, X } from 'lucide-react'
 import { MAX_BOOKS_PER_LOAN } from '@/lib/borrow'
-import { books } from '@/mocks'
 import { cn } from '@/lib/utils'
+import type { Book } from '@/shared/types'
 
 /**
  * The books scanned into this checkout so far.
@@ -22,11 +22,17 @@ const SPINE_COLOR: Record<number, string> = {
 
 interface ScanCartProps {
   bookIds: string[]
+  /**
+   * Catalogue records for the scanned books, keyed by id — fetched by the step that owns
+   * the cart. A row whose record has not arrived yet simply does not draw, which is the
+   * same thing the old lookup did for an id it could not find.
+   */
+  booksById: Record<string, Book>
   /** Omitted on the confirmation step, where the list is a summary, not an editor. */
   onRemove?: (bookId: string) => void
 }
 
-export function ScanCart({ bookIds, onRemove }: ScanCartProps) {
+export function ScanCart({ bookIds, booksById, onRemove }: ScanCartProps) {
   return (
     // h-full, not just min-h-0: the page gives this a fixed box, and without it the
     // section grows to its natural height, spills past the box's overflow-hidden and the
@@ -58,7 +64,7 @@ export function ScanCart({ bookIds, onRemove }: ScanCartProps) {
       ) : (
         <ul className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto pr-1">
           {bookIds.map((id) => {
-            const book = books.find((b) => b.id === id)
+            const book = booksById[id]
             if (!book) return null
 
             return (

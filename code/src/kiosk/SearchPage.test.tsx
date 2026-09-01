@@ -1,4 +1,5 @@
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
+import { renderSettled } from '@/test/renderWithQuery'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -7,8 +8,8 @@ import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 import { useKeyboardStore } from '@/state/useKeyboardStore'
 import { SearchPage } from './SearchPage'
 
-function renderSearch() {
-  return render(
+async function renderSearch() {
+  return renderSettled(
     <MemoryRouter initialEntries={['/kiosk/search']}>
       <SearchPage />
     </MemoryRouter>,
@@ -26,30 +27,30 @@ describe('Kiosk SearchPage', () => {
    * results → back is a normal loop, and losing the query there would mean retyping it
    * on an on-screen keyboard.
    */
-  it('keeps the query when the search screen is re-entered', () => {
+  it('keeps the query when the search screen is re-entered', async () => {
     useBorrowSessionStore.getState().setSearchQuery('giải tích')
-    renderSearch()
+    await renderSearch()
     expect(screen.getByRole('searchbox')).toHaveValue('giải tích')
   })
 
   // The keyboard's enter key is configurable so the AI chat can label it "Gửi"; this
   // screen must keep its own default.
-  it('keeps "Tìm kiếm" on the on-screen keyboard enter key', () => {
-    renderSearch()
+  it('keeps "Tìm kiếm" on the on-screen keyboard enter key', async () => {
+    await renderSearch()
     const keyboard = within(screen.getByRole('group', { name: 'Bàn phím ảo' }))
     expect(keyboard.getByRole('button', { name: 'Tìm kiếm' })).toBeInTheDocument()
   })
 
   // The caret must already be in the field on arrival — the on-screen keyboard is
   // useless without focus, and users should not have to tap twice.
-  it('focuses the search field on arrival', () => {
-    renderSearch()
+  it('focuses the search field on arrival', async () => {
+    await renderSearch()
     expect(screen.getByRole('searchbox')).toHaveFocus()
   })
 
   it('keeps focus in the field while typing on the on-screen keyboard', async () => {
     const user = userEvent.setup()
-    renderSearch()
+    await renderSearch()
 
     await user.click(screen.getByRole('button', { name: 'a' }))
 
@@ -58,7 +59,7 @@ describe('Kiosk SearchPage', () => {
 
   it('docks the keyboard to either side and back', async () => {
     const user = userEvent.setup()
-    renderSearch()
+    await renderSearch()
 
     await user.click(screen.getByRole('button', { name: /sang phải/i }))
     expect(useKeyboardStore.getState().layout).toBe('right')
@@ -70,8 +71,8 @@ describe('Kiosk SearchPage', () => {
     expect(useKeyboardStore.getState().layout).toBe('full')
   })
 
-  it('shows suggested books before the user types anything', () => {
-    renderSearch()
+  it('shows suggested books before the user types anything', async () => {
+    await renderSearch()
     expect(screen.getByText('Gợi ý cho bạn')).toBeInTheDocument()
     expect(screen.getByText(suggestedBooks[0].title)).toBeInTheDocument()
   })
@@ -79,7 +80,7 @@ describe('Kiosk SearchPage', () => {
   // Telex on the on-screen keyboard: g-i-a-i-r must render "giải", not "giair".
   it('types Vietnamese tones through the on-screen keyboard', async () => {
     const user = userEvent.setup()
-    renderSearch()
+    await renderSearch()
 
     for (const key of ['g', 'i', 'a', 'i', 'r']) {
       await user.click(screen.getByRole('button', { name: key }))
@@ -90,7 +91,7 @@ describe('Kiosk SearchPage', () => {
 
   it('replaces the suggestions with live matches once the user types', async () => {
     const user = userEvent.setup()
-    renderSearch()
+    await renderSearch()
 
     for (const key of ['g', 'i', 'a', 'i', 'r']) {
       await user.click(screen.getByRole('button', { name: key }))
@@ -106,7 +107,7 @@ describe('Kiosk SearchPage', () => {
   // Typing without tones must still find the book — Telex is optional, not required.
   it('matches a query typed without diacritics', async () => {
     const user = userEvent.setup()
-    renderSearch()
+    await renderSearch()
 
     for (const key of ['v', 'a', 't']) {
       await user.click(screen.getByRole('button', { name: key }))
@@ -117,7 +118,7 @@ describe('Kiosk SearchPage', () => {
 
   it('reports when nothing matches', async () => {
     const user = userEvent.setup()
-    renderSearch()
+    await renderSearch()
 
     for (let i = 0; i < 3; i++) {
       await user.click(screen.getByRole('button', { name: 'z' }))
@@ -128,7 +129,7 @@ describe('Kiosk SearchPage', () => {
 
   it('backspace deletes the last character', async () => {
     const user = userEvent.setup()
-    renderSearch()
+    await renderSearch()
 
     await user.click(screen.getByRole('button', { name: 'a' }))
     await user.click(screen.getByRole('button', { name: 'b' }))

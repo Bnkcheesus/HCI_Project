@@ -1,16 +1,16 @@
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
+import { renderSettled } from '@/test/renderWithQuery'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { books } from '@/mocks'
-import { findBookByCode } from '@/lib/borrow'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 import { BookInfoPage } from './BookInfoPage'
 
 const BOOK = 'statistical-learning'
 
-function renderBook(bookId: string) {
-  return render(
+async function renderBook(bookId: string) {
+  return renderSettled(
     <MemoryRouter initialEntries={[`/kiosk/books/${bookId}`]}>
       <Routes>
         <Route path="/kiosk/books/:bookId" element={<BookInfoPage />} />
@@ -25,8 +25,8 @@ describe('Kiosk BookInfoPage', () => {
     useBorrowSessionStore.getState().reset()
   })
 
-  it('shows the book, its availability and its metadata', () => {
-    renderBook('statistical-learning')
+  it('shows the book, its availability and its metadata', async () => {
+    await renderBook('statistical-learning')
 
     expect(
       screen.getByRole('heading', { name: 'An Introduction to Statistical Learning' }),
@@ -42,15 +42,19 @@ describe('Kiosk BookInfoPage', () => {
   /**
    * The ISBN is the one field here that has to survive being copied. Step 1 of the
    * checkout asks the reader to key it in when a barcode will not scan, and the phone's
-   * QR screen falls back to the same code — both resolve it through `findBookByCode`,
-   * so the digits shown here have to be the digits that lookup accepts.
+   * QR screen falls back to the same code — both resolve it through
+   * `GET /api/books/by-isbn/:isbn`, so the digits shown here have to be the digits that
+   * lookup accepts.
    */
-  it('shows an ISBN the checkout would actually accept', () => {
-    renderBook(BOOK)
+  it('shows an ISBN the checkout would actually accept', async () => {
+    await renderBook(BOOK)
 
     const isbn = books.find((b) => b.id === BOOK)!.isbn
-    expect(screen.getByText(isbn)).toBeInTheDocument()
-    expect(findBookByCode(isbn)?.id).toBe(BOOK)
+    expect(await screen.findByText(isbn)).toBeInTheDocument()
+
+    const response = await fetch(`/api/books/by-isbn/${isbn}`)
+    const { book } = (await response.json()) as { book: { id: string } }
+    expect(book.id).toBe(BOOK)
   })
 
   /**
@@ -63,7 +67,7 @@ describe('Kiosk BookInfoPage', () => {
 
     it('opens the cover in a modal dialog', async () => {
       const user = userEvent.setup()
-      renderBook(BOOK)
+      await renderBook(BOOK)
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
 
       await user.click(openCover())
@@ -79,7 +83,7 @@ describe('Kiosk BookInfoPage', () => {
 
     it('closes on the button and hands focus back to the cover', async () => {
       const user = userEvent.setup()
-      renderBook(BOOK)
+      await renderBook(BOOK)
 
       await user.click(openCover())
       await user.click(screen.getByRole('button', { name: 'Đóng' }))
@@ -93,7 +97,7 @@ describe('Kiosk BookInfoPage', () => {
     // A kiosk has a keyboard attached; Escape is the reflex for anyone who uses one.
     it('closes on Escape', async () => {
       const user = userEvent.setup()
-      renderBook(BOOK)
+      await renderBook(BOOK)
 
       await user.click(openCover())
       await user.keyboard('{Escape}')
@@ -103,7 +107,7 @@ describe('Kiosk BookInfoPage', () => {
     // Tapping the dim is how people dismiss a lightbox without aiming at anything.
     it('closes on the backdrop but not on the image itself', async () => {
       const user = userEvent.setup()
-      renderBook(BOOK)
+      await renderBook(BOOK)
 
       await user.click(openCover())
       await user.click(screen.getByRole('img', { name: /^Bìa sách/ }))
@@ -118,8 +122,8 @@ describe('Kiosk BookInfoPage', () => {
    * Pain Reliever 5 / Gain 6: the persona's complaint is that a picture-only map is
    * unusable, so the route must also exist as readable text, not just as a drawing.
    */
-  it('gives the route in words as well as on the map', () => {
-    renderBook('statistical-learning')
+  it('gives the route in words as well as on the map', async () => {
+    await renderBook('statistical-learning')
 
     expect(screen.getByText('Đi thẳng khoảng 15m')).toBeInTheDocument()
     expect(screen.getByText('Rẽ phải vào dãy kệ A')).toBeInTheDocument()
@@ -130,7 +134,7 @@ describe('Kiosk BookInfoPage', () => {
 
   it('starts the borrow flow and remembers which book was chosen', async () => {
     const user = userEvent.setup()
-    renderBook('statistical-learning')
+    await renderBook('statistical-learning')
 
     await user.click(screen.getByRole('button', { name: /Mượn sách/ }))
 
@@ -139,15 +143,15 @@ describe('Kiosk BookInfoPage', () => {
   })
 
   // A book with no copies on the shelf cannot be borrowed at the kiosk.
-  it('disables borrowing when every copy is out', () => {
-    renderBook('pattern-recognition')
+  it('disables borrowing when every copy is out', async () => {
+    await renderBook('pattern-recognition')
 
     const button = screen.getByRole('button', { name: /Đã mượn hết/ })
     expect(button).toBeDisabled()
   })
 
-  it('handles an unknown book id', () => {
-    renderBook('khong-ton-tai')
+  it('handles an unknown book id', async () => {
+    await renderBook('khong-ton-tai')
     expect(screen.getByText('Không tìm thấy tài liệu này')).toBeInTheDocument()
   })
 })

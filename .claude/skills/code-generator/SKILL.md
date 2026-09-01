@@ -14,9 +14,9 @@ Turn the UX pipeline (persona → value proposition → scenario) and the Figma 
 
 ## Current state (read this before doing anything else)
 ```bash
-cd code && npm run build && npm run test
+cd code && npm run build && npm run test && npm run test:server
 ```
-Both pass. The app is **not a scaffold** — it is a working implementation with real interaction logic, real (non-placeholder) mock data, and 253+ tests. Treat it as a codebase to extend and fix, not a template to redo.
+All pass (`test:server` needs a database — see `docs/database.md`). The app is **not a scaffold** — it is a working implementation with real interaction logic, a real database behind a REST API, and 319+ tests across the two suites. Treat it as a codebase to extend and fix, not a template to redo.
 
 **All 14 screens are built** — 10 kiosk (`/kiosk/*`) and 4 mobile (`/mobile/*`) — and every one has been through rounds of real UI polish against browser screenshots. `PlaceholderScreen` is gone; nothing is stubbed.
 
@@ -76,7 +76,8 @@ Skip these Figma nodes — backups/duplicates, not separate screens: `kiosk-sear
 - Do not invent flows beyond what `scenario.md` dramatizes or `value-proposition.md` maps out. If a Figma frame has no corresponding value-map entry, flag it to the user instead of silently implementing it. If the Figma frame is *narrower* than what the value map promises (has happened: the scan frames show one book, but the value prop promises multi-book borrowing), widen the implementation to match the promise — don't implement the thin version and quietly drop the rest.
 - Accessibility is first-class, not a follow-up pass: the persona (Nguyễn Minh Khang) has thị lực kém and the value proposition dedicates a whole Product/Service to it. `src/state/useAccessibilityStore.ts` + the `data-a11y` attribute on `<html>` + `src/styles/tokens.css` wire the toggle. Every interactive element needs a real focus state, WCAG AA contrast **for body text, not just large text**, a ≥48px touch target, and ARIA labeling from the start.
 - User-facing copy (labels, buttons, messages, error text) is in Vietnamese. Code identifiers, comments and commit messages are in English — the one place in the repo where the two languages coexist deliberately.
-- No backend exists. Data lives in `src/mocks/` — extend it there (see "Mock data" below), never hardcode data inline in a component.
+- **There is a backend.** Screens fetch what they draw through `src/api/queries.ts`; the REST API lives in `code/server/` and reads PostgreSQL or SQL Server. `src/mocks/` is no longer runtime data — it is the **seed** for the database and the **fixture** the tests answer from. Extend data there and re-seed (`npm run db:seed`); never hardcode data inline in a component.
+- **A page fetches, a leaf component receives props.** This is the rule that keeps the data layer swappable. `AvailabilityChip` used to read `availability[bookId]` from a module-level object at the bottom of the component tree, and that single habit is what made moving to an API a 27-file change. If a component needs data it was not given, add the prop — do not add a fetch inside it.
 - **Verify on a real browser before calling anything done.** jsdom (what the Vitest suite runs on) does not lay out flexbox/grid, does not resolve CSS custom properties, and cannot measure contrast. Overflow bugs, scroll-container bugs, and a11y-mode contrast bugs are all invisible to `npm run test` and only show up in `scripts/*.mjs` (Playwright) or a manual `npm run dev` click-through. See "Verification" below.
 
 ## Tech stack (decided — do not re-litigate)
@@ -86,7 +87,9 @@ Skip these Figma nodes — backups/duplicates, not separate screens: `kiosk-sear
 | Styling | Tailwind CSS v4 (`@tailwindcss/vite`) + shadcn/ui (Radix base, Nova preset originally, palette since fully replaced — see "Design system") |
 | Routing | React Router v7, `useRoutes()` in `src/App.tsx` — **not** JSX `<Route>` spreading (see Gotchas) |
 | Shared/session state | Zustand — `useBorrowSessionStore`, `useAccessibilityStore`, `useChatStore`, `useKeyboardStore` in `src/state/` |
-| Mock data | `src/mocks/` — typed, real bibliographic data (see "Mock data") |
+| Backend | Fastify + **Kysely** in `code/server/`, one codebase over PostgreSQL *and* SQL Server (`DB_DIALECT`) — see `code/docs/database.md` |
+| Data fetching | TanStack Query — hooks in `src/api/queries.ts`, client in `src/api/client.ts` |
+| Seed / fixtures | `src/mocks/` — typed, real bibliographic data, loaded into the DB by `server/db/seed.ts` |
 | Testing | Vitest + React Testing Library, jsdom, 184+ tests |
 | Browser verification | Playwright, ad hoc scripts in `code/scripts/` (not part of `npm run test`) |
 | Package manager | npm |
@@ -121,6 +124,13 @@ code/
   index.html
   package.json
 ```
+
+## Backend and database
+`code/server/` is a Fastify API over Kysely, and it runs on **both PostgreSQL and SQL Server** from one set of queries — the dialect is an environment variable. That constraint shapes the SQL: no identity columns, no `RETURNING`/`OUTPUT`, no `ON CONFLICT`/`MERGE`, no `unaccent`/`ILIKE`, no `FOR UPDATE`/`UPDLOCK`. Diacritic-insensitive search is a precomputed `search_text` column folded with the same `removeDiacritics` the browser uses; reserving a copy is a conditional `UPDATE … WHERE copies_available > 0` whose affected-row count is the answer.
+
+`node server/scripts/check-sql-portability.mjs` enforces those rules — it is the only guard on the SQL Server branch, which is verified on the group's Windows machine and **has not been run here**. Full reasoning in `code/docs/database.md`.
+
+Two things the backend exists to make true, both previously impossible: borrowing a book actually decrements the copy count (Gain Creator 4), and a slip filed at the kiosk is readable from a genuinely separate device (Gain Creator 3). `node scripts/check-handoff.mjs` proves both in a real browser.
 
 ## Mock data — real bibliographic data, generated, not hand-typed
 `src/mocks/catalog.ts`, `availability.ts` and `libraryMap.ts` are **generated files** — a header comment in each says so. Do not hand-edit them; edit `scripts/catalog-seed.mjs` (a curated list of ~116 real books, one per faculty shelf) and regenerate:
@@ -206,11 +216,18 @@ Then verify with `node scripts/check-mobile.mjs`, and **look at the screenshots 
 ## Verification (run every time, not just at the end)
 ```bash
 cd code
-npm run build     # tsc -b && vite build
-npm run test      # vitest run — 253+ tests
-npm run lint      # oxlint
-npm run dev       # then actually click through the flow — see below
+npm run build       # tsc -b && vite build
+npm run test        # vitest run — frontend, jsdom, answered by src/test/fakeApi.ts
+npm run test:server # re-seeds, then runs the API + DB suite against a real database
+npm run lint        # oxlint
+node server/scripts/check-sql-portability.mjs
+npm run dev         # then actually click through the flow — see below
 ```
+`npm run test` and `npm run test:server` are different suites with different prerequisites:
+the first runs anywhere, the second needs Postgres (or SQL Server) on the other end of
+`DATABASE_URL`. The frontend suite answers its own fetches from `src/test/fakeApi.ts`, which
+serves the same routes over `src/mocks/`; what stops that stub drifting from the real server
+is `server/test/api.spec.ts`, which asserts the same shapes against real SQL.
 **`npm run test` passing is not sufficient sign-off.** jsdom doesn't lay out flexbox/grid, doesn't resolve CSS variables, can't measure contrast, and can't tell you a scrollbar sits 300px from the screen edge. Every layout/overflow/contrast bug this project has hit was invisible to the test suite and only surfaced in a real browser. Use the Playwright scripts in `code/scripts/`:
 ```bash
 node scripts/check-chrome.mjs    # header/footer pinned, no page-level scroll, at several viewport sizes; also checks the home screen fits without scrolling and nothing overlaps
@@ -223,7 +240,12 @@ node scripts/check-mobile.mjs    # every /mobile/* route at 4 phone sizes: overf
                                  # pinned back button, chevron alignment, a11y contrast
 node scripts/check-palette.mjs   # every colour pairing the components actually paint, against AA
                                  # for *normal* text (4.5:1) — see scripts/palettes.data.mjs
+node scripts/check-handoff.mjs   # the three promises the backend exists to keep: stock decrements,
+                                 # a slip crosses to a *separate browser context*, the limit is the
+                                 # server's. None of these can be asked in jsdom.
 ```
+The Playwright scripts need `npm run dev` running (API + Vite, one origin via the proxy) and a
+migrated, seeded database.
 `check-mobile.mjs` and `check-chrome.mjs` are the two that gate a change; the `shot-*` ones
 are for looking. Two checks in them deliberately assert a *declaration* rather than a
 rendering (`align-items` on flex-column buttons), because the bug they guard against is one

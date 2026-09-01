@@ -11,7 +11,11 @@
  * it is the same assertions on both — which is the only way to find out that `varchar`
  * ate the Vietnamese diacritics, or that a `date` came back a day early.
  *
- * Prerequisite: `npm run db:migrate && npm run db:seed`.
+ * Prerequisite: `npm run db:migrate`. The seed is re-run by `npm run test:server` itself,
+ * and it has to be: the fixtures date themselves relative to *now* — a card expiring in
+ * 300 days, a loan taken out 70 days ago — and a slip number encodes its borrow date. A
+ * database seeded yesterday therefore disagrees with today's fixtures by a day, and the
+ * suite would fail on a difference that means nothing about the code.
  */
 import { afterAll, describe, expect, it } from 'vitest'
 import { availability, books, libraryStatus, loanHistory, shelfLocations, students } from '@/mocks'

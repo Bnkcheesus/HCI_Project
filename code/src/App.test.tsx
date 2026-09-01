@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { renderSettled } from '@/test/renderWithQuery'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
@@ -7,8 +8,8 @@ import { findStudentByCard } from '@/mocks'
 import { MOBILE_ACCOUNT_CARD } from './mobile/account'
 
 describe('App routing', () => {
-  it('redirects / to the kiosk home screen', () => {
-    render(
+  it('redirects / to the kiosk home screen', async () => {
+    await renderSettled(
       <MemoryRouter initialEntries={['/']}>
         <App />
       </MemoryRouter>,
@@ -16,8 +17,8 @@ describe('App routing', () => {
     expect(screen.getByRole('heading', { name: /sách được mượn nhiều/i })).toBeInTheDocument()
   })
 
-  it('renders the mobile home screen at /mobile', () => {
-    render(
+  it('renders the mobile home screen at /mobile', async () => {
+    await renderSettled(
       <MemoryRouter initialEntries={['/mobile']}>
         <App />
       </MemoryRouter>,
@@ -36,7 +37,7 @@ describe('App routing', () => {
    */
   it('opens the search screen when the home search bar is tapped', async () => {
     const user = userEvent.setup()
-    render(
+    await renderSettled(
       <MemoryRouter initialEntries={['/kiosk']}>
         <App />
       </MemoryRouter>,

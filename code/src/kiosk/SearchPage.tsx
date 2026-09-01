@@ -11,7 +11,7 @@ import { SearchField } from '@/components/kiosk/SearchField'
 import { SearchSuggestions } from '@/components/kiosk/SearchSuggestions'
 import { applyTelexKey } from '@/lib/telex'
 import { useSpeechSearch } from '@/lib/useSpeechSearch'
-import { suggestedBooks } from '@/mocks'
+import { useSuggestedBooks } from '@/api/queries'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 
 const VOICE_MESSAGE = {
@@ -48,6 +48,10 @@ export function SearchPage() {
   const fieldValue = speech.interim || searchQuery
   const isTyping = fieldValue.trim().length > 0
 
+  // The same four books the home screen greets a reader with — shown here until they
+  // start typing, so an empty field is never an empty screen.
+  const { data: suggested } = useSuggestedBooks()
+
   function handleSelectBook(bookId: string) {
     selectBook(bookId)
     navigate(`/kiosk/books/${bookId}`, { state: { from: '/kiosk/search' } })
@@ -77,9 +81,13 @@ export function SearchPage() {
               Gợi ý cho bạn
             </h2>
             <ul className="grid grid-cols-2 gap-5 lg:grid-cols-4">
-              {suggestedBooks.map((book) => (
+              {(suggested?.books ?? []).map((book) => (
                 <li key={book.id} className="min-w-0">
-                  <ResultCard book={book} onSelect={handleSelectBook} />
+                  <ResultCard
+                    book={book}
+                    availability={suggested?.availability[book.id]}
+                    onSelect={handleSelectBook}
+                  />
                 </li>
               ))}
             </ul>

@@ -465,6 +465,7 @@ const PINNED_ROUTES = {
   M1: ['Lên tầng 3 bằng thang máy', 'Đi thẳng tới cuối dãy', 'Kệ M1'],
 }
 
+// Must stay in step with AISLE_COUNT in src/shared/types.ts — see the header emitted below.
 const AISLE_COUNT = 5
 
 function generateLibraryMap(records) {
@@ -518,15 +519,15 @@ function generateLibraryMap(records) {
 // Seed for the database (server/db/seed.ts) and fixture for the test suite.
 
 export type { ShelfLocation } from '@/shared/types'
+// AISLE_COUNT is geometry shared with the map component, so it lives beside the types.
+// The value below in this generator must match it, or a shelf lands outside the drawing.
+export { AISLE_COUNT } from '@/shared/types'
 
 import type { ShelfLocation } from '@/shared/types'
 
 export const shelfLocations: Record<string, ShelfLocation> = {
 ${rows}
 }
-
-/** Number of shelf runs drawn on the floor plan. */
-export const AISLE_COUNT = ${AISLE_COUNT}
 `
 }
 

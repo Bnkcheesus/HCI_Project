@@ -1,127 +1,95 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { createLoanSlip } from './borrow'
-import { clearSavedSlips, saveSlip } from './loanSlips'
-import { accountSlips, closedSlips, isSlipOpen, openBooks, openSlips } from './accountSlips'
-import { findStudentByCard, isoDaysFromNow, loanHistory } from '@/mocks'
+/**
+ * Sorting and splitting a reader's slips — what stayed in the browser.
+ *
+ * The *grouping* of loan rows into slips moved to the server, and is covered by
+ * `server/test/api.spec.ts` against real SQL. These are the pure helpers the mobile
+ * screens still run on the result: which slips are open, in what order, and which books
+ * inside them are still out.
+ *
+ * Built from literals rather than from the fixture. Each case is about a shape — an
+ * overdue slip, a half-returned one — and reaching into `loanHistory` for a slip that
+ * happens to have that shape makes the test fail later for reasons that have nothing to
+ * do with the code.
+ */
+import { describe, expect, it } from 'vitest'
+import type { AccountSlip } from '@/shared/types'
+import { closedSlips, isSlipOpen, openBooks, openSlips } from './accountSlips'
 
-const KHANG = '20215012'
-const student = findStudentByCard(KHANG)!
+function slip(
+  id: string,
+  borrowedAt: string,
+  dueAt: string,
+  books: [string, string | null][],
+): AccountSlip {
+  return {
+    id,
+    borrowedAt,
+    dueAt,
+    books: books.map(([bookId, returnedAt]) => ({ bookId, returnedAt })),
+    source: 'history',
+  }
+}
 
-beforeEach(() => clearSavedSlips())
+const OVERDUE = slip('SLIP-A', '2026-01-05', '2026-01-19', [['a', null]])
+const DUE_LATER = slip('SLIP-B', '2026-02-01', '2026-02-15', [['b', null]])
+const RETURNED = slip('SLIP-C', '2026-01-10', '2026-01-24', [['c', '2026-01-20']])
+const OLDER_RETURNED = slip('SLIP-D', '2025-11-01', '2025-11-15', [['d', '2025-11-10']])
 
-describe('accountSlips — reading the seeded history', () => {
-  it('covers every history record for the card, and none from another card', () => {
-    const mine = loanHistory.filter((l) => l.studentId === KHANG)
-    const bookIds = accountSlips(KHANG).flatMap((s) => s.books.map((b) => b.bookId))
+/** One book back, one still out — the slip as a whole is not finished. */
+const HALF_BACK = slip('SLIP-E', '2026-02-10', '2026-02-24', [
+  ['e1', '2026-02-12'],
+  ['e2', null],
+])
 
-    expect(bookIds).toHaveLength(mine.length)
-    expect(new Set(bookIds)).toEqual(new Set(mine.map((l) => l.bookId)))
+describe('isSlipOpen', () => {
+  it('is open while any book on it is still out', () => {
+    expect(isSlipOpen(HALF_BACK)).toBe(true)
+    expect(isSlipOpen(DUE_LATER)).toBe(true)
   })
 
-  it('keeps a slip open while any of its books is still out', () => {
-    const open = openSlips(accountSlips(KHANG))
-    expect(open.length).toBeGreaterThan(0)
-    expect(open.every(isSlipOpen)).toBe(true)
-    expect(closedSlips(accountSlips(KHANG)).every((s) => !isSlipOpen(s))).toBe(true)
-  })
-
-  it('sorts open slips by due date and closed ones by most recently borrowed', () => {
-    const slips = accountSlips(KHANG)
-    const dues = openSlips(slips).map((s) => s.dueAt)
-    expect(dues).toEqual([...dues].sort())
-
-    const borrowed = closedSlips(slips).map((s) => s.borrowedAt)
-    expect(borrowed).toEqual([...borrowed].sort().reverse())
+  it('is closed only once every book has come back', () => {
+    expect(isSlipOpen(RETURNED)).toBe(false)
   })
 })
 
-describe('accountSlips — slips filed at the kiosk', () => {
-  /**
-   * The receipt screen tells the reader "đã lưu vào ứng dụng LibAssist". If a slip filed
-   * at the kiosk did not appear here, that message would be false — this is the assertion
-   * that keeps the two screens honest with each other.
-   */
-  it('shows a slip the kiosk filed this session', () => {
-    const slip = createLoanSlip(student, ['cormen-algorithms', 'stewart-calculus'])
-    saveSlip(slip)
-
-    const found = accountSlips(KHANG).find((s) => s.id === slip.id)
-    expect(found).toBeDefined()
-    expect(found!.source).toBe('kiosk')
-    expect(found!.books.map((b) => b.bookId)).toEqual(slip.bookIds)
-    expect(isSlipOpen(found!)).toBe(true)
+describe('openSlips', () => {
+  /** Soonest due first, so anything overdue leads — the reader's most urgent debt. */
+  it('sorts by due date, overdue first', () => {
+    const sorted = openSlips([DUE_LATER, HALF_BACK, OVERDUE, RETURNED])
+    expect(sorted.map((s) => s.id)).toEqual(['SLIP-A', 'SLIP-B', 'SLIP-E'])
   })
 
-  // Pain 4 is about "nhiều đầu sách cùng lúc" — four books borrowed together are one
-  // slip, not four cards repeating the same dates.
-  it('keeps a multi-book loan as a single slip', () => {
-    const ids = ['cormen-algorithms', 'stewart-calculus', 'campbell-biology', 'rosen-discrete-math']
-    saveSlip(createLoanSlip(student, ids))
-
-    const kioskSlips = accountSlips(KHANG).filter((s) => s.source === 'kiosk')
-    expect(kioskSlips).toHaveLength(1)
-    expect(kioskSlips[0].books).toHaveLength(4)
+  it('leaves out anything fully returned', () => {
+    expect(openSlips([RETURNED, OLDER_RETURNED])).toEqual([])
   })
+})
 
-  it('ignores slips belonging to another card', () => {
-    const other = findStudentByCard('20217777')!
-    saveSlip(createLoanSlip(other, ['cormen-algorithms']))
-    expect(accountSlips(KHANG).some((s) => s.source === 'kiosk')).toBe(false)
+describe('closedSlips', () => {
+  /** Most recently borrowed first: a history reads backwards from now. */
+  it('sorts by borrow date, newest first', () => {
+    const sorted = closedSlips([OLDER_RETURNED, RETURNED, OVERDUE])
+    expect(sorted.map((s) => s.id)).toEqual(['SLIP-C', 'SLIP-D'])
   })
 })
 
 describe('openBooks', () => {
-  it('flattens every unreturned book across slips, soonest due first', () => {
-    saveSlip(createLoanSlip(student, ['cormen-algorithms', 'stewart-calculus']))
-
-    const out = openBooks(accountSlips(KHANG))
-    const dues = out.map((b) => b.dueAt)
-    expect(dues).toEqual([...dues].sort())
-
-    // The seeded open loan plus the two just borrowed; nothing returned leaks in.
-    expect(out).toHaveLength(3)
-  })
-
-  it('leaves returned books out entirely', () => {
-    const returned = loanHistory.filter((l) => l.studentId === KHANG && l.returnedAt !== null)
-    const out = openBooks(accountSlips(KHANG)).map((b) => b.bookId)
-    for (const record of returned) expect(out).not.toContain(record.bookId)
-  })
-})
-
-describe('grouping', () => {
-  it('groups history rows that share a slip number', () => {
-    const slips = accountSlips(KHANG)
-    for (const slip of slips.filter((s) => s.source === 'history')) {
-      const rows = loanHistory.filter((l) => l.studentId === KHANG && l.slipId === slip.id)
-      expect(slip.books).toHaveLength(rows.length)
-    }
-  })
-
   /**
-   * Pain 4 is about "nhiều đầu sách cùng lúc". Unit-testing a multi-book slip built in the
-   * test is not enough — the seeded account has to contain one, or opening the app cold
-   * never shows the case the feature exists for.
+   * Flattened across slips and sorted by due date. The home screen counts these and leads
+   * with the first — the one running out of time — so a book still out on a half-returned
+   * slip has to appear, and the one already back must not.
    */
-  it('seeds a real multi-book slip on the account', () => {
-    const multi = accountSlips(KHANG).filter((s) => s.books.length > 1)
-    expect(multi.length).toBeGreaterThan(0)
-    expect(multi[0].source).toBe('history')
+  it('lists every book still out, soonest due first', () => {
+    expect(openBooks([HALF_BACK, OVERDUE, RETURNED])).toEqual([
+      { bookId: 'a', dueAt: '2026-01-19' },
+      { bookId: 'e2', dueAt: '2026-02-24' },
+    ])
   })
 
-  /**
-   * Every card shows a slip number. Showing it on some and not others read as a rendering
-   * bug; the cause was that history rows had no slip of their own to name.
-   */
-  it('gives every slip a number in the printed format', () => {
-    for (const slip of accountSlips(KHANG)) {
-      expect(slip.id).toMatch(/^SLIP-\d{4}-\d{4}-\d{4}$/)
-    }
+  it('gives each book the due date of its own slip', () => {
+    expect(openBooks([DUE_LATER])).toEqual([{ bookId: 'b', dueAt: '2026-02-15' }])
   })
 
-  it('keeps two visits on the same day as separate slips', () => {
-    const sameDay = loanHistory.filter((l) => l.borrowedAt === isoDaysFromNow(-3))
-    // Phạm Gia Bảo's five books went out together, so they share one slip id.
-    expect(new Set(sameDay.map((l) => l.slipId)).size).toBe(1)
+  it('is empty when nothing is out', () => {
+    expect(openBooks([RETURNED, OLDER_RETURNED])).toEqual([])
   })
 })

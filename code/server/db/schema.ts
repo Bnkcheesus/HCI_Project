@@ -43,6 +43,8 @@ export interface BooksTable {
    * browser used to use, turns the query into a plain `LIKE` that needs neither.
    */
   search_text: string
+  /** Position on the kiosk home screen (0-based), or null. See the migration for why. */
+  suggested_rank: number | null
 }
 
 export interface ShelfLocationsTable {

@@ -5,15 +5,23 @@
 // card renders however many went out together.
 import { formatDate } from '@/lib/borrow'
 import { loanStatus, wasReturnedLate } from '@/lib/loans'
-import { books } from '@/mocks'
+import type { Book } from '@/shared/types'
 import type { AccountSlip, AccountSlipBook } from '@/lib/accountSlips'
 import { DueBadge } from './DueBadge'
 
 interface SlipCardProps {
   slip: AccountSlip
+  /**
+   * The catalogue records for the books on this slip, keyed by id.
+   *
+   * Handed down rather than looked up here. A slip holds book *ids*, and this component
+   * sits at the bottom of a list — fetching from inside it would mean one request per
+   * book per card. The page fetches the whole set once and passes it through.
+   */
+  booksById: Record<string, Book>
 }
 
-export function SlipCard({ slip }: SlipCardProps) {
+export function SlipCard({ slip, booksById }: SlipCardProps) {
   const stillOut = slip.books.some((b) => b.returnedAt === null)
 
   return (
@@ -37,7 +45,12 @@ export function SlipCard({ slip }: SlipCardProps) {
 
       <ul className="flex flex-col gap-3 border-t border-dashed border-[var(--rule)] pt-3">
         {slip.books.map((book) => (
-          <SlipBookRow key={book.bookId} slip={slip} book={book} />
+          <SlipBookRow
+            key={book.bookId}
+            slip={slip}
+            book={book}
+            record={booksById[book.bookId]}
+          />
         ))}
       </ul>
 
@@ -54,8 +67,17 @@ export function SlipCard({ slip }: SlipCardProps) {
   )
 }
 
-function SlipBookRow({ slip, book }: { slip: AccountSlip; book: AccountSlipBook }) {
-  const record = books.find((b) => b.id === book.bookId)
+function SlipBookRow({
+  slip,
+  book,
+  record,
+}: {
+  slip: AccountSlip
+  book: AccountSlipBook
+  record: Book | undefined
+}) {
+  // Still loading, or a slip naming a book the catalogue no longer carries. Either way
+  // there is no row worth drawing.
   if (!record) return null
 
   // A book's due date is the slip's; only its return date is its own.

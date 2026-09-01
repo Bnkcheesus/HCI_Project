@@ -6,6 +6,9 @@
 // Seed for the database (server/db/seed.ts) and fixture for the test suite.
 
 export type { ShelfLocation } from '@/shared/types'
+// AISLE_COUNT is geometry shared with the map component, so it lives beside the types.
+// The value below in this generator must match it, or a shelf lands outside the drawing.
+export { AISLE_COUNT } from '@/shared/types'
 
 import type { ShelfLocation } from '@/shared/types'
 
@@ -1055,6 +1058,3 @@ export const shelfLocations: Record<string, ShelfLocation> = {
     directions: ['Đi thẳng khoảng 14m', 'Rẽ phải vào khu Vật lý', 'Kệ PH-220, hàng thứ 3 từ trên xuống'],
   },
 }
-
-/** Number of shelf runs drawn on the floor plan. */
-export const AISLE_COUNT = 5

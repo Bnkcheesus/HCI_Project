@@ -41,3 +41,27 @@ export function vietnameseIncludes(haystack: string, query: string): boolean {
 export function buildSearchText(parts: string[]): string {
   return removeDiacritics(parts.join(' ')).toLowerCase()
 }
+
+/**
+ * The shortest run of digits treated as an ISBN rather than as ordinary text.
+ *
+ * Every ISBN-13 in the catalogue starts "978", so a three-digit query would match the
+ * whole shelf, and four digits would make every year — "2022" — return books whose *code*
+ * happens to contain it. Six is past both: long enough that a digit run is a deliberate
+ * code, short enough that a reader keying one off a back cover starts seeing it narrow
+ * well before the end.
+ */
+const MIN_ISBN_QUERY = 6
+
+/**
+ * The reader's query read as a code, or null if it is not one.
+ *
+ * Lives here beside the folding rules because it answers the same kind of question — what
+ * did the reader mean by what they typed — and because the search endpoint and the search
+ * box have to agree on the answer. Punctuation is stripped the way `normalizeIsbn` strips
+ * it: the spaces and dashes printed on a back cover are decoration.
+ */
+export function asIsbnQuery(query: string): string | null {
+  const digits = query.replace(/[\s-]/g, '')
+  return /^\d+$/.test(digits) && digits.length >= MIN_ISBN_QUERY ? digits : null
+}

@@ -1,14 +1,13 @@
 import { Check, X } from 'lucide-react'
 import { useEffect, useRef } from 'react'
-import { LANGUAGE_LABEL, type Language } from '@/mocks'
+import { LANGUAGE_LABEL, type Language } from '@/shared/types'
 import {
-  DEFAULT_FILTERS,
   STOCK_LABEL,
-  YEAR_MAX,
-  YEAR_MIN,
   activeFilterCount,
+  defaultFilters,
   type AdvancedFilters,
   type StockState,
+  type YearBounds,
 } from '@/lib/search'
 import { cn } from '@/lib/utils'
 import { RangeSlider } from './RangeSlider'
@@ -24,11 +23,24 @@ const STOCK_STATES: StockState[] = ['available', 'out']
 
 interface AdvancedFilterPanelProps {
   filters: AdvancedFilters
+  /**
+   * The catalogue's real publication span, from the library-status response.
+   *
+   * Passed in rather than imported: these were module constants computed from the whole
+   * book list, and a slider whose ends do not match the data either hides books at one
+   * end or offers years nothing was published in at the other.
+   */
+  years: YearBounds
   onChange: (filters: AdvancedFilters) => void
   onClose: () => void
 }
 
-export function AdvancedFilterPanel({ filters, onChange, onClose }: AdvancedFilterPanelProps) {
+export function AdvancedFilterPanel({
+  filters,
+  years,
+  onChange,
+  onClose,
+}: AdvancedFilterPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null)
 
   // Close on Escape or on a tap outside — expected behaviour for a popover, and the
@@ -52,7 +64,7 @@ export function AdvancedFilterPanel({ filters, onChange, onClose }: AdvancedFilt
     return list.includes(value) ? list.filter((v) => v !== value) : [...list, value]
   }
 
-  const count = activeFilterCount(filters)
+  const count = activeFilterCount(filters, years)
 
   return (
     <div
@@ -83,8 +95,8 @@ export function AdvancedFilterPanel({ filters, onChange, onClose }: AdvancedFilt
 
       <Section title="Năm xuất bản">
         <RangeSlider
-          min={YEAR_MIN}
-          max={YEAR_MAX}
+          min={years.min}
+          max={years.max}
           from={filters.yearFrom}
           to={filters.yearTo}
           labelFrom="Năm xuất bản từ"
@@ -122,7 +134,7 @@ export function AdvancedFilterPanel({ filters, onChange, onClose }: AdvancedFilt
         </p>
         <button
           type="button"
-          onClick={() => onChange(DEFAULT_FILTERS)}
+          onClick={() => onChange(defaultFilters(years))}
           disabled={count === 0}
           className="min-h-[var(--touch-min)] rounded-[8px] border border-[var(--rule)] px-5 font-heading font-semibold text-foreground transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
           style={{ fontSize: 'var(--text-meta)' }}

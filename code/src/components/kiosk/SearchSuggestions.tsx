@@ -1,12 +1,18 @@
 import { ChevronRight, SearchX } from 'lucide-react'
-import type { Book } from '@/mocks'
-import { searchCatalog } from '@/lib/search'
+import { useSearchBooks } from '@/api/queries'
+import type { Book } from '@/shared/types'
 import { AvailabilityChip } from './AvailabilityChip'
 
 /**
  * Live autocomplete under the search field — Job 1 / Pain Reliever 1 & 2.
  * Every row carries its availability, so the persona learns a book is gone while still
  * standing at the kiosk instead of after walking to the shelf.
+ *
+ * This panel fetches its own results rather than being handed them. The query *is* what
+ * it is for — there is nothing left of it once the results are passed in — and the search
+ * screen around it has no other use for them. The rule it does follow is the one that
+ * matters: the availability chips are drawn from the copy counts that arrived with these
+ * exact books, not read from somewhere else.
  */
 
 const SPINE_VAR: Record<Book['spine'], string> = {
@@ -22,7 +28,17 @@ interface SearchSuggestionsProps {
 }
 
 export function SearchSuggestions({ query, onSelect }: SearchSuggestionsProps) {
-  const results: Book[] = searchCatalog(query)
+  const { data, isPending } = useSearchBooks(query)
+  const results: Book[] = data?.books ?? []
+  const availability = data?.availability ?? {}
+
+  /*
+   * Nothing at all while the first results are in flight — deliberately not a spinner.
+   * This list sits directly under the field and updates on every keystroke; a spinner
+   * flickering there on each letter is noise, and worse, "không tìm thấy" appearing for a
+   * moment before the results arrive tells the reader something false about their query.
+   */
+  if (isPending) return null
 
   if (results.length === 0) {
     return (
@@ -74,7 +90,7 @@ export function SearchSuggestions({ query, onSelect }: SearchSuggestionsProps) {
                 </span>
               </span>
 
-              <AvailabilityChip bookId={book.id} className="shrink-0" />
+              <AvailabilityChip availability={availability[book.id]} className="shrink-0" />
               <ChevronRight
                 className="size-6 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1"
                 aria-hidden

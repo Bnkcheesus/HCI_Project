@@ -1,16 +1,34 @@
-import { act, render, screen, within } from '@testing-library/react'
+import { act, screen, within } from '@testing-library/react'
+import { renderSettled, renderWithQuery } from '@/test/renderWithQuery'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '@/App'
 import { MAX_BOOKS_PER_LOAN } from '@/lib/borrow'
-import { clearSavedSlips, findSavedSlip } from '@/lib/loanSlips'
 import { IDLE_SECONDS, IDLE_WARN_AT } from '@/lib/kioskSession'
 import { availability, books } from '@/mocks'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 
-function renderAt(path: string) {
-  return render(
+async function renderAt(path: string) {
+  return renderSettled(
+    <MemoryRouter initialEntries={[path]}>
+      <App />
+    </MemoryRouter>,
+  )
+}
+
+/**
+ * Render without waiting for the screen's data.
+ *
+ * The idle-watchdog tests install fake timers before rendering, and the settling helper
+ * waits on a real timer — the two deadlock, which is what a five-second test timeout was.
+ * Those tests are about the countdown and the session store, not about anything fetched,
+ * so they do not need the wait. Installing the fake timers *after* rendering would not
+ * work either: the watchdog's interval is created on mount, and a real interval cannot be
+ * advanced by `vi.advanceTimersByTime`.
+ */
+function renderAtWithFakeTimers(path: string) {
+  return renderWithQuery(
     <MemoryRouter initialEntries={[path]}>
       <App />
     </MemoryRouter>,
@@ -32,13 +50,12 @@ function seedCart(count: number) {
 beforeEach(() => {
   useBorrowSessionStore.getState().reset()
   // Slips persist to localStorage on purpose, so each test starts from an empty account.
-  clearSavedSlips()
 })
 
 describe('Step 1 — scanning books', () => {
   it('adds a book scanned by ISBN and announces it', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/scan/step-1')
+    await renderAt('/kiosk/scan/step-1')
 
     await user.type(codeField(), inStock[0].isbn)
     await user.click(keypad().getByRole('button', { name: 'OK' }))
@@ -50,7 +67,7 @@ describe('Step 1 — scanning books', () => {
   /** The whole point of the change from the prototype: more than one book per trip. */
   it('collects several books in one checkout', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/scan/step-1')
+    await renderAt('/kiosk/scan/step-1')
 
     for (const book of inStock.slice(0, 3)) {
       await user.clear(codeField())
@@ -65,7 +82,7 @@ describe('Step 1 — scanning books', () => {
   it('lets a mis-scanned book be taken back off the slip', async () => {
     const user = userEvent.setup()
     seedCart(2)
-    renderAt('/kiosk/scan/step-1')
+    await renderAt('/kiosk/scan/step-1')
 
     await user.click(screen.getByRole('button', { name: `Bỏ "${inStock[0].title}" khỏi phiếu mượn` }))
 
@@ -75,7 +92,7 @@ describe('Step 1 — scanning books', () => {
   // kiosk-book-scan-step1-fail (39:82) — rendered as state, not a separate route.
   it('explains an invalid code instead of failing silently', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/scan/step-1')
+    await renderAt('/kiosk/scan/step-1')
 
     await user.type(codeField(), '0000000000000')
     await user.click(keypad().getByRole('button', { name: 'OK' }))
@@ -86,7 +103,7 @@ describe('Step 1 — scanning books', () => {
 
   it('refuses a book with no copies left, before the reader walks to the shelf', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/scan/step-1')
+    await renderAt('/kiosk/scan/step-1')
 
     await user.type(codeField(), outOfStock.isbn)
     await user.click(keypad().getByRole('button', { name: 'OK' }))
@@ -97,7 +114,7 @@ describe('Step 1 — scanning books', () => {
   it('refuses the same book twice', async () => {
     const user = userEvent.setup()
     seedCart(1)
-    renderAt('/kiosk/scan/step-1')
+    await renderAt('/kiosk/scan/step-1')
 
     await user.type(codeField(), inStock[0].isbn)
     await user.click(keypad().getByRole('button', { name: 'OK' }))
@@ -106,15 +123,15 @@ describe('Step 1 — scanning books', () => {
     expect(useBorrowSessionStore.getState().scannedBookIds).toHaveLength(1)
   })
 
-  it('cannot move on with an empty slip', () => {
-    renderAt('/kiosk/scan/step-1')
+  it('cannot move on with an empty slip', async () => {
+    await renderAt('/kiosk/scan/step-1')
     expect(screen.getByRole('button', { name: /Tiếp tục/ })).toBeDisabled()
   })
 
   it('refuses a sixth book and disables the scanner once the slip is full', async () => {
     const user = userEvent.setup()
     seedCart(MAX_BOOKS_PER_LOAN)
-    renderAt('/kiosk/scan/step-1')
+    await renderAt('/kiosk/scan/step-1')
 
     expect(screen.getByRole('button', { name: /Mô phỏng quét một cuốn/ })).toBeDisabled()
 
@@ -128,7 +145,7 @@ describe('Step 1 — scanning books', () => {
 
   it('types digits through the numeric keypad', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/scan/step-1')
+    await renderAt('/kiosk/scan/step-1')
 
     await user.click(keypad().getByRole('button', { name: '9' }))
     await user.click(keypad().getByRole('button', { name: '7' }))
@@ -148,7 +165,7 @@ describe('Leaving the checkout', () => {
   it('goes back to the book, not forward into step 1', async () => {
     const user = userEvent.setup()
     useBorrowSessionStore.getState().selectBook(inStock[0].id)
-    renderAt('/kiosk/scan')
+    await renderAt('/kiosk/scan')
 
     // Walk into step 1 and back, the sequence that used to corrupt the history.
     await user.click(screen.getByRole('button', { name: /Bắt đầu quy trình mượn sách/ }))
@@ -169,7 +186,7 @@ describe('Leaving the checkout', () => {
   it('returns to the results list from the book screen after a checkout detour', async () => {
     const user = userEvent.setup()
     useBorrowSessionStore.getState().setSearchQuery('giải tích')
-    renderAt('/kiosk/search/results')
+    await renderAt('/kiosk/search/results')
 
     await user.click(screen.getByRole('button', { name: /Giải tích 1/ }))
     await user.click(screen.getByRole('button', { name: /Mượn sách/ }))
@@ -195,7 +212,7 @@ describe('Leaving the checkout', () => {
     const user = userEvent.setup()
     // A book was viewed earlier in the session and is still selected in the store.
     useBorrowSessionStore.getState().selectBook(inStock[0].id)
-    renderAt('/kiosk')
+    await renderAt('/kiosk')
 
     await user.click(screen.getByRole('tab', { name: 'Mượn sách' }))
     expect(screen.getByText('Tự mượn sách tại kiosk')).toBeInTheDocument()
@@ -209,7 +226,7 @@ describe('Leaving the checkout', () => {
 
   it('goes to the home screen when no book was picked first', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/scan')
+    await renderAt('/kiosk/scan')
 
     await user.click(screen.getByRole('button', { name: /^Quay về$/ }))
 
@@ -222,7 +239,7 @@ describe('Step 2 — the card check', () => {
 
   it('accepts a card in good standing and shows the due date before committing', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/scan/step-2')
+    await renderAt('/kiosk/scan/step-2')
 
     await user.type(codeField(), '20215012')
     await user.click(keypad().getByRole('button', { name: 'OK' }))
@@ -236,7 +253,7 @@ describe('Step 2 — the card check', () => {
 
   it('refuses an expired card and says how to fix it', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/scan/step-2')
+    await renderAt('/kiosk/scan/step-2')
 
     await user.type(codeField(), '20219999')
     await user.click(keypad().getByRole('button', { name: 'OK' }))
@@ -249,7 +266,7 @@ describe('Step 2 — the card check', () => {
 
   it('refuses a card with overdue books and names them', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/scan/step-2')
+    await renderAt('/kiosk/scan/step-2')
 
     await user.type(codeField(), '20218888')
     await user.click(keypad().getByRole('button', { name: 'OK' }))
@@ -260,7 +277,7 @@ describe('Step 2 — the card check', () => {
 
   it('refuses a card that has hit the borrowing limit', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/scan/step-2')
+    await renderAt('/kiosk/scan/step-2')
 
     await user.type(codeField(), '20217777')
     await user.click(keypad().getByRole('button', { name: 'OK' }))
@@ -271,7 +288,7 @@ describe('Step 2 — the card check', () => {
 
   it('explains an unknown card', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/scan/step-2')
+    await renderAt('/kiosk/scan/step-2')
 
     await user.type(codeField(), '11112222')
     await user.click(keypad().getByRole('button', { name: 'OK' }))
@@ -279,9 +296,9 @@ describe('Step 2 — the card check', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(/Mã thẻ không hợp lệ/)
   })
 
-  it('sends the reader back to scanning if the cart emptied underneath them', () => {
+  it('sends the reader back to scanning if the cart emptied underneath them', async () => {
     useBorrowSessionStore.getState().resetCheckout()
-    renderAt('/kiosk/scan/step-2')
+    await renderAt('/kiosk/scan/step-2')
     expect(screen.getByText(/Bước 1 — Quét mã QR/)).toBeInTheDocument()
   })
 })
@@ -289,7 +306,7 @@ describe('Step 2 — the card check', () => {
 describe('The whole checkout, end to end', () => {
   it('scans two books, checks the card, and prints a slip for both', async () => {
     const user = userEvent.setup()
-    renderAt('/kiosk/scan')
+    await renderAt('/kiosk/scan')
 
     await user.click(screen.getByRole('button', { name: /Bắt đầu quy trình mượn sách/ }))
 
@@ -318,11 +335,15 @@ describe('The whole checkout, end to end', () => {
    * The app half used to be a QR the reader had to stop and scan; it now happens on its
    * own, so this asserts the slip really was filed, not just that a reassuring line of
    * text is on screen.
+   *
+   * "Filed" used to mean written into localStorage — which only ever worked when the
+   * kiosk and the phone were the same browser. It now means a row the phone can fetch by
+   * number from any device, so the check is that `GET /api/slips/:id` returns it.
    */
   it('files the slip to the app and still offers the paper one', async () => {
     const user = userEvent.setup()
     seedCart(1)
-    renderAt('/kiosk/scan/step-2')
+    await renderAt('/kiosk/scan/step-2')
 
     await user.type(codeField(), '20215012')
     await user.click(keypad().getByRole('button', { name: 'OK' }))
@@ -332,14 +353,19 @@ describe('The whole checkout, end to end', () => {
     expect(screen.getByRole('button', { name: /In lại phiếu mượn/ })).toBeInTheDocument()
 
     const slip = useBorrowSessionStore.getState().slip!
-    expect(findSavedSlip(slip.id)).toEqual(slip)
+    const response = await fetch(`/api/slips/${slip.id}`)
+    const filed = (await response.json()) as { id: string; books: { bookId: string }[] }
+
+    expect(response.status).toBe(200)
+    expect(filed.id).toBe(slip.id)
+    expect(filed.books.map((b) => b.bookId)).toEqual(slip.bookIds)
   })
 
   // Nothing is asked of the reader to make the sync happen — no scan, no extra tap.
   it('does not ask the reader to scan anything to save the slip', async () => {
     const user = userEvent.setup()
     seedCart(1)
-    renderAt('/kiosk/scan/step-2')
+    await renderAt('/kiosk/scan/step-2')
 
     await user.type(codeField(), '20215012')
     await user.click(keypad().getByRole('button', { name: 'OK' }))
@@ -348,15 +374,15 @@ describe('The whole checkout, end to end', () => {
     expect(screen.queryByText(/Quét/)).not.toBeInTheDocument()
   })
 
-  it('redirects away from the receipt when nothing was borrowed', () => {
-    renderAt('/kiosk/borrow-complete')
+  it('redirects away from the receipt when nothing was borrowed', async () => {
+    await renderAt('/kiosk/borrow-complete')
     expect(screen.queryByText('Mượn sách thành công!')).not.toBeInTheDocument()
   })
 
   it('confirms the reprint so the reader is not left tapping', async () => {
     const user = userEvent.setup()
     seedCart(1)
-    renderAt('/kiosk/scan/step-2')
+    await renderAt('/kiosk/scan/step-2')
 
     await user.type(codeField(), '20215012')
     await user.click(keypad().getByRole('button', { name: 'OK' }))
@@ -370,7 +396,7 @@ describe('The whole checkout, end to end', () => {
   it('clears the session on the way back to the home screen', async () => {
     const user = userEvent.setup()
     seedCart(1)
-    renderAt('/kiosk/scan/step-2')
+    await renderAt('/kiosk/scan/step-2')
 
     await user.type(codeField(), '20215012')
     await user.click(keypad().getByRole('button', { name: 'OK' }))
@@ -389,12 +415,12 @@ describe('The idle watchdog', () => {
    * A reader who walks off mid-checkout must not leave a live session with their card in
    * it for the next person at the machine.
    */
-  it('warns, then clears the session and leaves', () => {
+  it('warns, then clears the session and leaves', async () => {
     vi.useFakeTimers()
     try {
       seedCart(1)
       useBorrowSessionStore.getState().setStudentCard('20215012')
-      renderAt('/kiosk/scan/step-2')
+      renderAtWithFakeTimers('/kiosk/scan/step-2')
 
       act(() => void vi.advanceTimersByTime((IDLE_SECONDS - IDLE_WARN_AT) * 1000))
       expect(screen.getByRole('alertdialog', { name: 'Phiên mượn sắp hết hạn' })).toBeInTheDocument()
@@ -407,11 +433,11 @@ describe('The idle watchdog', () => {
     }
   })
 
-  it('does not interrupt a reader who is still working', () => {
+  it('does not interrupt a reader who is still working', async () => {
     vi.useFakeTimers()
     try {
       seedCart(1)
-      renderAt('/kiosk/scan/step-1')
+      renderAtWithFakeTimers('/kiosk/scan/step-1')
 
       // Stop one second short of the warning, touch the screen, then run past where the
       // original deadline would have been.

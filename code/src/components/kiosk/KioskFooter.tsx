@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { libraryStatus } from '@/mocks'
+import { useLibraryInfo } from '@/api/queries'
 
 /**
  * One footer shared by every kiosk screen. Merges the two different footers the Figma
@@ -16,6 +16,18 @@ const numberFormat = new Intl.NumberFormat('vi-VN')
 
 export function KioskFooter() {
   const now = useClock()
+  const { data } = useLibraryInfo()
+
+  /*
+   * The footer is on every screen, so it is the one place a loading state would be seen
+   * constantly. It renders its chrome regardless and fills the live figures in when they
+   * arrive — a bar that appears and disappears under the content would shift every screen
+   * on the first paint.
+   *
+   * The clock never waits on the network: it is the piece the persona actually reads
+   * ("how long have I got"), and it is local.
+   */
+  const status = data?.status
 
   return (
     <footer
@@ -27,23 +39,27 @@ export function KioskFooter() {
     >
       <p className="flex items-center gap-3 font-semibold text-foreground">
         <span className="kiosk-pulse size-2.5 rounded-full bg-[var(--live)]" aria-hidden />
-        {libraryStatus.isOpen ? 'Thư viện đang mở cửa' : 'Thư viện đã đóng cửa'}
+        {status?.isOpen === false ? 'Thư viện đã đóng cửa' : 'Thư viện đang mở cửa'}
         <span className="font-normal text-muted-foreground">
-          {libraryStatus.opensAt} – {libraryStatus.closesAt}
+          {status ? `${status.opensAt} – ${status.closesAt}` : '\u00a0'}
         </span>
       </p>
 
-      <p className="text-muted-foreground">
-        <strong className="font-semibold text-[var(--live-ink)]">
-          {numberFormat.format(libraryStatus.titlesAvailable)}
-        </strong>{' '}
-        trong {numberFormat.format(libraryStatus.titlesTotal)} đầu sách đang sẵn sàng cho mượn
-      </p>
+      {status && (
+        <p className="text-muted-foreground">
+          <strong className="font-semibold text-[var(--live-ink)]">
+            {numberFormat.format(status.titlesAvailable)}
+          </strong>{' '}
+          trong {numberFormat.format(status.titlesTotal)} đầu sách đang sẵn sàng cho mượn
+        </p>
+      )}
 
-      <p className="text-muted-foreground">
-        Hỗ trợ kỹ thuật:{' '}
-        <strong className="font-semibold text-foreground">{libraryStatus.supportPhone}</strong>
-      </p>
+      {status && (
+        <p className="text-muted-foreground">
+          Hỗ trợ kỹ thuật:{' '}
+          <strong className="font-semibold text-foreground">{status.supportPhone}</strong>
+        </p>
+      )}
 
       <p className="font-heading font-semibold tabular-nums text-foreground">
         <span className="sr-only">Bây giờ là </span>

@@ -1,5 +1,5 @@
 import { SlidersHorizontal } from 'lucide-react'
-import { DOCUMENT_TYPE_LABEL } from '@/mocks'
+import { DOCUMENT_TYPE_LABEL } from '@/shared/types'
 import { SORT_LABEL, type SortMode, type TypeFilter } from '@/lib/search'
 import { cn } from '@/lib/utils'
 

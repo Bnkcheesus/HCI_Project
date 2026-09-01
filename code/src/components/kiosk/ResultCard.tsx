@@ -1,5 +1,5 @@
 import { BookOpen, MapPin, Newspaper, RotateCcw, ScrollText } from 'lucide-react'
-import { availability, DOCUMENT_TYPE_LABEL, type Book } from '@/mocks'
+import { DOCUMENT_TYPE_LABEL, type Availability, type Book } from '@/shared/types'
 import { AvailabilityChip } from './AvailabilityChip'
 
 /**
@@ -24,11 +24,13 @@ const TYPE_ICON: Record<Book['type'], typeof BookOpen> = {
 
 interface ResultCardProps {
   book: Book
+  /** Copy counts for this book, from the same response the book came in. */
+  availability: Availability | undefined
   onSelect: (bookId: string) => void
 }
 
-export function ResultCard({ book, onSelect }: ResultCardProps) {
-  const record = availability[book.id]
+export function ResultCard({ book, availability, onSelect }: ResultCardProps) {
+  const record = availability
   const isAvailable = (record?.copiesAvailable ?? 0) > 0
   const TypeIcon = TYPE_ICON[book.type]
 
@@ -92,7 +94,10 @@ export function ResultCard({ book, onSelect }: ResultCardProps) {
             </span>
           </span>
         )}
-        <AvailabilityChip bookId={book.id} className="absolute right-3 top-3 z-10 shadow-sm" />
+        <AvailabilityChip
+          availability={availability}
+          className="absolute right-3 top-3 z-10 shadow-sm"
+        />
       </div>
 
       {/* shrink-0: the cover takes the slack in a stretched card, not this block — a taller

@@ -8,33 +8,56 @@ viện, `/mobile/*` cho điện thoại người đọc. Chúng dùng chung desi
 nối với nhau bằng **cú bắt tay QR** — mã QR trên trang sách của kiosk mở đúng màn định vị kệ
 trên điện thoại.
 
-> **Trạng thái**: 13 màn đã xong và đã qua nhiều vòng chỉnh sửa UI/UX thật. Backend + database
-> đang làm dở: schema, migration và seeder đã chạy thật trên PostgreSQL, nhưng **frontend vẫn
-> đang đọc `src/mocks/` chứ chưa gọi API**. Lộ trình ở
-> [docs/ke-hoach-backend-database.md](docs/ke-hoach-backend-database.md).
+> **Trạng thái**: 13 màn đã xong, và toàn bộ đã nối vào **backend + database thật** — REST API
+> (Fastify + Kysely) chạy được trên cả PostgreSQL lẫn SQL Server từ một bộ query duy nhất.
+> Nhánh SQL Server chưa chạy thật trên máy phát triển (macOS); xem
+> [docs/database.md](docs/database.md).
 
-## Chạy thử nhanh
+## Cần cài trước
 
-Chỉ xem giao diện thì không cần database:
+| | | |
+|---|---|---|
+| **Node.js ≥ 22.12** | bắt buộc | Kysely cần ≥ 22, Vite 8 cần ≥ 22.12 — ghi trong `engines` của `package.json`. Kiểm bằng `node -v`. Bản cũ hơn: npm chỉ **cảnh báo** rồi vẫn cài, nhưng lỗi sẽ nổ lúc chạy, nên đừng bỏ qua |
+| **npm** | bắt buộc | đi kèm Node |
+| **PostgreSQL** *hoặc* **SQL Server** | bắt buộc | Docker, Homebrew, hay bản cài sẵn đều được — [docs/database.md](docs/database.md) |
+| **Trình duyệt Playwright** | chỉ khi chạy script kiểm chứng | `npx playwright install chromium` |
+
+Ngoài đó không cần gì thêm: font tự host qua npm, không gọi CDN; ảnh bìa đã nằm trong
+`public/covers/`; dữ liệu sách đã cache trong `scripts/catalog-resolved.json` nên **không cần
+mạng** để chạy.
+
+## Chạy thử
+
+Mọi màn đều lấy dữ liệu từ API, nên **cần database chạy trước** — chạy mỗi Vite thì màn hình
+chỉ hiện trạng thái đang tải.
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173/kiosk
+cp .env.example .env     # sửa DATABASE_URL cho khớp máy bạn
+npm run db:migrate       # tạo bảng
+npm run db:seed          # nạp 116 đầu sách + thẻ + lịch sử mượn
+npm run dev              # API :3001 + Vite :5173 → http://localhost:5173/kiosk
 ```
+
+`npm run db:migrate` cần database **đã tồn tại và đang chạy** — nó tạo bảng, không tạo
+database. Cách dựng cho cả PostgreSQL lẫn SQL Server: [docs/database.md](docs/database.md).
+
+Build bản production:
+
+```bash
+npm run build     # tsc -b (kiểm kiểu cả frontend lẫn server) rồi vite build → dist/
+npm run preview   # xem thử bản build trên :4173 — vẫn proxy /api, nên cần `npm run dev:api`
+```
+
+`npm run build` chỉ đóng gói **frontend**. Backend chạy thẳng từ TypeScript qua `tsx`
+(`npm run dev:api`) — dự án môn học, không có bước đóng gói server riêng.
+
+Vite proxy `/api` sang cổng 3001 nên trình duyệt chỉ nói chuyện với một origin duy nhất —
+không có CORS để mà cấu hình sai, và mọi script Playwright trong `scripts/` vẫn trỏ `:5173`
+như cũ. Cần chạy riêng từng phần thì có `npm run dev:api` và `npm run dev:web`.
 
 Kiosk thiết kế cho màn 1280×720 trở lên; các màn `/mobile/*` cho khổ điện thoại (hẹp nhất là
 iPhone SE 375×667 — đây là khổ hay làm vỡ bố cục nhất, xem phần Kiểm chứng).
-
-Muốn dựng cả database (chưa cần thiết để xem app chạy):
-
-```bash
-cp .env.example .env    # sửa cho khớp máy bạn
-npm run db:migrate
-npm run db:seed
-npm run test:server
-```
-
-Hướng dẫn đầy đủ cho cả PostgreSQL lẫn SQL Server: [docs/database.md](docs/database.md).
 
 ## Màn hình
 
@@ -67,15 +90,20 @@ src/
     kiosk/          ~25 component dùng chung (thẻ sách, bàn phím, chat, bản đồ kệ…)
     mobile/         chrome điện thoại, thẻ phiếu mượn
     ui/             primitive shadcn, thêm khi cần
-  lib/              logic thuần, không React: search, librarian, borrow, telex, qrHandoff…
-  shared/           dùng chung frontend ↔ server: types, text, borrowRules
-  mocks/            catalog/availability/map/students/loans — nguồn seed + fixture test
+  api/              client + hook TanStack Query — mọi lần đọc dữ liệu đi qua đây
+  lib/              logic thuần, không React: search, borrow, telex, loans, qrHandoff…
+  shared/           dùng chung frontend ↔ server: types, text, borrowRules, librarian
+  mocks/            catalog/availability/map/students/loans — nguồn seed DB + fixture test
+  test/             fakeApi.ts (trả lời fetch trong test), renderWithQuery.tsx
   state/            4 store Zustand
   styles/tokens.css thang chữ, shadow, override chế độ trợ năng
   index.css         design token (:root), font, Tailwind
 server/
   db/               dialect, schema, migration, seeder
-  test/             test toàn vẹn dữ liệu, chạy trên DB thật
+  repos/            đọc DB → object domain (books, availability, shelves, loans, status)
+  services/         checkout.ts — giao dịch mượn sách, phần duy nhất ghi dữ liệu
+  routes/           REST API dưới /api/*
+  test/             test API + DB, chạy trên database thật
 scripts/            pipeline catalog + script kiểm chứng Playwright
 docs/               nguồn dữ liệu, test case mượn sách, database, kế hoạch backend
 ```
@@ -84,10 +112,11 @@ docs/               nguồn dữ liệu, test case mượn sách, database, kế
 
 | Lệnh | Việc |
 |---|---|
-| `npm run dev` | Dev server, cổng 5173 |
+| `npm run dev` | API (3001) + Vite (5173) song song |
+| `npm run dev:web` / `dev:api` | Chạy riêng từng cái |
 | `npm run build` | `tsc -b` rồi build production |
-| `npm run test` | Vitest — 264 test frontend |
-| `npm run test:server` | 18 test toàn vẹn dữ liệu, cần DB đã seed |
+| `npm run test` | Vitest — 253 test frontend, jsdom |
+| `npm run test:server` | 67 test API + DB, tự seed lại rồi chạy trên database thật |
 | `npm run lint` | oxlint |
 | `npm run db:migrate` / `db:seed` / `db:reset` | Schema và dữ liệu |
 | `npm run catalog` / `catalog:offline` | Sinh lại catalog từ Open Library (hoặc từ cache) |
@@ -116,13 +145,29 @@ jsdom (thứ Vitest chạy trên đó) **không dựng flexbox/grid, không phâ
 được tương phản**. Mọi lỗi bố cục, tràn khung và tương phản mà dự án này từng gặp đều vô hình
 với `npm run test` và chỉ lộ ra trong trình duyệt thật.
 
+Các script Playwright cần **trình duyệt đã tải về một lần**:
+
+```bash
+npx playwright install chromium
+```
+
+Thiếu bước này thì script báo `Executable doesn't exist` — lỗi khó đoán, nên đây là chỗ hay
+vấp nhất khi người khác clone repo về.
+
 ```bash
 npm run dev                        # rồi ở terminal khác:
 node scripts/check-chrome.mjs      # kiosk: header/footer ghim đúng chỗ, không tràn, trang chủ không cuộn
 node scripts/check-mobile.mjs      # mobile: 4 khổ điện thoại, chạm 48px, tương phản chế độ trợ năng
 node scripts/check-palette.mjs     # mọi cặp màu component thật sự vẽ ra, đo theo AA chữ thường
 node scripts/shot-scan.mjs         # đi hết luồng mượn tới phiếu, chụp từng bước
+node scripts/check-handoff.mjs     # ba lời hứa backend tồn tại để giữ (xem dưới)
+node server/scripts/check-sql-portability.mjs   # SQL không dùng cấu trúc riêng của một engine
 ```
+
+`check-handoff.mjs` kiểm ba điều mà jsdom **không thể** hỏi, vì nó chỉ có một storage và một
+thiết bị: mượn sách thì số bản còn giảm thật; phiếu lập ở kiosk đọc được từ **một browser
+context hoàn toàn khác** (đúng cảnh kiosk thật + điện thoại thật); và giới hạn mượn do server
+quyết định chứ không phải màn hình.
 
 `check-chrome` và `check-mobile` là hai cửa gác chính. **Chạy xong phải mở ảnh chụp ra xem** —
 "script in ok" mà không nhìn ảnh đã bỏ lọt lỗi thật nhiều lần trong dự án này.

@@ -8,7 +8,7 @@ import { KioskFooter } from '@/components/kiosk/KioskFooter'
 import { KioskHeader } from '@/components/kiosk/KioskHeader'
 import { ScanSteps } from '@/components/kiosk/ScanSteps'
 import { MAX_BOOKS_PER_LOAN, LOAN_DAYS } from '@/lib/borrow'
-import { books } from '@/mocks'
+import { useBookDetail } from '@/api/queries'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 
 export function ScanInstructionPage() {
@@ -18,7 +18,10 @@ export function ScanInstructionPage() {
   const resetCheckout = useBorrowSessionStore((s) => s.resetCheckout)
   const setScanStep = useBorrowSessionStore((s) => s.setScanStep)
 
-  const chosen = books.find((b) => b.id === selectedBookId)
+  // The book the reader picked on the detail screen, if they came that way. `undefined`
+  // when they walked straight into the checkout from the home screen.
+  const { data: chosenDetail } = useBookDetail(selectedBookId ?? undefined)
+  const chosen = chosenDetail?.book
 
   // Arriving here always starts a fresh checkout — otherwise a session abandoned by the
   // previous reader would still be sitting in the cart.

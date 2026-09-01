@@ -5,20 +5,25 @@ import { ChevronRight, QrCode, ScrollText } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { MobileFrame } from '@/components/mobile/MobileFrame'
 import { DueBadge } from '@/components/mobile/DueBadge'
-import { accountSlips, openBooks } from '@/lib/accountSlips'
+import { useAccount, useBooksByIds } from '@/api/queries'
+import { openBooks } from '@/lib/accountSlips'
 import { mostUrgentLoan } from '@/lib/loans'
-import { books, findStudentByCard } from '@/mocks'
 import { MOBILE_ACCOUNT_CARD } from '@/mobile/account'
 
 export function MobileHomePage() {
   const navigate = useNavigate()
 
-  const student = findStudentByCard(MOBILE_ACCOUNT_CARD)
-  // Same source as the slip list, so the two screens cannot disagree about what is out —
-  // a book borrowed at the kiosk this session shows up on both or on neither.
-  const stillOut = openBooks(accountSlips(MOBILE_ACCOUNT_CARD))
+  // Same request as the slip list, so the two screens cannot disagree about what is out —
+  // a book borrowed at the kiosk shows up on both or on neither.
+  const { data: account } = useAccount(MOBILE_ACCOUNT_CARD)
+  const student = account?.student
+
+  const stillOut = openBooks(account?.slips ?? [])
   const urgent = mostUrgentLoan(stillOut)
-  const urgentBook = urgent ? books.find((b) => b.id === urgent.bookId) : undefined
+
+  // Only the one book the banner names — the rest of the list is counted, not titled.
+  const { data: urgentSet } = useBooksByIds(urgent ? [urgent.bookId] : [])
+  const urgentBook = urgentSet?.books[0]
 
   return (
     <MobileFrame>

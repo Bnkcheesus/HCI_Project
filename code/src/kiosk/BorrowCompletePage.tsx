@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import { KioskFooter } from '@/components/kiosk/KioskFooter'
 import { KioskHeader } from '@/components/kiosk/KioskHeader'
 import { formatDate, LOAN_DAYS } from '@/lib/borrow'
-import { books, libraryStatus } from '@/mocks'
+import { useBooksByIds, useLibraryInfo } from '@/api/queries'
 import { useBorrowSessionStore } from '@/state/useBorrowSessionStore'
 
 export function BorrowCompletePage() {
@@ -25,11 +25,14 @@ export function BorrowCompletePage() {
     if (!slip) navigate('/kiosk', { replace: true })
   }, [slip, navigate])
 
+  // Fetched before the early return — hooks cannot be called conditionally, and an empty
+  // id list simply disables the query.
+  const { data: borrowedSet } = useBooksByIds(slip?.bookIds ?? [])
+  const { data: library } = useLibraryInfo()
+
   if (!slip) return null
 
-  const borrowed = slip.bookIds
-    .map((id) => books.find((b) => b.id === id))
-    .filter((b) => b !== undefined)
+  const borrowed = borrowedSet?.books ?? []
 
   function goHome() {
     reset()
@@ -200,7 +203,7 @@ export function BorrowCompletePage() {
         className="shrink-0 border-t border-[var(--rule)] bg-secondary px-10 py-2 text-center text-muted-foreground"
         style={{ fontSize: 'var(--text-eyebrow)' }}
       >
-        Hệ thống in đang hoạt động bình thường • Giấy in còn 85% • Hỗ trợ: {libraryStatus.supportPhone}
+        Hệ thống in đang hoạt động bình thường • Giấy in còn 85% • Hỗ trợ: {library?.status.supportPhone ?? '—'}
       </p>
 
       <KioskFooter />

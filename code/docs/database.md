@@ -5,25 +5,34 @@ không phải đổi code.
 
 ## Chuẩn bị chung
 
+Cần **Node.js ≥ 22.12** (xem [README](../README.md#cần-cài-trước)) và một trong hai database
+bên dưới đang chạy.
+
 ```bash
 cd code
 npm install
 cp .env.example .env      # rồi sửa cho khớp máy bạn
 ```
 
+Lưu ý chung cho cả hai engine: `npm run db:migrate` **tạo bảng, không tạo database**. Database
+rỗng phải có sẵn trước — mỗi mục bên dưới nói rõ cách tạo.
+
 ## PostgreSQL
 
 Cách nào cũng được — Docker, Homebrew, hay bản cài sẵn.
 
 ```bash
-# Docker
+# Docker — compose tự tạo database tên libassist
 docker compose up -d postgres
 # DATABASE_URL=postgres://libassist:libassist@localhost:5432/libassist
 
-# Hoặc Homebrew (macOS) — tự tạo database rỗng
+# Hoặc Homebrew (macOS) — phải tự tạo database rỗng
+brew services start postgresql@16
 createdb libassist
 # DATABASE_URL=postgres://<user>@localhost:5432/libassist
 ```
+
+Kiểm database đã lên chưa: `pg_isready` (Homebrew) hoặc `docker compose ps` (Docker).
 
 `.env`:
 
@@ -35,8 +44,11 @@ DATABASE_URL=postgres://libassist:libassist@localhost:5432/libassist
 ```bash
 npm run db:migrate
 npm run db:seed
-npm run test:server      # 18 phép kiểm tra tính toàn vẹn dữ liệu
+npm run test:server      # 67 test: toàn vẹn dữ liệu + API + giao dịch mượn
 ```
+
+Bộ test tự dọn sau mỗi ca và **chạy lại bao nhiêu lần cũng ra kết quả như nhau** — nó khôi
+phục về đúng giá trị đã seed chứ không "hoàn tác" việc mình vừa làm.
 
 ## SQL Server
 

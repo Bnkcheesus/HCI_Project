@@ -7,15 +7,17 @@ Trạng thái theo mục 9 (Thứ tự thực hiện):
 | 1. Hạ tầng server (env, dialect, docker-compose, .env.example) | ✅ xong |
 | 2. `src/shared/` + re-export shim ở `src/lib/` | ✅ xong |
 | 3. Migration + seeder, chạy thật trên PostgreSQL | ✅ xong — xem [database.md](database.md) |
-| 4. Repos + routes đọc | ⬜ chưa |
-| 5. `services/checkout.ts` + `POST /api/loans` | ⬜ chưa |
-| 6. `src/api/` + hook Query | ⬜ chưa |
-| 7. Cắt frontend sang API | ⬜ chưa |
-| 8. Xoá `loanSlips.ts`, gỡ `src/mocks` khỏi runtime | ⬜ chưa |
-| 9. `check-sql-portability.mjs` + cập nhật CLAUDE.md/SKILL.md | ⬜ chưa |
+| 4. Repos + routes đọc | ✅ xong — 44 test |
+| 5. `services/checkout.ts` + `POST /api/loans` | ✅ xong — 16 test |
+| 6. `src/api/` + hook Query | ✅ xong |
+| 7. Cắt frontend sang API | ✅ xong — 27 file, 0 file runtime còn đọc `@/mocks` |
+| 8. Xoá `loanSlips.ts`, gỡ `src/mocks` khỏi runtime | ✅ xong |
+| 9. `check-sql-portability.mjs` + cập nhật CLAUDE.md/SKILL.md | ✅ xong |
 
-Frontend hiện **vẫn đọc `src/mocks/` như cũ** — database đã dựng xong nhưng chưa có gì nối
-vào. Đó là chủ ý: bước 1–3 không đụng tới một component nào.
+**Toàn bộ kế hoạch đã hoàn tất trên nhánh PostgreSQL.** Nhánh SQL Server vẫn chưa chạy thật —
+xem mục 10.
+
+Chạy thử: `npm run dev` (Vite + API song song), rồi mở `http://localhost:5173/kiosk`.
 
 ## 1. Vì sao cần backend
 

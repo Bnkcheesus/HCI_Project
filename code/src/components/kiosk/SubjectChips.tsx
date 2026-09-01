@@ -1,4 +1,4 @@
-import { popularSubjects } from '@/mocks'
+import { useLibraryInfo } from '@/api/queries'
 
 /**
  * One-tap subject shortcuts — Job 1 / Gain Creator 5 (tìm theo chủ đề chuyên sâu).
@@ -11,6 +11,12 @@ interface SubjectChipsProps {
 }
 
 export function SubjectChips({ onSelect }: SubjectChipsProps) {
+  // Counted from the catalogue by the server, so a shortcut can never lead to "Không tìm
+  // thấy tài liệu nào" — the persona taps these precisely when they do not know what to
+  // type, and a dead end there strands them.
+  const { data } = useLibraryInfo()
+  const subjects = data?.popularSubjects ?? []
+
   return (
     <section className="flex flex-col gap-4">
       <h2
@@ -21,7 +27,7 @@ export function SubjectChips({ onSelect }: SubjectChipsProps) {
       </h2>
 
       <ul className="flex flex-wrap gap-3">
-        {popularSubjects.map((subject) => (
+        {subjects.map((subject) => (
           <li key={subject}>
             <button
               type="button"
