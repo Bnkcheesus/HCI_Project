@@ -35,6 +35,15 @@ const schema = z
     // SQL Server — tedious takes discrete fields, not a URL, so these are separate.
     MSSQL_HOST: z.string().optional(),
     MSSQL_PORT: z.coerce.number().int().positive().default(1433),
+    /**
+     * Named instance, e.g. `SQLEXPRESS` for a default SQL Server Express install.
+     *
+     * Express installs as `localhost\SQLEXPRESS` on a *dynamic* port, not 1433, so a
+     * host+port connection simply times out — the single most likely reason the Windows
+     * half of this project fails to connect on the first try. When set, tedious asks the
+     * SQL Browser service for the port and `MSSQL_PORT` is ignored (the two conflict).
+     */
+    MSSQL_INSTANCE: z.string().optional(),
     MSSQL_USER: z.string().optional(),
     MSSQL_PASSWORD: z.string().optional(),
     MSSQL_DATABASE: z.string().optional(),

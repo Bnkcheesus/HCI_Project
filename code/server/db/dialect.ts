@@ -59,7 +59,15 @@ function mssql(): MssqlDialect {
         new tedious.Connection({
           server: env.MSSQL_HOST!,
           options: {
-            port: env.MSSQL_PORT,
+            /*
+             * A named instance resolves its own port, so the two settings are mutually
+             * exclusive in tedious — passing both makes the connection fail. SQL Server
+             * Express installs as `localhost\SQLEXPRESS` on a *dynamic* port rather than
+             * 1433, so without `MSSQL_INSTANCE` a default Express install just times out.
+             */
+            ...(env.MSSQL_INSTANCE
+              ? { instanceName: env.MSSQL_INSTANCE }
+              : { port: env.MSSQL_PORT }),
             database: env.MSSQL_DATABASE!,
             trustServerCertificate: env.MSSQL_TRUST_CERT,
             // Without this tedious returns `date` columns as local-midnight Dates on some

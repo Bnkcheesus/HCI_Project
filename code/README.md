@@ -13,6 +13,9 @@ trên điện thoại.
 > Nhánh SQL Server chưa chạy thật trên máy phát triển (macOS); xem
 > [docs/database.md](docs/database.md).
 
+**Cài đặt từng bước cho máy Mac (PostgreSQL) và máy Windows (SQL Server):**
+[huong-dan-cai-dat.md](huong-dan-cai-dat.md).
+
 ## Cần cài trước
 
 | | | |
@@ -184,7 +187,9 @@ bằng tiếng Việt.
   kiến trúc, bảng truy vết màn hình, và danh sách **Gotchas** dài ghi lại mọi cạm bẫy đã gặp
   thật (bug `<button>` của WebKit, hành vi thanh cuộn, chế độ a11y gộp token về cùng màu đen…).
   Đọc trước khi sửa gì trong này.
-- [docs/database.md](docs/database.md) — dựng PostgreSQL / SQL Server.
+- [huong-dan-cai-dat.md](huong-dan-cai-dat.md) — cài đặt từng bước cho macOS và Windows.
+- [docs/database.md](docs/database.md) — dựng PostgreSQL / SQL Server, và vì sao một codebase
+  chạy được cả hai.
 - [docs/ke-hoach-backend-database.md](docs/ke-hoach-backend-database.md) — kế hoạch backend và
   tiến độ.
 - [docs/test-cases-muon-sach.md](docs/test-cases-muon-sach.md) — bảng test case luồng mượn.
