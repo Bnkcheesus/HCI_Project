@@ -15,7 +15,7 @@ Hệ thống tập trung vào **4 luồng người dùng quan trọng (Key User 
 1. **Luồng 1: Tra cứu Sách & Định vị Kệ sách 2D (Book Search & Indoor Location Flow)**
 2. **Luồng 2: Trò chuyện & Gợi ý Sách thông minh qua AI (AI Recommendation Flow)**
 3. **Luồng 3: Quy trình Tự Mượn sách tại Kiosk (Self-Checkout Scan Flow)**
-4. **Luồng 4: Đồng bộ & Quản lý Phiếu mượn trên Mobile (Mobile Companion Flow)**
+4. **Luồng 4: Kiểm tra & Quản lý Phiếu mượn trên Mobile (Mobile Loan Management Flow)**
 
 ---
 
@@ -107,10 +107,10 @@ flowchart TD
 
 ---
 
-### 4. Luồng Đồng bộ & Quản lý Phiếu mượn trên Mobile (Mobile Companion Flow)
+### 4. Luồng Kiểm tra & Quản lý Phiếu mượn trên Mobile (Mobile Loan Management Flow)
 
 #### Mô tả luồng:
-Sinh viên mở ứng dụng di động **LibAssist Mobile Companion**. Sử dụng tính năng quét mã QR để tải sơ đồ dẫn đường 2D (Indoor turn-by-turn navigation) từ Kiosk sang điện thoại hoặc lưu thông tin phiếu mượn. Ứng dụng tự động theo dõi thời hạn trả sách (Due Date) và gửi thông báo nhắc nhở tự động trước khi tới hạn.
+Sinh viên mở ứng dụng di động **LibAssist Mobile Companion** để tra cứu cá nhân. Bản chất sinh viên chỉ cần mở ứng dụng và truy cập mục **Phiếu mượn** (`/mobile/phieu-muon`) để kiểm tra danh sách các sách đang mượn, theo dõi hạn trả (Due Date) và nhận các thông báo nhắc nhở trả sách tự động.
 
 #### Sơ đồ Luồng 4 (Mermaid Diagram):
 ```mermaid
@@ -119,15 +119,11 @@ flowchart TD
     classDef step fill:#171B24,stroke:#22D3EE,stroke-width:1px,color:#F5F7FA;
 
     START(["▶ Mở App Mobile LibAssist (/mobile)"]):::startEnd
-    QR["📷 Mở Camera quét mã QR hiển thị từ Kiosk (/mobile/qr)"]:::step
-    BRANCH1["🗺️ Tải Bản đồ Chỉ đường Kệ sách (/mobile/location)"]:::step
-    BRANCH2["📄 Tải & Lưu Phiếu mượn (/mobile/phieu-muon)"]:::step
-    NOTIFY["🔔 Hệ thống gửi Thông báo tự động nhắc hạn trả"]:::step
-    FINISH(["■ Quản lý lịch sử mượn & Chủ động trả sách đúng hạn"]):::startEnd
+    NAV["📄 Chọn mục Phiếu Mượn (/mobile/phieu-muon)"]:::step
+    VIEW["📋 Xem danh sách sách đang mượn & Hạn trả (Due Dates)"]:::step
+    FINISH(["■ Kiểm tra trạng thái & Nhận thông báo nhắc trả tự động"]):::startEnd
 
-    START --> QR
-    QR -- "Mã QR Bản đồ" --> BRANCH1 --> NOTIFY --> FINISH
-    QR -- "Mã QR Phiếu mượn" --> BRANCH2 --> NOTIFY --> FINISH
+    START --> NAV --> VIEW --> FINISH
 ```
 
 ---
