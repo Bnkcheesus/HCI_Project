@@ -68,6 +68,15 @@ export interface LibrarianAnswer {
   bookIds: string[]
 }
 
+/** What `POST /api/returns` gives back. Mirrors `ReturnedLoan` on the server. */
+export interface ReturnedLoan {
+  loanId: string
+  slipId: string
+  bookId: string
+  returnedAt: string
+  wasLate: boolean
+}
+
 /* ------------------------------------------------------------------------ query keys */
 
 /**
@@ -226,6 +235,28 @@ export function useCheckout() {
   return useMutation({
     mutationFn: (request: { cardCode: string; bookIds: string[] }) =>
       apiPost<{ slip: LoanSlip }>('/api/loans', request),
+    onSuccess: (_data, request) => {
+      void client.invalidateQueries({ queryKey: keys.books })
+      void client.invalidateQueries({ queryKey: keys.library })
+      void client.invalidateQueries({ queryKey: keys.account(request.cardCode) })
+    },
+  })
+}
+
+/**
+ * Give a book back — the demo tool at `/admin`, not a product feature. See
+ * `server/services/returnBook.ts` for why it exists outside /kiosk and /mobile.
+ *
+ * Invalidates exactly what `useCheckout` does, and for the same reason read backwards: a
+ * return puts a copy back, so every cached copy count is now one too low. Miss
+ * `keys.books` and the kiosk chip keeps saying "Còn 2 cuốn" about a shelf that has three.
+ */
+export function useReturnBook() {
+  const client = useQueryClient()
+
+  return useMutation({
+    mutationFn: (request: { cardCode: string; bookId: string }) =>
+      apiPost<{ loan: ReturnedLoan }>('/api/returns', request),
     onSuccess: (_data, request) => {
       void client.invalidateQueries({ queryKey: keys.books })
       void client.invalidateQueries({ queryKey: keys.library })
