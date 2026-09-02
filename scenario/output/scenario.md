@@ -1,68 +1,92 @@
-# Kịch bản Sử dụng — LibAssist
+# Kịch bản Người dùng — Nguyễn Minh Hoàng | LibAssist Kiosk
 
-Nguồn dữ liệu: [`persona/output/persona.md`](../../persona/output/persona.md) và [`value-proposition/output/value-proposition.md`](../../value-proposition/output/value-proposition.md).
-
-## I. Bối cảnh & Nhân vật
-
-**Nhân vật:** Nguyễn Minh Khang — 21 tuổi, sinh viên năm 3, thị lực kém, lịch học dày đặc, chỉ có vài phút rảnh giữa các tiết học để ghé thư viện.
-
-**Tác vụ được kịch bản hóa:** Giữa hai tiết học (khoảng 15 phút), Minh Khang cần **tìm một cuốn tài liệu tham khảo cho môn học, kiểm tra tình trạng còn/hết, xác định vị trí kệ, và tự mượn sách** trước khi vào tiết tiếp theo — đúng như các Task 1–5 và Goal 1–4 trong persona. Vì thị lực kém, mọi bước thao tác trên màn hình đều phải diễn ra dưới áp lực đọc-hiểu khó khăn (Goal 5, Task 6).
-
-Cùng một tác vụ này được kể lại hai lần: một lần trên hệ thống thư viện truyền thống hiện tại, một lần trên hệ thống LibAssist mới — để có thể so sánh trực tiếp.
+> Tổng hợp từ [`persona/output/persona.md`](../../persona/output/persona.md) — Persona đại diện duy nhất
 
 ---
 
-## II. Kịch bản 1: Thao tác trên Hệ thống Truyền thống
+## I. Bối cảnh & Nhân vật (Context & Persona)
 
-Minh Khang bước vào thư viện với 15 phút ít ỏi giữa hai tiết học. Anh tiến tới một máy tra cứu catalog cũ kỹ ở góc phòng. Gõ tên môn học vào ô tìm kiếm, màn hình trả về một danh sách mã phân loại (Dewey) và số kệ — nhưng anh chưa từng học cách đọc hệ thống phân loại này, đứng tần ngần không biết "306.4 T-neo" ứng với dãy kệ nào trong không gian rộng lớn của thư viện.
-
-Chữ trên màn hình catalog nhỏ và độ tương phản thấp; Minh Khang phải cúi sát mặt vào màn hình, nheo mắt để đọc từng dòng thông tin, mất thêm gần hai phút quý giá chỉ để xác nhận đúng tên sách.
-
-Xác định được khu vực kệ, anh vội đi tới — nhưng đi lại mất thêm vài phút vì không chắc lối nào dẫn đến đúng dãy. Đến nơi, cuốn sách không có trên kệ: catalog chỉ ghi "còn 2 bản" nhưng không phản ánh đúng thực tế, có thể đã bị mượn hoặc để nhầm chỗ.
-
-Chỉ còn chưa đầy 6 phút, Minh Khang chạy về quầy thủ thư để hỏi. Trước mặt anh đã có hai sinh viên khác đang làm thủ tục mượn/trả, anh phải xếp hàng chờ đến lượt. Khi được giúp, thủ thư tìm ra một cuốn khác cùng chủ đề, ghi thủ tục mượn bằng tay và quẹt thẻ sinh viên. Nhân tiện, Minh Khang hỏi thêm liệu một cuốn sách mượn trước đó có sắp đến hạn trả không — thủ thư phải lục lại sổ/màn hình riêng để tra cứu, khiến anh phải đợi thêm.
-
-Minh Khang rời thư viện trong khi tiết học đã bắt đầu được vài phút, tay cầm cuốn sách nhưng đầu óc căng thẳng vì một việc tưởng đơn giản lại tiêu tốn gần trọn khoảng nghỉ ít ỏi của mình.
-
-### Các điểm đau phát lộ
-- **Pain 1** — Không hiểu mã phân loại/cách sắp xếp sách trong thư viện lớn, lúng túng khi định vị khu vực kệ.
-- **Pain 2** — Catalog không phản ánh đúng tình trạng khả dụng; phải đến tận kệ mới biết sách đã hết.
-- **Pain 3** — Phải xếp hàng chờ quầy thủ thư trong khoảng thời gian ngắn ngủi giữa hai tiết học.
-- **Pain 4** — Muốn biết hạn trả của một cuốn sách mượn trước đó nhưng phải chờ thủ thư tra cứu thủ công.
-- **Pain 5** — Giao diện catalog chữ nhỏ, tương phản thấp, gây khó khăn cho người thị lực kém.
+* **Nhân vật chính:** Nguyễn Minh Hoàng (22 tuổi, sinh viên năm cuối ngành Công nghệ Thông tin, đang làm đồ án tốt nghiệp kiêm Trưởng nhóm Học thuật Câu lạc bộ Sinh viên).
+* **Nhiệm vụ (Task):** Hoàng có khoảng nghỉ 15 phút giữa hai ca học. Anh tranh thủ ghé thư viện để tìm và mượn cuốn sách tham khảo chuyên ngành *"Clean Architecture — A Craftsman's Guide to Software Structure"* phục vụ đồ án tốt nghiệp.
+* **Mục tiêu:** Tra cứu tình trạng sách, xác định vị trí kệ, mượn sách tự động và theo dõi hạn trả trên điện thoại — hoàn tất trước khi vào ca học tiếp theo.
 
 ---
 
-## III. Kịch bản 2: Tương tác trên Hệ thống LibAssist
+## II. Kịch bản 1: Thao tác trên Hệ thống Hiện tại (Existing System Scenario)
 
-Cũng với 15 phút giữa hai tiết học, Minh Khang bước tới Kiosk AI của LibAssist. Việc đầu tiên anh làm là chạm vào biểu tượng chế độ trợ năng — màn hình lập tức phóng to chữ, tăng độ tương phản và bật phản hồi âm thanh cho mỗi thao tác chạm, giúp anh đọc và thao tác dễ dàng dù thị lực kém.
+### 1. Diễn biến kịch bản
 
-Anh gõ đơn giản tên môn học vào ô tìm kiếm. Kiosk trả về ngay một danh sách tài liệu được gợi ý theo chủ đề, không đòi hỏi anh phải hiểu bất kỳ mã phân loại nào. Ngay trong danh sách kết quả, mỗi đầu sách đều hiển thị rõ tình trạng khả dụng theo thời gian thực — Minh Khang thấy ngay cuốn nào còn trên kệ, cuốn nào đã hết, không cần đoán hay đi kiểm tra thủ công.
+Vào lúc 9h45 sáng, sau khi kết thúc tiết lý thuyết, Hoàng nhanh chóng di chuyển đến thư viện. Anh chỉ có đúng 15 phút trước khi ca lab bắt đầu lúc 10h00.
 
-Chọn một cuốn còn sẵn, kiosk hiện ra bản đồ chỉ đường trực quan tới đúng dãy kệ; anh quét mã QR để mang theo bản đồ trên điện thoại trong lúc di chuyển, thay vì phải nhớ đường. Tới kệ, lấy đúng sách chỉ trong chưa đầy một phút.
+1. **Tra cứu trên máy OPAC cũ — rào cản nhập liệu:**
+   Hoàng đến máy tính tra cứu công cộng. Màn hình hiển thị giao diện xám tối, phông chữ nhỏ, tương phản kém. Mắt mỏi sau 3 tiết liên tiếp, anh phải ghé sát màn hình. Anh gõ *"clean architecture"* — hệ thống trả về lỗi "Không tìm thấy". Sau đó anh thử gõ lại đúng hoa thường *"Clean Architecture"* mới có kết quả. Hệ thống hiển thị mã phân loại `B2-07-05` và trạng thái *"Khả dụng: 1 cuốn"* — nhưng không có sơ đồ hay chỉ đường.
 
-Quay lại trạm kiosk gần nhất, Minh Khang tự quét mã sách và thẻ sinh viên. Toàn bộ thủ tục mượn hoàn tất chỉ với một thao tác — không cần xếp hàng, không cần chờ thủ thư. Phiếu mượn được in ra và đồng thời đồng bộ vào ứng dụng di động của anh.
+2. **Tự định vị kệ sách — mò mẫm thủ công:**
+   Giao diện chỉ hiện mã `B2-07-05`. Hoàng phải nhìn lên tấm bảng sơ đồ chữ dán ở cột sảnh, đoán khu vực dãy B2. Anh đi sâu vào kho sách rộng, len lỏi qua hàng chục dãy kệ sát nhau, ngước đọc từng nhãn tem đầu kệ. Sau 8 phút di chuyển, anh mới tìm đúng dãy B2.
 
-Trên đường ra khỏi thư viện, anh liếc nhanh ứng dụng di động và thấy ngay lịch sử mượn cùng lời nhắc hạn trả của cuốn sách mượn trước đó — thông tin đã tự động cập nhật, không cần hỏi ai. Minh Khang bước vào lớp đúng giờ, vẫn còn dư vài phút để ổn định chỗ ngồi.
+3. **Sự cố thông tin không cập nhật realtime:**
+   Hoàng rà soát từng gáy sách trên ngăn B2-07 nhưng chỉ thấy khoảng trống. Cuốn sách không có trên kệ dù hệ thống báo còn. Một sinh viên khác đã lấy ra đọc tại bàn từ 20 phút trước nhưng hệ thống OPAC cũ chưa cập nhật. Hoàng đã lãng phí 10 phút đi bộ vô ích.
 
-### Giá trị và Điểm mới trong Tương tác
-- **Chế độ trợ năng bật ngay từ đầu** — dùng *Chế độ trợ năng tích hợp trên kiosk* (Product/Service 5), giải quyết trực tiếp Pain Reliever 5 và tạo ra Gain Creator 6.
-- **Tìm kiếm bằng từ khóa + gợi ý theo chủ đề** — dùng *Hệ thống tìm kiếm từ khóa và gợi ý AI theo môn học/sở thích* (Product/Service 1), khớp với Pain Reliever 1 và Gain Creator 1.
-- **Tình trạng sách hiển thị ngay trong kết quả tìm kiếm** — nhờ năng lực *cập nhật tình trạng sách theo thời gian thực* (Gain Creator 4), khớp với Pain Reliever 2.
-- **Bản đồ trực quan + QR mang theo di động** — dùng *Bản đồ định vị kệ sách trên kiosk, xuất QR sang di động* (Product/Service 2), tạo ra Gain Creator 2.
-- **Tự mượn một chạm, không xếp hàng** — dùng *Trạm tự mượn sách tại kiosk* (Product/Service 3), khớp với Pain Reliever 3 và Gain Creator 3.
-- **Lịch sử mượn/hạn trả tự động đồng bộ** — dùng *Ứng dụng di động đồng bộ tình trạng sách và lịch sử mượn/hạn trả* (Product/Service 4), khớp với Pain Reliever 4.
+4. **Xếp hàng tại quầy thủ thư:**
+   Hoàng quay lại quầy để hỏi đầu sách thay thế. Trước quầy có 5–6 sinh viên đang xếp hàng chờ thủ thư nhập liệu và đóng dấu thẻ thủ công. Đồng hồ chỉ 9h57. Hoàng biết mình không còn đủ thời gian — đành bỏ về tay không và trễ cả mục tiêu tra cứu tài liệu lẫn lịch học.
+
+### 2. Các điểm đau phát lộ (Highlighted Problems)
+
+- **Nhập liệu case-sensitive:** Phải gõ đúng chữ hoa/thường mới có kết quả — dễ bỏ lỡ tài liệu vì sai ký tự.
+- **Thiếu bản đồ định vị trực quan:** Người dùng phải tự đoán và mò mẫm giữa kho sách rộng lớn.
+- **Dữ liệu không cập nhật realtime:** Hệ thống báo còn sách nhưng thực tế trên kệ đã hết.
+- **Ùn tắc quầy thủ thư:** Quy trình mượn phụ thuộc nhân viên, gây xếp hàng — người bận rộn không thể mượn kịp.
+- **Rào cản giao diện:** Chữ nhỏ, tương phản kém gây mỏi mắt, chậm thao tác.
 
 ---
 
-## IV. Bảng So sánh Hiệu quả Tương tác
+## III. Kịch bản 2: Tương tác trên Hệ thống LibAssist mới (New System Scenario)
 
-| Tiêu chí | Hệ thống truyền thống | Hệ thống LibAssist |
-|---|---|---|
-| Xác định vị trí sách | Phải tự hiểu mã phân loại, dễ lúng túng trong thư viện lớn | Tìm bằng từ khóa đơn giản, có gợi ý theo chủ đề, không cần hiểu mã phân loại |
-| Độ tin cậy về tình trạng sách | Catalog không phản ánh đúng thực tế, phải đến tận kệ mới biết | Hiển thị tình trạng khả dụng theo thời gian thực ngay trong kết quả tìm kiếm |
-| Thời gian chờ mượn | Phải xếp hàng chờ quầy thủ thư | Tự mượn một chạm tại kiosk, không xếp hàng |
-| Theo dõi lịch sử/hạn trả | Phải hỏi thủ thư, tra cứu thủ công, mất thời gian | Tự động đồng bộ và nhắc trên ứng dụng di động |
-| Khả năng tiếp cận (thị lực kém) | Chữ nhỏ, tương phản thấp, khó đọc | Chế độ trợ năng: chữ lớn, tương phản cao, phản hồi âm thanh |
-| Định vị & di chuyển đến kệ | Không chắc lối đi, mất thời gian dò tìm | Bản đồ chỉ đường trực quan, có thể mang theo qua QR trên di động |
-| Kết quả cuối cùng | Trễ giờ vào lớp, căng thẳng | Hoàn tất trong vài phút, kịp giờ vào lớp |
+### 1. Diễn biến kịch bản
+
+Cũng vào lúc 9h45 sáng, Hoàng bước vào sảnh thư viện với cùng nhiệm vụ tìm cuốn *"Clean Architecture"*.
+
+1. **Tiếp cận Kiosk AI — tìm kiếm linh hoạt:**
+   Ngay tại sảnh chính, Hoàng đến trạm **Kiosk AI LibAssist**. Màn hình cảm ứng lớn, phông chữ to rõ, giao diện sáng hiện đại. Hoàng gõ *"clean arch"* — hệ thống **Fuzzy Search** tự động gợi ý *"Clean Architecture — Robert C. Martin"* ngay khi đang gõ. Anh chọn kết quả đúng chỉ sau 2 giây.
+   *(Nếu mắt đang mỏi, Hoàng chỉ cần chạm nút **Trợ năng** ở góc màn hình để kích hoạt chế độ chữ lớn và tương phản cao tức thì.)*
+
+2. **Kiểm tra khả dụng realtime & xem bản đồ chỉ đường:**
+   Kiosk phản hồi ngay: sách đang có **02 cuốn** tại kệ **B2-07**. Đồng thời màn hình hiển thị **Bản đồ số** 2D trực quan, vẽ đường mũi tên từ vị trí Kiosk hiện tại dẫn thẳng đến dãy kệ B2-07.
+
+3. **Chuyển bản đồ sang điện thoại qua QR:**
+   Hoàng rút điện thoại, quét mã QR hiển thị trên Kiosk. Bản đồ chỉ đường được tải thẳng vào ứng dụng **LibAssist Mobile App**. Anh vừa đi vào kho sách vừa nhìn bản đồ trên điện thoại để định hướng.
+
+4. **Lấy sách nhanh chóng tại kệ:**
+   Nhờ bản đồ chính xác, Hoàng đi thẳng đến đúng dãy kệ B2-07 chỉ trong **dưới 1 phút**. Anh thấy ngay cuốn sách đang xếp sẵn trên kệ, lấy xuống.
+
+5. **Tự mượn sách 1-chạm tại Kiosk:**
+   Hoàng quay lại Kiosk tự phục vụ và thực hiện 2 bước đơn giản:
+   - **Bước 1:** Đặt gáy sách lên vùng máy quét mã vạch của Kiosk.
+   - **Bước 2:** Đưa thẻ sinh viên vào khe đọc thẻ cảm ứng.
+
+   Màn hình xác nhận mượn thành công. Máy in nhả ra **Phiếu mượn**. Đồng thời hệ thống tự động đẩy thông tin phiếu mượn và **thông báo nhắc hạn trả** về ứng dụng LibAssist trên điện thoại của Hoàng.
+
+Toàn bộ quy trình từ tra cứu đến mượn xong chỉ mất **chưa đầy 3 phút**. Hoàng cầm sách bước vào phòng lab đúng giờ, không bỏ lỡ bất kỳ tiết học nào.
+
+### 2. Giá trị & Điểm mới trong tương tác (New Interaction Highlights)
+
+- **Fuzzy Search thông minh:** Tìm được sách dù gõ thiếu dấu, viết tắt hoặc sai chính tả — không còn bị lỗi case-sensitive.
+- **Bản đồ số + QR di động:** Định vị chính xác kệ sách ngay sau kết quả tìm kiếm và mang bản đồ đi theo trên smartphone.
+- **Trạng thái khả dụng realtime:** Biết chính xác số lượng sách còn trên kệ trước khi di chuyển, tránh đi nhầm.
+- **Tự mượn 1-chạm không xếp hàng:** Quét sách + thẻ sinh viên → xác nhận trong 2 bước, không cần nhân viên can thiệp.
+- **Đồng bộ Kiosk ↔ Mobile App:** Tự động đồng bộ phiếu mượn và nhắc hạn trả về điện thoại.
+- **Giao diện Trợ năng (Accessibility Mode):** Chữ lớn, tương phản cao, phản hồi âm thanh — hỗ trợ mọi đối tượng người dùng.
+
+---
+
+## IV. Bảng So sánh Hiệu quả Tương tác (Interaction Comparison Matrix)
+
+| Tiêu chí | Hệ thống Hiện tại (OPAC cũ) | Hệ thống LibAssist mới |
+| :--- | :--- | :--- |
+| **Thời gian hoàn tất** | 15–20 phút (thường không kịp) | 2–3 phút (hoàn thành siêu tốc) |
+| **Tìm kiếm tài liệu** | Case-sensitive, phải nhập chính xác tên/tác giả | Fuzzy Search — gợi ý tự động khi gõ |
+| **Định vị kệ sách** | Tự đoán từ mã phân loại, mò mẫm thủ công | Bản đồ số chỉ đường + QR sang di động |
+| **Trạng thái sách** | Không cập nhật realtime — đến kệ mới biết hết | Hiển thị số lượng còn trên kệ tức thì |
+| **Quy trình mượn** | Xếp hàng chờ thủ thư nhập liệu thủ công | Tự quét mã sách & thẻ sinh viên 1-chạm |
+| **Quản lý hạn trả** | Tự nhớ hoặc xem phiếu giấy | Tự động đồng bộ & nhắc trên Mobile App |
+| **Giao diện** | Chữ nhỏ, tương phản kém, gây mỏi mắt | Màn hình lớn, có chế độ Trợ năng Accessibility |

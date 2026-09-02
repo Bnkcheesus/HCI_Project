@@ -1,87 +1,83 @@
-# Value Proposition Canvas — LibAssist
+# Value Proposition Canvas — Nguyễn Minh Hoàng | LibAssist Kiosk
 
-Nguồn dữ liệu duy nhất: [`persona/output/persona.md`](../../persona/output/persona.md) — persona "Nguyễn Minh Khang" (sinh viên năm 3, 21 tuổi, thị lực kém).
-
-## 1. Bảng truy vết (Traceability Table)
-
-Mọi Pain phải có Pain Reliever, mọi Gain phải có Gain Creator, mọi Customer Job phải có Product/Service tương ứng — không có mục nào "mồ côi" ở cả hai phía.
-
-| Persona → Customer Profile | Value Map tương ứng |
-|---|---|
-| **Job 1** — Tìm đúng sách/tài liệu nhanh bằng từ khóa đơn giản *(Goal 1, Task 1–2)* | **Product/Service 1** — Hệ thống tìm kiếm từ khóa + gợi ý AI theo môn học/sở thích |
-| **Job 2** — Xác định chính xác vị trí kệ sách để đi thẳng tới lấy *(Goal 2, Task 4)* | **Product/Service 2** — Bản đồ định vị kệ sách trên kiosk, xuất QR sang di động |
-| **Job 3** — Tự mượn sách nhanh gọn, không xếp hàng *(Goal 3, Task 5)* | **Product/Service 3** — Trạm tự mượn tại kiosk (quét sách + thẻ sinh viên, in phiếu) |
-| **Job 4** — Theo dõi tình trạng khả dụng của sách và lịch sử mượn/hạn trả *(Goal 4, Task 3)* | **Product/Service 4** — Ứng dụng di động đồng bộ tình trạng sách & lịch sử mượn/hạn trả |
-| **Job 5** — Thao tác kiosk độc lập dù thị lực kém *(Goal 5, Task 6)* | **Product/Service 5** — Chế độ trợ năng tích hợp trên kiosk |
-| **Pain 1** — Chưa hiểu cách phân loại/sắp xếp sách trong thư viện lớn, dễ lúng túng | **Pain Reliever 1** — Tìm kiếm bằng từ khóa/gợi ý AI thay cho việc phải tự hiểu hệ thống phân loại |
-| **Pain 2** — Không chắc sách còn khả dụng hay đã có người mượn, phải đến tận kệ mới biết | **Pain Reliever 2** — Hiển thị tình trạng khả dụng của sách theo thời gian thực ngay trên kết quả tìm kiếm |
-| **Pain 3** — Không muốn xếp hàng chờ quầy thủ thư trong thời gian ngắn giữa tiết học | **Pain Reliever 3** — Quy trình tự mượn tại kiosk (quét mã, không cần chờ thủ thư) |
-| **Pain 4** — Khó nhớ lịch sử mượn và hạn trả của nhiều đầu sách cùng lúc | **Pain Reliever 4** — Ứng dụng di động lưu và nhắc lịch sử mượn/hạn trả tự động |
-| **Pain 5** — Giao diện kiosk chữ nhỏ, tương phản thấp, bản đồ thuần hình ảnh, thao tác chạm thiếu phản hồi | **Pain Reliever 5** — Chế độ trợ năng (chữ lớn, tương phản cao, phản hồi âm thanh, chỉ dẫn văn bản) |
-| **Gain 1** — Tìm kiếm bằng từ khóa đơn giản kèm gợi ý sách phù hợp môn học/sở thích | **Gain Creator 1** — Bộ gợi ý sách theo từ khóa/môn học/sở thích |
-| **Gain 2** — Bản đồ chỉ đường trực quan, hiển thị chính xác vị trí kệ sách | **Gain Creator 2** — Bản đồ chỉ đường trực quan trên kiosk, xuất QR |
-| **Gain 3** — Quy trình tự mượn rõ ràng, nhanh; in phiếu hoặc đồng bộ app | **Gain Creator 3** — Luồng tự mượn một chạm (quét sách + thẻ, in phiếu/đồng bộ app) |
-| **Gain 4** — Biết ngay số lượng sách còn khả dụng theo thời gian thực | **Gain Creator 4** — Cập nhật tình trạng sách theo thời gian thực |
-| **Gain 5** — Tìm kiếm nâng cao theo chủ đề chuyên sâu, xem tài liệu liên quan | **Gain Creator 5** — Chức năng tìm kiếm nâng cao theo chủ đề + tài liệu liên quan |
-| **Gain 6** — Chế độ trợ năng: chữ lớn, tương phản cao, giọng nói, âm thanh, chỉ dẫn văn bản rõ ràng | **Gain Creator 6** — Chế độ trợ năng toàn diện trên kiosk |
+> Tổng hợp từ [`persona/output/persona.md`](../../persona/output/persona.md) — Persona đại diện duy nhất  
+> Khung phân tích: Value Proposition Canvas (Osterwalder)
 
 ---
 
-## 2. Customer Profile
+## I. Hồ sơ Khách hàng (Customer Profile)
 
-### Customer Jobs
-1. Tìm đúng sách/tài liệu nhanh bằng từ khóa đơn giản.
-2. Xác định chính xác vị trí kệ sách để đi thẳng tới lấy.
-3. Tự mượn sách nhanh gọn, không cần xếp hàng.
-4. Theo dõi tình trạng khả dụng của sách và lịch sử mượn/hạn trả.
-5. Thao tác kiosk độc lập dù gặp khó khăn về thị lực.
+### 1. Việc cần làm (Customer Jobs)
 
-### Pains
-1. Chưa hiểu cách phân loại/sắp xếp sách trong một thư viện lớn, dễ lúng túng.
-2. Không chắc sách cần tìm còn khả dụng hay đã có người mượn, phải đến tận kệ mới biết.
-3. Không muốn xếp hàng chờ quầy thủ thư trong khoảng thời gian ngắn giữa các tiết học.
-4. Khó nhớ lịch sử mượn và hạn trả của nhiều đầu sách cùng lúc.
-5. Giao diện kiosk chữ nhỏ, tương phản thấp, bản đồ thuần hình ảnh khó dùng, thao tác chạm thiếu phản hồi rõ ràng.
+* **Job 1:** Tìm kiếm tài liệu chuyên ngành và giáo trình phục vụ đồ án tốt nghiệp / nghiên cứu học thuật.
+* **Job 2:** Xác định vị trí chính xác kệ sách trong thư viện rộng lớn sau khi tìm được đầu sách.
+* **Job 3:** Thực hiện thủ tục mượn sách nhanh chóng trong khoảng thời gian giải lao giữa các ca học.
+* **Job 4:** Theo dõi thời hạn trả sách và quản lý lịch sử mượn để không bị phạt trễ.
 
-### Gains
-1. Tìm kiếm bằng từ khóa đơn giản kèm gợi ý sách phù hợp với môn học/sở thích.
-2. Bản đồ chỉ đường trực quan, hiển thị chính xác vị trí kệ sách.
-3. Quy trình tự mượn rõ ràng và nhanh; in phiếu mượn hoặc đồng bộ sang ứng dụng di động.
-4. Biết ngay số lượng sách còn khả dụng theo thời gian thực.
-5. Tìm kiếm nâng cao theo chủ đề chuyên sâu, xem được các tài liệu liên quan.
-6. Chế độ trợ năng: chữ lớn, tương phản cao, đọc nội dung bằng giọng nói, phản hồi âm thanh, chỉ dẫn vị trí bằng văn bản rõ ràng.
+### 2. Điểm đau (Pains)
 
----
+* **Pain 1 — Nhập liệu khắt khe:** Phải gõ đúng tên sách/tác giả, phân biệt chữ hoa/thường — rất dễ thất bại ngay bước đầu tiên.
+* **Pain 2 — Bế tắc định vị:** Biết sách tồn tại trong hệ thống nhưng không tự xác định được vị trí kệ — vẫn phải hỏi thủ thư.
+* **Pain 3 — Dữ liệu không realtime:** Đi đến tận kệ mới phát hiện sách đã bị người khác mượn do hệ thống không cập nhật tức thì.
+* **Pain 4 — Xếp hàng quầy thủ thư:** Quy trình mượn thủ công phụ thuộc nhân viên, gây ùn tắc trong giờ cao điểm giữa ca học.
+* **Pain 5 — Rào cản giao diện:** Chữ nhỏ, tương phản kém, nhiều thông tin rối mắt khiến thao tác chậm và mỏi mắt.
+* **Pain 6 — Tâm lý ngại tương tác:** Một số sinh viên có lo âu xã hội, ngại hỏi thủ thư — cản trở hoàn tất quy trình mượn.
 
-## 3. Value Map
+### 3. Mong muốn (Gains)
 
-### Products & Services
-1. Hệ thống tìm kiếm từ khóa và gợi ý AI theo môn học/sở thích.
-2. Bản đồ định vị kệ sách trên kiosk, có thể xuất QR sang di động.
-3. Trạm tự mượn sách tại kiosk (quét sách + thẻ sinh viên, in phiếu).
-4. Ứng dụng di động đồng bộ tình trạng sách và lịch sử mượn/hạn trả.
-5. Chế độ trợ năng tích hợp trên kiosk.
-
-### Pain Relievers
-1. Tìm kiếm bằng từ khóa/gợi ý AI thay cho việc phải tự hiểu hệ thống phân loại.
-2. Hiển thị tình trạng khả dụng của sách theo thời gian thực ngay trên kết quả tìm kiếm.
-3. Quy trình tự mượn tại kiosk (quét mã, không cần chờ thủ thư).
-4. Ứng dụng di động lưu và nhắc lịch sử mượn/hạn trả tự động.
-5. Chế độ trợ năng (chữ lớn, tương phản cao, phản hồi âm thanh, chỉ dẫn văn bản rõ ràng).
-
-### Gain Creators
-1. Bộ gợi ý sách theo từ khóa/môn học/sở thích.
-2. Bản đồ chỉ đường trực quan trên kiosk, có thể xuất QR.
-3. Luồng tự mượn một chạm (quét sách + thẻ, in phiếu hoặc đồng bộ app).
-4. Cập nhật tình trạng sách theo thời gian thực.
-5. Chức năng tìm kiếm nâng cao theo chủ đề, hiển thị tài liệu liên quan.
-6. Chế độ trợ năng toàn diện trên kiosk (chữ lớn, tương phản cao, giọng nói, âm thanh, chỉ dẫn văn bản).
+* **Gain 1:** Tìm được tài liệu đúng dù gõ thiếu dấu, viết tắt hoặc chỉ nhớ chủ đề — không cần nhập chính xác.
+* **Gain 2:** Có bản đồ chỉ đường trực quan đến đúng kệ sách, có thể xem trên điện thoại hoặc in ra giấy cầm đi.
+* **Gain 3:** Biết ngay số lượng sách còn trên kệ trước khi di chuyển, tránh đi rồi về tay không.
+* **Gain 4:** Tự mượn sách trong vài giây tại Kiosk mà không cần tương tác với bất kỳ nhân viên nào.
+* **Gain 5:** Nhận thông báo nhắc hạn trả sách tự động trên điện thoại để chủ động quản lý.
 
 ---
 
-## 4. Phân tích mức độ khớp (Fit Analysis)
+## II. Sơ đồ Giá trị (Value Map)
 
-- **Problem–Solution Fit đầy đủ:** cả 5 Customer Job đều có Product/Service tương ứng, cả 5 Pain đều có Pain Reliever, cả 6 Gain đều có Gain Creator — không có mục nào bị bỏ sót ở phía Value Map.
-- **Trợ năng là trục xuyên suốt, không phải tính năng phụ:** Job 5, Pain 5 và Gain 6 đều cùng trỏ về một nhóm giải pháp (chế độ trợ năng tích hợp trên kiosk), cho thấy đây là yêu cầu thiết kế cốt lõi chứ không phải bổ sung sau cùng.
-- **Thời gian thực là chủ đề lặp lại:** Pain 2 và Gain 4 đều cần cùng một năng lực nền tảng — dữ liệu tình trạng sách cập nhật theo thời gian thực — nên đây là một yêu cầu kỹ thuật ưu tiên cao, ảnh hưởng đến nhiều điểm giá trị cùng lúc.
-- **Tự phục vụ giảm phụ thuộc con người:** Pain 3 (ngại xếp hàng) và Gain 3 (quy trình tự mượn rõ ràng) cùng được giải quyết bởi luồng quét mượn tại kiosk, khẳng định giá trị cốt lõi của LibAssist là loại bỏ điểm nghẽn tại quầy thủ thư truyền thống.
+### 1. Sản phẩm & Dịch vụ (Products & Services)
+
+* **Product 1:** Hệ thống tìm kiếm thông minh Fuzzy Search + Chatbot AI gợi ý sách theo chủ đề.
+* **Product 2:** Bản đồ số vị trí kệ sách — hiển thị trực tiếp trên Kiosk, quét QR xem trên Mobile App, hoặc in giấy.
+* **Product 3:** Trạm tự mượn sách (Self-Checkout) — máy quét mã sách, đầu đọc thẻ sinh viên, máy in phiếu mượn tự động.
+* **Product 4:** Ứng dụng di động LibAssist — quản lý phiếu mượn, theo dõi hạn trả, nhận thông báo và xem bản đồ.
+* **Product 5:** Chế độ Trợ năng (Accessibility Mode) — chữ lớn, tương phản cao, phản hồi âm thanh khi thao tác.
+
+### 2. Giải pháp Giảm đau (Pain Relievers)
+
+* **Reliever 1:** Fuzzy Search + gợi ý auto-complete cho phép tìm kiếm linh hoạt, không yêu cầu nhập chính xác tên/tác giả.
+* **Reliever 2:** Bản đồ số hiển thị ngay sau kết quả tìm kiếm — dẫn đường trực tiếp từ Kiosk đến đúng kệ sách.
+* **Reliever 3:** Hiển thị trạng thái khả dụng sách theo thời gian thực (realtime) — tránh đi đến kệ mới biết hết sách.
+* **Reliever 4:** Quy trình tự mượn 1-chạm (quét sách + thẻ → xác nhận) — loại bỏ hoàn toàn việc xếp hàng chờ thủ thư.
+* **Reliever 5:** Giao diện Kiosk màn hình lớn, chữ rõ ràng + Accessibility Mode giảm rào cản thị giác.
+* **Reliever 6:** Tự phục vụ toàn bộ — không cần tương tác với nhân viên, phù hợp người dùng có lo âu xã hội.
+
+### 3. Yếu tố Tạo Giá trị (Gain Creators)
+
+* **Creator 1:** Gợi ý sách thông minh theo chủ đề/từ khóa linh hoạt — khai phá tài liệu phù hợp nhanh hơn.
+* **Creator 2:** Bản đồ chỉ đường linh hoạt — xem trên màn hình Kiosk, điện thoại (qua QR) hoặc in giấy cầm theo.
+* **Creator 3:** Realtime availability — biết ngay có sách hay không, tiết kiệm thời gian di chuyển không cần thiết.
+* **Creator 4:** Tự mượn sách nhanh trong vòng 2 bước — tiết kiệm tối đa thời gian giải lao ngắn giữa các ca học.
+* **Creator 5:** Tự động đồng bộ phiếu mượn & nhắc hạn trả về Mobile App — chủ động quản lý, không sợ quên hạn trả.
+
+---
+
+## III. Ma trận Đối soát 1-1 (Value Fit Matrix)
+
+| Hồ sơ Khách hàng | Sơ đồ Giá trị | Sự tương ứng |
+| :--- | :--- | :--- |
+| **Job 1:** Tìm tài liệu chuyên ngành / đồ án | **Product 1:** Fuzzy Search + Chatbot AI gợi ý | Tìm đúng tài liệu nhanh dù gõ thiếu chính xác |
+| **Job 2:** Xác định vị trí kệ sách | **Product 2:** Bản đồ số (Kiosk + QR + In giấy) | Định vị chính xác kệ sách trên mọi hình thức |
+| **Job 3:** Mượn sách nhanh trong giờ nghỉ | **Product 3:** Trạm tự mượn Self-Checkout | Tự thực hiện quy trình quét mượn trong 2 bước |
+| **Job 4:** Theo dõi hạn trả & lịch sử mượn | **Product 4:** App LibAssist + Thông báo | Lưu phiếu mượn & nhắc tự động trên smartphone |
+| **Pain 1:** Nhập liệu case-sensitive | **Reliever 1:** Fuzzy Search + auto-complete | Xóa bỏ rào cản nhập liệu chính xác |
+| **Pain 2:** Không tự tìm được vị trí kệ | **Reliever 2:** Bản đồ số chỉ đường tức thì | Dẫn đường trực tiếp sau khi tìm thấy sách |
+| **Pain 3:** Dữ liệu sách không cập nhật | **Reliever 3:** Trạng thái khả dụng realtime | Đảm bảo thông tin chính xác trước khi di chuyển |
+| **Pain 4:** Xếp hàng quầy thủ thư | **Reliever 4:** Tự mượn 1-chạm tại Kiosk | Loại bỏ hoàn toàn việc chờ đợi thủ thư |
+| **Pain 5:** Giao diện rối mắt, chữ nhỏ | **Reliever 5:** Kiosk lớn + Accessibility Mode | Giảm rào cản thị giác, dễ thao tác nhanh |
+| **Pain 6:** Ngại tương tác nhân viên | **Reliever 6:** Tự phục vụ 100% | Không cần giao tiếp với bất kỳ ai để mượn sách |
+| **Gain 1:** Tìm được dù gõ sai/thiếu | **Creator 1:** Gợi ý theo chủ đề linh hoạt | Khai phá đúng tài liệu mà không cần nhớ chính xác |
+| **Gain 2:** Bản đồ xem được trên mobile | **Creator 2:** QR → Mobile App / in giấy | Thuận tiện mang bản đồ theo khi di chuyển vào kho |
+| **Gain 3:** Biết ngay sách còn hay hết | **Creator 3:** Realtime availability display | Tránh lãng phí thời gian đi nhầm kệ |
+| **Gain 4:** Mượn trong vài giây | **Creator 4:** 2-bước tự mượn tại Kiosk | Hoàn tất mượn sách trong 15 phút giải lao |
+| **Gain 5:** Nhắc hạn trả tự động | **Creator 5:** Sync phiếu mượn → Mobile Alert | Chủ động quản lý hạn trả, tránh phạt trễ |

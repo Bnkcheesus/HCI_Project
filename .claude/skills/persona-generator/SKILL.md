@@ -10,14 +10,14 @@ Synthesize the individual users captured during user discovery into one realisti
 
 ## Use this skill when
 - The user wants to create or update the LibAssist persona.
-- `user-discovery/output/user-discovery.md` already exists with one or more researched users (goals, tasks, pain points, wishes, touch points, quotes, demographics).
+- The survey export in `user-discovery/output/` already exists with one or more researched users (goals, tasks, pain points, wishes, touch points, quotes, demographics).
 
 ## Required input
-- `user-discovery/output/user-discovery.md` — the raw user discovery findings (multiple interviewed/researched users).
+- The Google Form survey export CSV in `user-discovery/output/` — the raw user discovery findings, one row per respondent. Read whatever `.csv` is in that folder rather than hard-coding the filename: it is an unedited export and its name carries the survey title.
 
 ## Rules
 - Answer in Vietnamese.
-- Do not invent facts that aren't grounded in `user-discovery/output/user-discovery.md`.
+- Do not invent facts that aren't grounded in that survey export.
 - Keep all attributes internally consistent (goals ↔ tasks ↔ pain points ↔ wishes ↔ touch points must not contradict each other).
 - Goals should explain what the user wants to achieve.
 - Tasks describe the user's daily activities.
@@ -52,7 +52,7 @@ Reuse the visual system already established in this repo instead of inventing a 
 - The page must be self-contained (inline `<style>`, only the Google Fonts `<link>` as an external resource, no other external JS/CSS) so it opens standalone in a browser.
 
 ## Workflow
-1. Read `user-discovery/output/user-discovery.md` in full.
+1. Read the survey export CSV in `user-discovery/output/` in full.
 2. Extract and synthesize a single unified persona: identify the recurring goals/tasks/pain points/wishes across the discovered users, noting which source user each trait mainly comes from.
 3. Write `persona/output/persona.md` with the synthesis matrix and the complete persona profile.
 4. Render `persona/output/persona.html` from that persona, following the LibAssist Canvas Style template above.

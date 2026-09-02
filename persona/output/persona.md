@@ -1,87 +1,94 @@
-# Persona LibAssist — Hồ sơ tổng hợp
+# Persona — Khảo sát OPAC Thư viện & Quy trình Mượn sách
 
-Nguồn dữ liệu: [`user-discovery/output/user-discovery.md`](../../user-discovery/output/user-discovery.md) — 5 user được nghiên cứu (Minh Anh, Hoàng Nam, Cô Lan, Đức Minh, Minh Tuấn).
+> Tổng hợp từ dữ liệu khảo sát thực tế (Google Form, 8/2026)  
+> Nguồn: [`[HCI] KHẢO SÁT … Form Responses 1.csv`](../../user-discovery/output/%5BHCI%5D%20KH%E1%BA%A2O%20S%C3%81T%20V%E1%BA%A4N%20%C4%90%E1%BB%80%20S%E1%BB%AC%20D%E1%BB%A4NG%20H%E1%BB%86%20TH%E1%BB%90NG%20OPAC%20TH%C6%AF%20VI%E1%BB%86N%20V%C3%80%20QUY%20TR%C3%8CNH%20M%C6%AF%E1%BB%A2N%20S%C3%81CH%20%28Responses%29%20-%20Form%20Responses%201.csv) — đặt tại `user-discovery/output/`
 
-## 1. Ma trận tổng hợp (Synthesis Matrix)
+---
 
-Persona đại diện được hợp nhất từ 5 user thô. Bảng dưới đây ghi rõ mỗi đặc điểm của persona chủ yếu bắt nguồn từ (những) user nào, để việc hợp nhất luôn có thể truy vết ngược — không có đặc điểm nào bị trộn lẫn một cách âm thầm.
+## I. Tổng hợp dữ liệu khảo sát
 
-| Đặc điểm của persona | Nguồn user đóng góp chính |
+| Người trả lời | Tuổi | Vai trò | Năm học | Mức dùng OPAC | Gặp khó khăn mượn sách? | Ủng hộ tự động (1–10) |
+|---|---|---|---|---|---|---|
+| Thanh Hương | < 18 | Sinh viên | Năm 4 | 5 | Có | 6 |
+| Thái Minh Huy | 18–25 | Sinh viên | Năm 3 | 7 | Không | 10 |
+| Nguyễn Đình Chuẩn | 18–25 | Sinh viên | Năm 4 | 1 | Không | 10 |
+| Phương | 18–25 | Sinh viên | Năm 4 | 2 | Không | 10 |
+| Nguyễn Đức Thịnh | 18–25 | Sinh viên | Năm 4 | 10 | Có | 10 |
+| (Ẩn danh) | 18–25 | Sinh viên | Năm 3 | 1 | Không | 10 |
+| Bùi Quyết Thắng | 18–25 | Sinh viên | Năm 2 | 1 | Không | 9 |
+| Trần Thái Toàn | 18–25 | Sinh viên | Năm 2 | 5 | Không | 7 |
+
+### Mẫu nổi bật từ phân tích
+- **Tần suất dùng OPAC thấp–trung bình** (trung bình ~4/10): Đa số sinh viên chỉ sử dụng OPAC khi thực sự cần, không thành thói quen.
+- **Rào cản nhập liệu:** Nhiều người gặp khó khi phải nhập đúng tên sách/tác giả, phân biệt chữ hoa/thường.
+- **Khó định vị sách trong thư viện:** Sau khi tìm thấy trên hệ thống, vẫn khó đi tìm đúng kệ (không nhớ vị trí, thư viện rộng).
+- **Rào cản mượn sách:** Thủ tục rườm rà, tâm lý ngại tương tác với thủ thư.
+- **Ủng hộ cao hệ thống tự động:** Hầu hết cho điểm 9–10 với hệ thống mượn sách tự động.
+
+---
+
+## II. Hồ sơ Persona
+
+---
+
+### Persona Đại diện Duy nhất: Nguyễn Minh Hoàng
+
+* **Tên:** Nguyễn Minh Hoàng
+* **Thông tin nhân khẩu học:**
+  - **Tuổi:** 22 tuổi.
+  - **Vai trò:** Sinh viên năm cuối chuyên ngành Công nghệ Thông tin, đang làm đồ án tốt nghiệp kiêm Trưởng nhóm Học thuật Câu lạc bộ Sinh viên.
+  - **Bối cảnh sử dụng:** Thường xuyên đến thư viện với lịch trình dày đặc giữa các ca học và giờ làm đồ án. Vừa cần tra cứu tài liệu đại cương/chuyên ngành nhanh chóng, vừa cần chuẩn bị danh mục tài liệu để chia sẻ cho các bạn sinh viên khóa dưới.
+
+* **Trích dẫn đại diện:**
+  > *"Tôi cần tìm và mượn đúng tài liệu chuyên ngành thật nhanh giữa các ca học, biết rõ vị trí kệ sách để đi thẳng tới lấy mà không cần phải xếp hàng chờ đợi quầy thủ thư."*
+
+* **Mục tiêu (Goals):**
+  - **Tìm kiếm chính xác & nhanh chóng:** Tìm đúng giáo trình, sách tham khảo chuyên ngành hoặc sách giải trí mà không mất thời gian tra cứu thủ công.
+  - **Định vị không gian rõ ràng:** Xác định chính xác vị trí kệ sách trong thư viện rộng lớn để lấy sách ngay lập tức.
+  - **Tự phục vụ tối ưu thời gian:** Tự thực hiện toàn bộ quy trình quét mượn sách tại Kiosk trong 1-2 phút, tránh việc xếp hàng chờ quầy thủ thư.
+  - **Quản lý lịch mượn hiệu quả:** Theo dõi chính xác thời hạn trả sách và lịch sử mượn thông qua ứng dụng di động LibAssist.
+
+* **Nhiệm vụ (Tasks):**
+  - Ghé thư viện giữa các tiết học hoặc giờ giải lao ngắn để tra cứu sách phục vụ đồ án tốt nghiệp và bài giảng tham khảo.
+  - Kiểm tra số lượng khả dụng của đầu sách (xem còn trên kệ hay đã có người mượn).
+  - Tương tác với Kiosk AI: Nhập từ khóa chuyên sâu hoặc chọn khảo sát nhu cầu để nhận gợi ý sách.
+  - Đặt sách và thẻ sinh viên lên máy quét tự động tại Kiosk để mượn sách, nhận phiếu mượn in và kiểm tra thông báo trên điện thoại.
+  - Định vị vị trí kệ sách thông qua bản đồ hiển thị trên Kiosk hoặc quét mã QR xem bản đồ trên ứng dụng di động.
+
+* **Điểm đau (Pain Points):**
+  - **Áp lực thời gian:** Thời gian rảnh giữa các ca học rất ngắn, cảm thấy mệt mỏi và phiền phức khi phải xếp hàng chờ đợi thủ thư làm thủ tục thủ công.
+  - **Khó khăn định vị:** Kho sách thư viện quá lớn, sơ đồ kệ phân loại phức tạp khiến việc đi tìm từng kệ mất nhiều thời gian.
+  - **Thông tin không cập nhật:** Đã tốn công tìm đến tận kệ nhưng phát hiện sách đã được người khác mượn từ trước do hệ thống cũ không cập nhật thời gian thực.
+  - **Rào cản giao diện:** Giao diện tra cứu truyền thống có phông chữ nhỏ, độ tương phản kém và quá nhiều thông tin rối mắt, gây khó khăn khi thao tác nhanh hoặc khi mắt mỏi sau nhiều giờ đọc sách.
+
+* **Mong muốn (Wishes):**
+  - **Hệ thống tìm kiếm thông minh:** Kiosk hỗ trợ tìm kiếm bằng từ khóa linh hoạt hoặc gợi ý từ Chatbot AI theo chủ đề/cảm xúc.
+  - **Bản đồ sơ đồ kệ sách trực quan:** Bản đồ số hiển thị vị trí kệ rõ ràng, cho phép quét mã QR chuyển bản đồ sang điện thoại cá nhân hoặc in bản đồ giấy cầm tay.
+  - **Quy trình tự mượn 1-chạm:** Máy quét mã sách và thẻ sinh viên hoạt động nhạy bén, tự động in phiếu mượn và đồng bộ dữ liệu mượn/hạn trả về ứng dụng di động.
+  - **Giao diện thân thiện & Trợ năng:** Giao diện Kiosk hiển thị trực quan, hỗ trợ tùy chỉnh chữ lớn, tương phản cao và có phản hồi âm thanh/thao tác rõ ràng.
+
+* **Điểm chạm (Touch Points):**
+  - **Máy Kiosk AI tại sảnh thư viện:** Màn hình cảm ứng lớn, tích hợp Chatbot AI gợi ý, công cụ tìm kiếm từ khóa và Chế độ Trợ năng (Accessibility).
+  - **Hệ thống phần cứng Kiosk:** Máy quét mã vạch sách, máy đọc thẻ sinh viên và máy in phiếu mượn/bản đồ tự động.
+  - **Ứng dụng di động LibAssist (Mobile App):** Quét mã QR nhận bản đồ chỉ đường, xem danh sách phiếu mượn, theo dõi lịch sử mượn và nhận thông báo nhắc hạn trả sách.
+
+* **Tag (Thẻ phân loại):**
+  `#SinhVienNamCuoi` `#NghienCuuChuyenNganh` `#TuPhucVuNhanh` `#DinhViKeSach` `#ToiUuThoiGian` `#GiaoDienTroNang` `#LibAssistKiosk`
+
+---
+
+## III. Phân tích tính nhất quán & Hàm ý thiết kế
+
+### 1. Nhất quán nội tại
+| Yếu tố | Phân tích |
 |---|---|
-| Độ tuổi 21, sinh viên năm 3 (giữa năm nhất và năm cuối) | Minh Anh (18t, năm nhất) + Minh Tuấn (23t, năm cuối) |
-| Lịch trình bận rộn, chỉ có vài phút giữa các tiết học | Hoàng Nam |
-| Tìm sách bằng từ khóa đơn giản, chưa rành cách phân loại thư viện lớn | Minh Anh |
-| Sợ xếp hàng, muốn biết ngay sách còn hay hết trước khi đến kệ | Minh Tuấn, Hoàng Nam |
-| Theo dõi lịch sử mượn và hạn trả qua nhiều đầu sách | Hoàng Nam |
-| Nhu cầu tìm kiếm nâng cao theo chủ đề chuyên sâu, xem tài liệu liên quan | Cô Lan |
-| Bản đồ định vị kệ sách chính xác, có thể in hoặc xem qua QR | Minh Anh, Minh Tuấn, Cô Lan |
-| Thị lực kém, cần chế độ trợ năng (chữ lớn, tương phản cao, âm thanh) để thao tác độc lập | Đức Minh |
-| Quét sách + thẻ sinh viên để tự mượn, nhận phiếu in / đồng bộ app | Hoàng Nam, Minh Tuấn |
+| **Mục tiêu ↔ Nhiệm vụ** | Mục tiêu tự mượn và định vị sách khớp trực tiếp với nhiệm vụ quét thẻ/mã sách và xem bản đồ kệ. |
+| **Điểm đau ↔ Mong muốn** | Giao diện nhập liệu khắt khe → mong muốn tìm kiếm linh hoạt; bế tắc định vị → mong bản đồ chỉ đường; thủ tục rườm rà → mong tự mượn 1-chạm. |
+| **Điểm chạm ↔ Luồng trải nghiệm** | OPAC/Kiosk → Bản đồ → Máy quét → Xác nhận → App di động: luồng liền mạch từ tra cứu đến trả sách. |
 
-**Ghi chú:** Persona được xây dựng quanh trục "sinh viên tự phục vụ tại kiosk" vì đây là mẫu số chung của 3/5 user (Minh Anh, Hoàng Nam, Minh Tuấn). Nhu cầu tìm kiếm chuyên sâu của Cô Lan (giảng viên) và nhu cầu trợ năng của Đức Minh (nghiên cứu sinh, thị lực kém) được hợp nhất thêm vào như các đặc điểm/wishes bổ sung có nguồn gốc rõ ràng, để persona phản ánh đầy đủ yêu cầu thiết kế bao trùm (inclusive design) của toàn bộ nhóm người dùng thư viện — không riêng một nhóm nhân khẩu học.
-
----
-
-## 2. Hồ sơ Persona
-
-### Tên
-**Nguyễn Minh Khang**
-
-### Nhân khẩu học
-- 21 tuổi, sinh viên năm 3.
-- Thường xuyên đến thư viện giữa các tiết học và trong lúc làm bài tập/đồ án cần tài liệu tham khảo.
-- Thị lực kém (cận thị nặng), quen sử dụng công nghệ hỗ trợ khi đọc màn hình.
-
-### Trích dẫn đại diện
-> "Mình chỉ có vài phút giữa các tiết học để tìm đúng sách, biết ngay còn hay hết, và tự mượn được — không cần xếp hàng, không cần hỏi ai, miễn màn hình đọc được rõ ràng."
-
-### Mục tiêu (Goals)
-1. Tìm đúng sách/tài liệu nhanh chóng bằng từ khóa đơn giản.
-2. Xác định chính xác vị trí kệ sách để đi thẳng tới lấy, không mất công dò tìm.
-3. Hoàn tất việc mượn sách trong vài phút, không cần xếp hàng chờ quầy thủ thư.
-4. Theo dõi tình trạng khả dụng của sách và lịch sử mượn/hạn trả.
-5. Tự tra cứu và thao tác độc lập trên kiosk dù gặp khó khăn về thị lực.
-
-### Nhiệm vụ (Tasks)
-1. Ghé thư viện giữa các tiết học hoặc giờ rảnh ngắn để tìm tài liệu.
-2. Tìm tài liệu cho môn học/đồ án hoặc sách đọc thêm bằng từ khóa hoặc chủ đề.
-3. Kiểm tra tình trạng còn/hết của sách trước khi di chuyển đến kệ.
-4. Xem bản đồ định vị kệ sách trên kiosk.
-5. Quét sách và thẻ sinh viên để tự mượn, nhận phiếu in hoặc đồng bộ sang ứng dụng di động.
-6. Bật chế độ trợ năng (chữ lớn, hướng dẫn âm thanh) khi thao tác trên kiosk lúc cần.
-
-### Điểm đau (Pain Points)
-1. Chưa hiểu cách phân loại/sắp xếp sách trong một thư viện lớn, dễ lúng túng.
-2. Không chắc sách cần tìm còn khả dụng hay đã có người mượn, phải đến tận kệ mới biết.
-3. Không muốn xếp hàng chờ quầy thủ thư trong khoảng thời gian ngắn giữa các tiết học.
-4. Khó nhớ lịch sử mượn và hạn trả của nhiều đầu sách cùng lúc.
-5. Giao diện kiosk chữ nhỏ, độ tương phản thấp, quá nhiều thông tin gây khó đọc; bản đồ thuần hình ảnh khó sử dụng; thao tác chạm đôi khi thiếu phản hồi rõ ràng.
-
-### Mong muốn (Wishes)
-1. Tìm kiếm bằng từ khóa đơn giản kèm gợi ý sách phù hợp với môn học/sở thích.
-2. Bản đồ chỉ đường trực quan, hiển thị chính xác vị trí kệ sách.
-3. Quy trình tự mượn rõ ràng và nhanh; có thể in phiếu mượn hoặc đồng bộ sang ứng dụng di động.
-4. Biết ngay số lượng sách còn khả dụng theo thời gian thực.
-5. Tìm kiếm nâng cao theo chủ đề chuyên sâu, xem được các tài liệu liên quan.
-6. Chế độ trợ năng: chữ lớn, tương phản cao, đọc nội dung bằng giọng nói, phản hồi âm thanh khi thao tác, và chỉ dẫn vị trí bằng văn bản rõ ràng.
-
-### Điểm chạm hệ thống (Touch Points)
-1. Kiosk AI tại thư viện.
-2. Bản đồ thư viện trên kiosk, có thể quét QR để xem trên điện thoại.
-3. Máy quét mã sách và máy quét thẻ sinh viên.
-4. Phiếu mượn in và ứng dụng di động đồng bộ lịch sử mượn/hạn trả.
-5. Chức năng tìm kiếm nâng cao theo chủ đề/chuyên ngành.
-6. Chế độ trợ năng và hướng dẫn âm thanh trên kiosk.
-
-### Phân loại & Tags
-`#SinhVien` `#TựPhụcVụ` `#TốiƯuThờiGian` `#ĐịnhVịKệSách` `#TrợNăng` `#TìmKiếmChuyênSâu`
-
----
-
-## 3. Hàm ý thiết kế (Design Implications)
-
-- **Tìm kiếm & gợi ý:** cần ô tìm kiếm từ khóa đơn giản cho người mới, đồng thời có chế độ tìm kiếm nâng cao theo chủ đề/chuyên ngành cho nhu cầu học thuật sâu hơn.
-- **Định vị:** bản đồ kệ sách phải trực quan, chính xác, và có thể xuất ra dạng khác (QR/mobile) chứ không chỉ hiển thị hình ảnh thuần túy trên kiosk.
-- **Dữ liệu thời gian thực:** tình trạng khả dụng của sách cần đồng bộ theo thời gian thực để tránh việc người dùng đến tận kệ mới biết sách đã hết.
-- **Luồng tự phục vụ nhanh:** quy trình quét mượn (sách + thẻ sinh viên) phải tối giản, hoàn tất trong vài phút, có phiếu in và đồng bộ ứng dụng di động để theo dõi hạn trả.
-- **Trợ năng bắt buộc, không phải tùy chọn phụ:** chữ lớn, tương phản cao, phản hồi âm thanh và hướng dẫn bằng giọng nói cần được thiết kế như một chế độ hạng nhất của kiosk, không phải tính năng bổ sung.
+### 2. Hàm ý cho thiết kế LibAssist Kiosk
+1. **Tìm kiếm khoan dung (Fuzzy Search):** Cho phép tìm theo từ khoá không dấu, gợi ý tự động, không yêu cầu nhập chính xác tên/tác giả.
+2. **Bản đồ kệ sách tích hợp:** Sau mỗi kết quả tìm kiếm, hiển thị ngay sơ đồ vị trí kệ và hỗ trợ quét QR để xem trên điện thoại.
+3. **Trạng thái khả dụng thời gian thực:** Hiển thị số lượng sách còn trên kệ (realtime) ngay trong kết quả tìm kiếm.
+4. **Tự mượn không ma sát:** Luồng quét mã sách → quét thẻ → xác nhận trong 2 bước, không yêu cầu nhân viên can thiệp.
+5. **Đồng bộ với mobile:** Tự động đẩy thông tin phiếu mượn và hạn trả về ứng dụng di động, tránh trường hợp người dùng quên hạn.

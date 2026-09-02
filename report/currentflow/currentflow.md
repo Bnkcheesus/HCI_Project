@@ -1,7 +1,7 @@
 # Sơ đồ Luồng Tra cứu & Mượn sách Hiện tại (Current Flowchart)
 
-> **Nguồn dữ liệu:** [`currentflow.txt`](file:///d:/KHTN_Nam_3/HK3_HCI/Project/HCI_Project/report/currentflow/currentflow.txt)  
-> **Giao diện HTML trực quan:** [`currentflow.html`](file:///d:/KHTN_Nam_3/HK3_HCI/Project/HCI_Project/report/currentflow/currentflow.html)
+> **Nguồn dữ liệu:** [`currentflow.txt`](currentflow.txt)  
+> **Giao diện HTML trực quan:** [`currentflow.html`](currentflow.html)
 
 ---
 
@@ -71,5 +71,5 @@ flowchart TD
 ---
 
 ## III. Tài nguyên Đi kèm
-* 📄 **File gốc:** [`currentflow.txt`](file:///d:/KHTN_Nam_3/HK3_HCI/Project/HCI_Project/report/currentflow/currentflow.txt)
-* 🎨 **File HTML Flowchart:** [`currentflow.html`](file:///d:/KHTN_Nam_3/HK3_HCI/Project/HCI_Project/report/currentflow/currentflow.html)
+* 📄 **File gốc:** [`currentflow.txt`](currentflow.txt)
+* 🎨 **File HTML Flowchart:** [`currentflow.html`](currentflow.html)
