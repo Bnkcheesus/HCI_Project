@@ -3,6 +3,11 @@
 Cùng một schema, cùng một bộ query. Đổi `DB_DIALECT` trong `code/.env` là đổi database,
 không phải đổi code.
 
+Sơ đồ ER — chụp trực tiếp từ database đang chạy, khớp đúng
+[`server/db/migrations/001-initial.ts`](../server/db/migrations/001-initial.ts):
+
+![Sơ đồ ER LibAssist](diagrams/er-diagram.png)
+
 ## Chuẩn bị chung
 
 Cần **Node.js ≥ 22.12** (xem [README](../README.md#cần-cài-trước)) và một trong hai database
