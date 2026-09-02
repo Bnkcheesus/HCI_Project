@@ -220,3 +220,41 @@ Sau khi seed, năm thẻ demo minh hoạ đủ các kết cục máy tự mượ
 | `20217777` | Phạm Gia Bảo | ❌ đang mượn 5 cuốn, chạm giới hạn |
 
 Nút "Mô phỏng quét thẻ" ở bước 2 của luồng tự mượn dùng thẻ persona `20215012`.
+
+---
+
+## Demo mượn – trả
+
+Vòng đầy đủ để diễn trước lớp. Mấu chốt là **tồn kho đi xuống rồi quay lại được**, chứ không
+phải chỉ mượn được.
+
+> **Chạy `npm run db:seed` trước khi diễn.** Mỗi lần thử nghiệm đều để lại dấu vết trong
+> database, nên con số ở bảng dưới chỉ đúng khi bắt đầu từ trạng thái gốc. Đây là bước dễ quên
+> nhất và là lý do phổ biến nhất khiến buổi demo lệch khỏi kịch bản.
+
+| Bước | Làm gì | Nhìn thấy gì |
+|---|---|---|
+| 1 | Mở `/kiosk/books/cormen-algorithms` | *Còn 3 cuốn* |
+| 2 | Bấm **Mượn sách**, đi hết luồng quét | Phiếu mượn in ra |
+| 3 | Quay lại trang sách đó | *Còn 2 cuốn* — tồn kho thật đã giảm |
+| 4 | Mở `/mobile/phieu-muon` | Sách nằm ở mục **Đang mượn** |
+| 5 | Mở **`/admin`**, bấm **Trả sách** | Xác nhận "Đã trả …" |
+| 6 | Mở lại `/mobile/phieu-muon` | Sách chuyển sang mục **Đã trả** |
+| 7 | Mở lại trang sách trên kiosk | *Còn 3 cuốn* — về đúng mốc ban đầu |
+
+Bước 4 và 6 là chỗ đáng chỉ cho người xem: **không có dòng code nào của màn hình điện thoại
+biết đến việc trả sách**. Nó chỉ đọc `returned_at` từ database, nên vừa trả xong là nó tự đổi
+mục. Đó là điều chỉ có backend thật mới làm được.
+
+Chạy tự động toàn bộ bảy bước trên trình duyệt thật:
+
+```bash
+node scripts/check-return.mjs      # cần npm run dev đang chạy
+```
+
+**`/admin` là công cụ nội bộ, không thuộc sản phẩm.** Trả sách không nằm trong value
+proposition, và thư viện thật nhận trả ở quầy chứ không ở kiosk tra cứu. Nó tồn tại chỉ để
+demo khép được vòng — nếu không, mượn vài lần là hết sách và thẻ kẹt ở giới hạn 5 cuốn, chỉ
+còn cách `npm run db:seed` làm lại từ đầu. Trang này **không có đăng nhập**.
+
+Muốn về trạng thái gốc bất cứ lúc nào: `npm run db:seed`.
