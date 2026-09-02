@@ -10,15 +10,15 @@
 
 <style>
 /* ==========================================================
-   TOKENS & BASE SETUP
+   TOKENS & BASE SETUP (MATCHES value-proposition.html FORMAT)
    ========================================================== */
 :root {
   --page-bg: #E5E5E5;
   --frame: #000000;
 
   --card-1: #12151C;   /* Base Dark */
-  --card-2: #171B24;
-  --card-3: #1D2230;
+  --card-2: #171B24;   
+  --card-3: #1D2230;   
 
   --cyan: #22D3EE;
   --cyan-dim: rgba(34,211,238,0.4);
@@ -32,7 +32,7 @@
   --shape: 800px;   /* Master Canvas Size */
 }
 
-* { margin:0; padding:0; box-sizing:border-box; border-radius: 0 !important; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
 /* PNG EXPORT OPTIMIZATION */
 html, body {
@@ -52,12 +52,29 @@ body {
 img, svg { display:block; }
 
 .stage {
-  width: fit-content;
+  width: 1792px;
   height: auto !important;
   overflow: visible !important;
   padding: 48px 56px 64px;
   background: var(--page-bg);
 }
+
+/* EXPORT BUTTON */
+#export-btn {
+  display: block;
+  margin: 0 auto 28px;
+  padding: 10px 28px;
+  background: var(--frame);
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border: 2px solid var(--frame);
+  cursor: pointer;
+  text-transform: uppercase;
+}
+#export-btn:hover { background: var(--cyan); color: var(--frame); }
 
 /* ==========================================================
    DOC HEADER
@@ -144,7 +161,7 @@ img, svg { display:block; }
   gap: 0;
 }
 
-/* CONNECTOR: MŨI TÊN CHÌA VÀO NHAU -> <- */
+/* CONNECTOR */
 .connector {
   width: 80px;
   flex-shrink: 0;
@@ -183,7 +200,7 @@ img, svg { display:block; }
   color: var(--frame);
 }
 
-/* ĐƯỜNG CHIA TẠO NÉT MẢNH VÀ SẮC HƠN */
+/* OVERLAY DIVIDER LINES */
 .overlay-lines {
   position: absolute;
   inset: 0;
@@ -198,17 +215,18 @@ img, svg { display:block; }
   filter: drop-shadow(0 0 1.5px rgba(34, 211, 238, 0.4));
 }
 
-/* ITEM TYPOGRAPHY & SPACING */
+/* ITEM TYPOGRAPHY & BULLETPROOF INDEX SQUARE */
 .items {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
 }
 .items li {
   display: flex;
-  gap: 8px;
-  font-size: 12px;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 11.5px;
   line-height: 1.35;
   color: var(--white);
 }
@@ -218,7 +236,7 @@ img, svg { display:block; }
   height: 17px;
   background: var(--cyan);
   color: #05070A;
-  font-family: var(--font-mono);
+  font-family: monospace;
   font-weight: 700;
   font-size: 10px;
   line-height: 17px;
@@ -230,20 +248,20 @@ img, svg { display:block; }
 .panel-head {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-  padding-bottom: 6px;
+  gap: 7px;
+  margin-bottom: 7px;
+  padding-bottom: 5px;
   border-bottom: 1px solid var(--cyan-dim);
 }
 .panel-head .ic {
-  width: 19px;
-  height: 19px;
+  width: 18px;
+  height: 18px;
   color: var(--cyan);
   flex-shrink: 0;
 }
 .panel-head h3 {
   font-family: var(--font-mono);
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.05em;
   color: var(--cyan);
@@ -251,7 +269,7 @@ img, svg { display:block; }
 }
 
 /* ==========================================================
-   1. VALUE MAP (SQUARE) — CHIA KIỂU >–
+   1. VALUE MAP (SQUARE)
    ========================================================== */
 .square .panel {
   position: absolute;
@@ -260,21 +278,22 @@ img, svg { display:block; }
   flex-direction: column;
 }
 
+/* Products & Services: Positioned left to avoid diagonal bounds */
 .square .panel.ps {
-  left: 28px; top: 50%;
+  left: 18px; top: 50%;
   transform: translateY(-50%);
-  width: 290px;
+  width: 275px;
 }
 
-/* Gain Creators */
+/* Gain Creators: Top Right */
 .square .panel.gc {
-  bottom: 400px; right: 40px;
+  bottom: 420px; right: 35px;
   width: 335px;
 }
 
-/* Pain Relievers */
+/* Pain Relievers: Bottom Right */
 .square .panel.pr {
-  top: 426px; right: 40px;
+  top: 420px; right: 35px;
   width: 335px;
 }
 
@@ -291,10 +310,10 @@ img, svg { display:block; }
 .center-badge-square svg { width: 28px; height: 28px; color: var(--cyan); }
 
 /* ==========================================================
-   2. CUSTOMER PROFILE (CIRCLE) — CHIA KIỂU –|
+   2. CUSTOMER PROFILE (CIRCLE)
    ========================================================== */
 .shape.circle {
-  border-radius: 50% !important;
+  border-radius: 50%;
   background: var(--card-1);
 }
 
@@ -305,23 +324,23 @@ img, svg { display:block; }
   flex-direction: column;
 }
 
-/* Gains */
+/* Gains: Top Left */
 .circle .panel.gains {
-  bottom: 400px; left: 75px;
-  width: 290px;
+  bottom: 420px; left: 65px;
+  width: 300px;
 }
 
-/* Pains */
+/* Pains: Bottom Left */
 .circle .panel.pains {
-  top: 426px; left: 75px;
-  width: 290px;
+  top: 420px; left: 65px;
+  width: 300px;
 }
 
-/* Customer Jobs */
+/* Customer Jobs: Right */
 .circle .panel.jobs {
-  right: 50px; top: 50%;
+  right: 45px; top: 50%;
   transform: translateY(-50%);
-  width: 295px;
+  width: 300px;
 }
 
 .center-head-circle {
@@ -329,7 +348,7 @@ img, svg { display:block; }
   left: 50%; top: 50%;
   transform: translate(-50%, -50%);
   width: 64px; height: 64px;
-  border-radius: 50% !important;
+  border-radius: 50%;
   background: var(--frame);
   border: 2px solid var(--cyan);
   display: flex; align-items: center; justify-content: center;
@@ -354,12 +373,15 @@ img, svg { display:block; }
 
 <div class="stage">
 
+  <!-- EXPORT BUTTON -->
+  <button id="export-btn" onclick="exportPNG()">⬇ Xuất valuepropositionver2.png</button>
+
   <!-- ================= DOC HEADER ================= -->
   <div class="doc-header">
     <div class="system-title">
       <span>LibAssist System</span>
       <span>/</span>
-      <span class="badge-phase">VALUE PROPOSITION</span>
+      <span class="badge-phase">USER DISCOVERY</span>
     </div>
     <h1>THE VALUE PROPOSITION CANVAS</h1>
 
@@ -370,7 +392,7 @@ img, svg { display:block; }
       </div>
       <div class="subtitle-card">
         <span class="tag">SEGMENT</span>
-        <p>Nguyễn Minh Khang — Sinh viên năm 3, 21 tuổi, thị lực kém (Persona)</p>
+        <p>Sinh viên &amp; Độc giả Thư viện (Nguyễn Minh Hoàng — Persona)</p>
       </div>
     </div>
   </div>
@@ -388,49 +410,49 @@ img, svg { display:block; }
         <line x1="400" y1="400" x2="800" y2="400" />
       </svg>
 
-      <!-- Products & Services -->
+      <!-- Products & Services (5 items) -->
       <div class="panel ps">
         <div class="panel-head">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M3 8V5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v3"/><path d="M12 4v17"/></svg>
           <h3>Products &amp; Services</h3>
         </div>
         <ul class="items">
-          <li><span class="idx">1</span>Hệ thống tìm kiếm từ khóa và gợi ý AI theo môn học/sở thích.</li>
-          <li><span class="idx">2</span>Bản đồ định vị kệ sách trên kiosk, xuất QR sang di động.</li>
-          <li><span class="idx">3</span>Trạm tự mượn sách tại kiosk (quét sách + thẻ sinh viên, in phiếu).</li>
-          <li><span class="idx">4</span>Ứng dụng di động đồng bộ tình trạng sách và lịch sử mượn/hạn trả.</li>
-          <li><span class="idx">5</span>Chế độ trợ năng tích hợp trên kiosk.</li>
+          <li><span class="idx">1</span>Fuzzy Search + Chatbot AI gợi ý sách theo chủ đề linh hoạt.</li>
+          <li><span class="idx">2</span>Bản đồ số vị trí kệ sách (Kiosk, QR mobile, in giấy).</li>
+          <li><span class="idx">3</span>Trạm tự mượn Self-Checkout (quét mã sách, thẻ SV &amp; in phiếu).</li>
+          <li><span class="idx">4</span>App LibAssist Mobile — quản lý phiếu mượn, hạn trả &amp; bản đồ.</li>
+          <li><span class="idx">5</span>Chế độ Trợ năng (Accessibility) — chữ lớn, tương phản cao.</li>
         </ul>
       </div>
 
-      <!-- Gain Creators -->
+      <!-- Gain Creators (5 items) -->
       <div class="panel gc">
         <div class="panel-head">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
           <h3>Gain Creators</h3>
         </div>
         <ul class="items">
-          <li><span class="idx">1</span>Bộ gợi ý sách theo từ khóa/môn học/sở thích.</li>
-          <li><span class="idx">2</span>Bản đồ chỉ đường trực quan trên kiosk, có thể xuất QR.</li>
-          <li><span class="idx">3</span>Luồng tự mượn một chạm (quét sách + thẻ, in phiếu/đồng bộ app).</li>
-          <li><span class="idx">4</span>Cập nhật tình trạng sách theo thời gian thực.</li>
-          <li><span class="idx">5</span>Tìm kiếm nâng cao theo chủ đề, hiển thị tài liệu liên quan.</li>
-          <li><span class="idx">6</span>Chế độ trợ năng toàn diện (chữ lớn, tương phản cao, giọng nói, âm thanh, chỉ dẫn văn bản).</li>
+          <li><span class="idx">1</span>Gợi ý thông minh — khai phá tài liệu dù không nhớ tên chính xác.</li>
+          <li><span class="idx">2</span>Bản đồ chỉ đường linh hoạt — xem trên Kiosk, di động hoặc in giấy.</li>
+          <li><span class="idx">3</span>Realtime availability display — biết chính xác còn sách trước khi đi.</li>
+          <li><span class="idx">4</span>Tự mượn sách 2 bước — hoàn tất trong 15 phút giải lao giữa ca.</li>
+          <li><span class="idx">5</span>Mobile Sync &amp; Automatic Alerts — tự động nhắc hạn trả sách.</li>
         </ul>
       </div>
 
-      <!-- Pain Relievers -->
+      <!-- Pain Relievers (6 items) -->
       <div class="panel pr">
         <div class="panel-head">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m5 12 7 7 7-7"/></svg>
           <h3>Pain Relievers</h3>
         </div>
         <ul class="items">
-          <li><span class="idx">1</span>Tìm kiếm bằng từ khóa/gợi ý AI thay cho việc phải tự hiểu hệ thống phân loại.</li>
-          <li><span class="idx">2</span>Hiển thị tình trạng khả dụng của sách theo thời gian thực ngay trên kết quả tìm kiếm.</li>
-          <li><span class="idx">3</span>Quy trình tự mượn tại kiosk (quét mã, không cần chờ thủ thư).</li>
-          <li><span class="idx">4</span>Ứng dụng di động lưu và nhắc lịch sử mượn/hạn trả tự động.</li>
-          <li><span class="idx">5</span>Chế độ trợ năng (chữ lớn, tương phản cao, phản hồi âm thanh, chỉ dẫn văn bản).</li>
+          <li><span class="idx">1</span>Fuzzy Search + auto-complete — tìm kiếm không cần chính xác.</li>
+          <li><span class="idx">2</span>Bản đồ số hiển thị ngay — dẫn đường trực tiếp từ Kiosk đến kệ.</li>
+          <li><span class="idx">3</span>Trạng thái khả dụng realtime — tránh di chuyển nhầm khi hết sách.</li>
+          <li><span class="idx">4</span>Tự mượn 1-chạm (2 bước) — loại bỏ xếp hàng quầy thủ thư.</li>
+          <li><span class="idx">5</span>Kiosk màn hình lớn + Accessibility Mode — giảm mỏi mắt.</li>
+          <li><span class="idx">6</span>Tự phục vụ 100% — không cần tương tác nhân viên, phù hợp người ngại.</li>
         </ul>
       </div>
 
@@ -455,49 +477,48 @@ img, svg { display:block; }
         <line x1="400" y1="0" x2="400" y2="800" />
       </svg>
 
-      <!-- Gains -->
+      <!-- Gains (5 items) -->
       <div class="panel gains">
         <div class="panel-head">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 14.4 8.6 21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4Z"/></svg>
           <h3>Gains</h3>
         </div>
         <ul class="items">
-          <li><span class="idx">1</span>Tìm kiếm bằng từ khóa đơn giản kèm gợi ý sách phù hợp môn học/sở thích.</li>
-          <li><span class="idx">2</span>Bản đồ chỉ đường trực quan, hiển thị chính xác vị trí kệ sách.</li>
-          <li><span class="idx">3</span>Quy trình tự mượn rõ ràng, nhanh; in phiếu hoặc đồng bộ app.</li>
-          <li><span class="idx">4</span>Biết ngay số lượng sách còn khả dụng theo thời gian thực.</li>
-          <li><span class="idx">5</span>Tìm kiếm nâng cao theo chủ đề chuyên sâu, xem tài liệu liên quan.</li>
-          <li><span class="idx">6</span>Chế độ trợ năng: chữ lớn, tương phản cao, giọng nói, âm thanh, chỉ dẫn văn bản rõ ràng.</li>
+          <li><span class="idx">1</span>Tìm kiếm linh hoạt — tìm được tài liệu dù gõ thiếu dấu, viết tắt.</li>
+          <li><span class="idx">2</span>Bản đồ số chỉ đường — chỉ đến đúng kệ, xem trên mobile/in giấy.</li>
+          <li><span class="idx">3</span>Trạng thái realtime — biết ngay còn sách hay không trước khi đi.</li>
+          <li><span class="idx">4</span>Tự mượn 1-chạm — mượn sách vài giây tại Kiosk không cần nhân viên.</li>
+          <li><span class="idx">5</span>Nhắc hạn trả tự động — nhận thông báo nhắc nhở trên điện thoại.</li>
         </ul>
       </div>
 
-      <!-- Pains -->
+      <!-- Pains (6 items) -->
       <div class="panel pains">
         <div class="panel-head">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           <h3>Pains</h3>
         </div>
         <ul class="items">
-          <li><span class="idx">1</span>Chưa hiểu cách phân loại/sắp xếp sách trong thư viện lớn, dễ lúng túng.</li>
-          <li><span class="idx">2</span>Không chắc sách còn khả dụng, phải đến tận kệ mới biết.</li>
-          <li><span class="idx">3</span>Không muốn xếp hàng chờ quầy thủ thư giữa các tiết học.</li>
-          <li><span class="idx">4</span>Khó nhớ lịch sử mượn và hạn trả của nhiều đầu sách.</li>
-          <li><span class="idx">5</span>Giao diện chữ nhỏ, tương phản thấp, bản đồ khó dùng, thao tác chạm thiếu phản hồi.</li>
+          <li><span class="idx">1</span>Nhập liệu khắt khe — gõ đúng chữ hoa/thường dễ thất bại.</li>
+          <li><span class="idx">2</span>Bế tắc định vị — không tự tìm được vị trí kệ sau khi tra cứu.</li>
+          <li><span class="idx">3</span>Dữ liệu không realtime — đến tận kệ mới phát hiện sách đã hết.</li>
+          <li><span class="idx">4</span>Xếp hàng quầy thủ thư lâu — ùn tắc không kịp giờ ca học.</li>
+          <li><span class="idx">5</span>Rào cản giao diện — chữ nhỏ, tương phản kém làm thao tác chậm.</li>
+          <li><span class="idx">6</span>Tâm lý ngại tương tác — lo âu xã hội khi hỏi thủ thư mượn sách.</li>
         </ul>
       </div>
 
-      <!-- Customer Jobs -->
+      <!-- Customer Jobs (4 items) -->
       <div class="panel jobs">
         <div class="panel-head">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
           <h3>Customer Jobs</h3>
         </div>
         <ul class="items">
-          <li><span class="idx">1</span>Tìm đúng sách/tài liệu nhanh bằng từ khóa đơn giản.</li>
-          <li><span class="idx">2</span>Xác định chính xác vị trí kệ sách để đi thẳng tới lấy.</li>
-          <li><span class="idx">3</span>Tự mượn sách nhanh gọn, không cần xếp hàng.</li>
-          <li><span class="idx">4</span>Theo dõi tình trạng khả dụng của sách và lịch sử mượn/hạn trả.</li>
-          <li><span class="idx">5</span>Thao tác kiosk độc lập dù gặp khó khăn về thị lực.</li>
+          <li><span class="idx">1</span>Tìm kiếm tài liệu chuyên ngành &amp; giáo trình nghiên cứu.</li>
+          <li><span class="idx">2</span>Xác định vị trí không gian của kệ sách trong thư viện.</li>
+          <li><span class="idx">3</span>Thực hiện thủ tục mượn sách nhanh trong giờ giải lao.</li>
+          <li><span class="idx">4</span>Theo dõi thời hạn trả sách và quản lý lịch sử mượn.</li>
         </ul>
       </div>
 
@@ -509,9 +530,45 @@ img, svg { display:block; }
 
   </div>
 
-  <p class="footnote">LibAssist · Value Proposition Canvas — Nguồn: persona/output/persona.md</p>
+  <p class="footnote">LibAssist · Value Proposition Canvas</p>
 
 </div>
+
+<!-- html2canvas + Export -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+async function exportPNG() {
+  const btn = document.getElementById('export-btn');
+  btn.style.display = 'none';
+
+  try {
+    if (document.fonts) {
+      await document.fonts.ready;
+    }
+
+    const target = document.querySelector('.stage');
+    const canvas = await html2canvas(target, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#E5E5E5',
+      width: target.scrollWidth,
+      height: target.scrollHeight,
+      windowWidth: target.scrollWidth,
+      logging: false
+    });
+
+    const link = document.createElement('a');
+    link.download = 'valuepropositionver2.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(e) {
+    alert('Xuất ảnh thất bại: ' + e.message);
+    console.error(e);
+  } finally {
+    btn.style.display = 'block';
+  }
+}
+</script>
 
 </body>
 </html>

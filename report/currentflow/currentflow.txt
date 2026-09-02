@@ -1,0 +1,26 @@
+[Bắt đầu] 
+   │
+   ▼
+[Đến máy OPAC] ──► [Nhập chính xác Tên/Tác giả] 
+   │
+   ├─► (Nếu gõ sai/không nhớ rõ) ──► [Hệ thống báo 0 kết quả] ──► [Thất bại / Thử lại]
+   │
+   ▼
+[Tìm thấy sách & Ghi lại Mã số Call Number]
+   │
+   ▼
+[Đến xem Bảng sơ đồ tĩnh] ──► [Dò tìm vị trí khu vực]
+   │
+   ▼
+[Đi đến dãy kệ sách vật lý] ──► [Tìm kiếm gáy sách]
+   │
+   ├─► (Nếu sách đã bị mượn/mất) ──► [Không thấy sách trên kệ] ──► [Mất thời gian / Bỏ cuộc]
+   │
+   ▼
+[Lấy được sách trên kệ]
+   │
+   ▼
+[Đi đến quầy Thủ thư] ──► [Xếp hàng chờ đợi] ──► [Giao tiếp với thủ thư] ──► [Quét thẻ & Nhận sách] 
+   │
+   ▼
+[Hoàn tất]

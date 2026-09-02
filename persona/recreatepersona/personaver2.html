@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Persona — Nguyễn Minh Hoàng | LibAssist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================================
+   DESIGN TOKENS
+   ========================================================= */
+:root {
+  --bg-outer:    #D1D5DB;
+  --bg-card:     #0F1117;
+  --bg-sub:      #161B27;
+  --bg-row:      #1C2333;
+
+  --cyan:        #22D3EE;
+  --cyan-dim:    rgba(34,211,238,0.18);
+  --cyan-glow:   rgba(34,211,238,0.08);
+
+  --red:         #F87171;
+  --red-dim:     rgba(248,113,113,0.12);
+  --red-border:  rgba(248,113,113,0.40);
+
+  --amber:       #FBBF24;
+  --amber-dim:   rgba(251,191,36,0.20);
+
+  --white:       #F0F4FA;
+  --muted:       #8B97AA;
+  --frame:       #000000;
+
+  --font:        'Plus Jakarta Sans', system-ui, sans-serif;
+  --mono:        'Space Mono', monospace;
+
+  --r:           0px;
+}
+
+/* =========================================================
+   RESET
+   ========================================================= */
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+  border-radius: var(--r) !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* =========================================================
+   OUTER PAGE (EXPORT WRAPPER)
+   ========================================================= */
+html, body {
+  background: var(--bg-outer);
+  font-family: var(--font);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =========================================================
+   EXPORT BUTTON (hidden when printing / captured)
+   ========================================================= */
+#export-btn {
+  display: block;
+  margin: 20px auto 0;
+  padding: 10px 28px;
+  background: var(--frame);
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border: 2px solid var(--frame);
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.2s, color 0.2s;
+}
+#export-btn:hover { background: var(--cyan); color: var(--frame); }
+
+/* =========================================================
+   PERSONA CANVAS — fixed-width card for screenshot
+   ========================================================= */
+#persona-canvas {
+  width: 1280px;
+  background: var(--bg-outer);
+  padding: 36px 40px 40px;
+  margin: 20px auto;
+}
+
+/* =========================================================
+   SYSTEM HEADER
+   ========================================================= */
+.sys-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid var(--frame);
+  padding-bottom: 12px;
+  margin-bottom: 22px;
+}
+.sys-title {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--mono); font-size: 12px; font-weight: 700;
+  color: var(--frame); text-transform: uppercase; letter-spacing: 0.06em;
+}
+.badge-phase {
+  background: var(--frame); color: var(--cyan);
+  padding: 3px 10px; font-weight: 700; font-size: 11px;
+}
+.sys-right {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  color: var(--frame); text-transform: uppercase; letter-spacing: 0.05em;
+}
+
+/* =========================================================
+   HERO BANNER
+   ========================================================= */
+.hero {
+  background: var(--bg-card);
+  border: 4px solid var(--frame);
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 24px;
+  padding: 24px;
+  margin-bottom: 20px;
+  position: relative;
+}
+.hero::after {
+  content: "";
+  position: absolute; top: 0; left: 0; bottom: 0;
+  width: 6px; background: var(--cyan);
+}
+.avatar {
+  width: 120px; height: 120px;
+  background: var(--bg-sub);
+  border: 2px solid var(--cyan);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.avatar svg { width: 68px; height: 68px; fill: var(--cyan); }
+
+.hero-info { display: flex; flex-direction: column; gap: 10px; }
+.hero-name { font-size: 26px; font-weight: 800; color: var(--white); letter-spacing: -0.01em; }
+.hero-role { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--cyan); margin-top: 2px; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  background: var(--bg-sub); color: var(--cyan);
+  padding: 3px 10px; border: 1px solid var(--cyan-dim);
+}
+.quote {
+  font-style: italic; font-size: 13px;
+  background: var(--bg-sub);
+  border-left: 3px solid var(--cyan);
+  padding: 11px 16px;
+  color: var(--white);
+  line-height: 1.5;
+}
+
+/* =========================================================
+   SURVEY STRIP
+   ========================================================= */
+.survey-strip {
+  background: var(--bg-card);
+  border: 4px solid var(--frame);
+  padding: 18px 22px;
+  margin-bottom: 20px;
+}
+.strip-label {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  color: var(--cyan); text-transform: uppercase; letter-spacing: 0.07em;
+  margin-bottom: 12px;
+}
+.survey-table { width: 100%; border-collapse: collapse; }
+.survey-table th {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;
+  text-align: left; padding: 6px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.survey-table td {
+  font-size: 12px; color: var(--white);
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.survey-table tr:last-child td { border-bottom: none; }
+.survey-table tr:nth-child(even) td { background: var(--bg-row); }
+.opac-high { color: var(--cyan); font-weight: 700; }
+.opac-low { color: var(--muted); }
+.auto-score { font-family: var(--mono); font-weight: 700; color: var(--amber); }
+.yes-badge { color: var(--red); font-weight: 700; font-family: var(--mono); font-size: 10px; }
+.no-badge  { color: var(--muted); font-size: 10px; }
+
+/* =========================================================
+   MAIN 3-COLUMN GRID
+   ========================================================= */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+.card {
+  background: var(--bg-card);
+  border: 4px solid var(--frame);
+  padding: 20px;
+}
+.card-head {
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--cyan-dim);
+  padding-bottom: 9px; margin-bottom: 14px;
+}
+.card-head h2 {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em;
+}
+.card-num {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  color: var(--muted);
+}
+
+/* List items */
+.dl { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.di { display: flex; align-items: flex-start; gap: 9px; font-size: 12.5px; color: var(--white); line-height: 1.45; }
+.sq {
+  width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px;
+  background: var(--cyan); color: #050810;
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.di strong { color: var(--cyan); }
+
+/* Pain card */
+.card-pain { border-left: 5px solid var(--red); }
+.pain-list { display: flex; flex-direction: column; gap: 9px; }
+.pain-item {
+  background: var(--red-dim); border: 1px solid var(--red-border);
+  padding: 9px 12px;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+}
+.pain-title { font-size: 12px; font-weight: 700; color: var(--red); margin-bottom: 2px; }
+.pain-desc  { font-size: 11.5px; color: #FFD2D2; opacity: 0.9; }
+.sev-pill {
+  font-family: var(--mono); font-size: 9.5px; font-weight: 700;
+  white-space: nowrap; padding: 2px 7px;
+  background: var(--red-dim); color: var(--red); border: 1px solid var(--red);
+}
+.sev-med { background: var(--amber-dim); color: var(--amber); border-color: var(--amber); }
+
+/* Touchpoints */
+.tp-list { display: flex; flex-direction: column; gap: 9px; }
+.tp-card {
+  background: var(--bg-sub); border: 1px solid var(--cyan-dim);
+  border-left: 3px solid var(--cyan); padding: 10px 13px;
+}
+.tp-title { font-size: 12.5px; font-weight: 700; color: var(--cyan); margin-bottom: 2px; }
+.tp-desc  { font-size: 12px; color: var(--white); }
+
+/* Tags */
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 7px; }
+.tag {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  background: var(--bg-sub); color: var(--cyan);
+  padding: 4px 9px; border: 1px solid var(--cyan-dim);
+}
+
+/* Implications card spans full width */
+.span-full { grid-column: 1 / -1; }
+.impl-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.impl-item {
+  background: var(--bg-sub); border: 1px solid var(--cyan-dim);
+  padding: 12px 14px; border-top: 3px solid var(--cyan);
+}
+.impl-num  { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--cyan); margin-bottom: 4px; }
+.impl-title{ font-size: 12px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+.impl-desc { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+
+/* Footer */
+.footer {
+  margin-top: 20px; padding-top: 12px;
+  border-top: 2px solid var(--frame);
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700; color: #6B7480;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     EXPORT BUTTON
+════════════════════════════════════════════ -->
+<button id="export-btn" onclick="exportPNG()">⬇ Xuất personaver2.png</button>
+
+<!-- ═══════════════════════════════════════════
+     PERSONA CANVAS (đây là vùng được chụp)
+════════════════════════════════════════════ -->
+<div id="persona-canvas">
+
+  <!-- SYSTEM HEADER -->
+  <header class="sys-header">
+    <div class="sys-title">
+      <span>LibAssist System</span>
+      <span>/</span>
+      <span class="badge-phase">USER DISCOVERY</span>
+      <span>/</span>
+      <span>HCI Khảo sát OPAC</span>
+    </div>
+    <div class="sys-right">User Persona</div>
+  </header>
+
+  <!-- HERO BANNER -->
+  <section class="hero">
+    <div class="avatar">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    </div>
+    <div class="hero-info">
+      <div>
+        <div class="hero-name">Nguyễn Minh Hoàng</div>
+        <div class="hero-role">Sinh viên năm cuối · Công nghệ Thông tin · 22 tuổi</div>
+      </div>
+      <div class="pills">
+        <span class="pill">Đồ án tốt nghiệp</span>
+        <span class="pill">Trưởng nhóm Học thuật CLB SV</span>
+        <span class="pill">Ghé thư viện vài lần/tuần</span>
+        <span class="pill">Lịch trình dày đặc giữa ca học</span>
+      </div>
+      <blockquote class="quote">
+        "Tôi cần tìm và mượn đúng tài liệu chuyên ngành thật nhanh giữa các ca học, biết rõ vị trí kệ sách để đi thẳng tới lấy mà không cần phải xếp hàng chờ đợi quầy thủ thư."
+      </blockquote>
+    </div>
+  </section>
+
+
+
+  <!-- 3-COLUMN MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- COL 1: Tasks + Goals -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+
+      <section class="card">
+        <div class="card-head">
+          <h2>01. Bối cảnh &amp; Hành vi sử dụng</h2>
+          <span class="card-num">01</span>
+        </div>
+        <p style="color: var(--muted); font-size: 12.5px; margin-bottom: 12px; line-height: 1.45;">
+          Thường xuyên đến thư viện với lịch trình dày đặc giữa các ca học và giờ làm đồ án. Vừa cần tra cứu tài liệu đại cương/chuyên ngành nhanh chóng, vừa chuẩn bị danh mục tài liệu để chia sẻ cho các bạn sinh viên khóa dưới.
+        </p>
+        <h3 style="font-size: 11px; font-weight: 700; color: var(--cyan); text-transform: uppercase; margin-bottom: 10px; font-family: var(--mono);">Nhiệm vụ thường nhật (Tasks)</h3>
+        <ul class="dl">
+          <li class="di"><span class="sq">1</span><span>Ghé thư viện giữa các tiết học để tra cứu sách phục vụ đồ án.</span></li>
+          <li class="di"><span class="sq">2</span><span>Kiểm tra số lượng khả dụng của đầu sách (còn hay đã mượn).</span></li>
+          <li class="di"><span class="sq">3</span><span>Nhập từ khóa / khảo sát trên Kiosk AI để nhận gợi ý sách chuyên sâu.</span></li>
+          <li class="di"><span class="sq">4</span><span>Tự quét sách + thẻ sinh viên tại Kiosk, nhận phiếu in &amp; kiểm tra app.</span></li>
+          <li class="di"><span class="sq">5</span><span>Định vị vị trí kệ qua bản đồ Kiosk hoặc quét QR xem trên điện thoại.</span></li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Mục tiêu (Goals)</h2>
+          <span class="card-num">02</span>
+        </div>
+        <ul class="dl">
+          <li class="di"><span class="sq">1</span><span><strong>Tìm kiếm nhanh & chính xác</strong> — không mất thời gian tra thủ công.</span></li>
+          <li class="di"><span class="sq">2</span><span><strong>Định vị kệ sách rõ ràng</strong> — đi thẳng tới lấy, không cần hỏi ai.</span></li>
+          <li class="di"><span class="sq">3</span><span><strong>Tự mượn tối ưu thời gian</strong> — quét xong trong 1–2 phút, bỏ qua quầy.</span></li>
+          <li class="di"><span class="sq">4</span><span><strong>Quản lý lịch mượn</strong> — theo dõi hạn trả qua app LibAssist.</span></li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Tags phân loại</h2>
+        </div>
+        <div class="tag-cloud">
+          <span class="tag">#SinhVienNamCuoi</span>
+          <span class="tag">#NghienCuuChuyenNganh</span>
+          <span class="tag">#TuPhucVuNhanh</span>
+          <span class="tag">#DinhViKeSach</span>
+          <span class="tag">#ToiUuThoiGian</span>
+          <span class="tag">#GiaoDienTroNang</span>
+          <span class="tag">#LibAssistKiosk</span>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- COL 2: Pain Points -->
+    <section class="card card-pain" style="height:fit-content;">
+      <div class="card-head" style="border-bottom-color:rgba(248,113,113,0.3);">
+        <h2 style="color:var(--red);">Điểm đau (Pain Points)</h2>
+        <span class="card-num" style="color:var(--red);">03</span>
+      </div>
+      <div class="pain-list">
+        <div class="pain-item">
+          <div>
+            <div class="pain-title">Áp lực thời gian</div>
+            <div class="pain-desc">Rảnh giữa các ca học rất ngắn — phiền khi phải xếp hàng chờ thủ thư làm thủ tục thủ công.</div>
+          </div>
+          <span class="sev-pill">Nghiêm trọng</span>
+        </div>
+        <div class="pain-item">
+          <div>
+            <div class="pain-title">Khó khăn định vị kệ sách</div>
+            <div class="pain-desc">Kho sách quá lớn, sơ đồ kệ phức tạp — biết sách có rồi nhưng vẫn không tự tìm được vị trí.</div>
+          </div>
+          <span class="sev-pill">Nghiêm trọng</span>
+        </div>
+        <div class="pain-item">
+          <div>
+            <div class="pain-title">Dữ liệu không realtime</div>
+            <div class="pain-desc">Đi đến tận kệ mới biết sách đã bị mượn — hệ thống cũ không cập nhật tình trạng tức thời.</div>
+          </div>
+          <span class="sev-pill">Nghiêm trọng</span>
+        </div>
+        <div class="pain-item">
+          <div>
+            <div class="pain-title">Nhập liệu khắt khe (case-sensitive)</div>
+            <div class="pain-desc">Phải gõ đúng chữ hoa/thường, tên tác giả chính xác — rất dễ thất bại ngay bước tìm kiếm.</div>
+          </div>
+          <span class="sev-pill">Nghiêm trọng</span>
+        </div>
+        <div class="pain-item">
+          <div>
+            <div class="pain-title">Rào cản giao diện cũ</div>
+            <div class="pain-desc">Chữ nhỏ, tương phản kém, thông tin rối mắt — khó thao tác nhanh hoặc khi mắt mỏi sau giờ học.</div>
+          </div>
+          <span class="sev-pill sev-med">Trung bình</span>
+        </div>
+        <div class="pain-item">
+          <div>
+            <div class="pain-title">Tâm lý ngại tương tác thủ thư</div>
+            <div class="pain-desc">Nhiều sinh viên ngại hỏi hoặc có rối loạn lo âu xã hội — cản trở hoàn tất quy trình mượn.</div>
+          </div>
+          <span class="sev-pill sev-med">Trung bình</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- COL 3: Wishes + Touchpoints -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Mong muốn (Wishes)</h2>
+          <span class="card-num">04</span>
+        </div>
+        <ul class="dl">
+          <li class="di"><span class="sq">1</span><span><strong>Tìm kiếm thông minh</strong> — Fuzzy search, gợi ý Chatbot AI theo chủ đề.</span></li>
+          <li class="di"><span class="sq">2</span><span><strong>Bản đồ kệ sách số</strong> — Hiển thị vị trí, quét QR sang mobile hoặc in giấy.</span></li>
+          <li class="di"><span class="sq">3</span><span><strong>Mượn 1-chạm</strong> — Quét sách + thẻ → xác nhận → in phiếu → đồng bộ app.</span></li>
+          <li class="di"><span class="sq">4</span><span><strong>Khả dụng realtime</strong> — Biết ngay số lượng còn trên kệ trước khi đi lấy.</span></li>
+          <li class="di"><span class="sq">5</span><span><strong>Nhắc hạn trả</strong> — Thông báo tự động qua điện thoại để không bị trễ hạn.</span></li>
+          <li class="di"><span class="sq">6</span><span><strong>Giao diện Trợ năng</strong> — Chữ lớn, tương phản cao, phản hồi âm thanh rõ ràng.</span></li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Điểm chạm (Touch Points)</h2>
+          <span class="card-num">05</span>
+        </div>
+        <div class="tp-list">
+          <div class="tp-card">
+            <div class="tp-title">Máy Kiosk AI — sảnh thư viện</div>
+            <div class="tp-desc">Màn hình cảm ứng lớn, Chatbot gợi ý sách, Chế độ Trợ năng (Accessibility).</div>
+          </div>
+          <div class="tp-card">
+            <div class="tp-title">Hệ thống phần cứng Kiosk</div>
+            <div class="tp-desc">Máy quét mã vạch sách, đầu đọc thẻ sinh viên, máy in phiếu mượn/bản đồ tự động.</div>
+          </div>
+          <div class="tp-card">
+            <div class="tp-title">App di động LibAssist</div>
+            <div class="tp-desc">Nhận bản đồ qua QR, xem danh sách phiếu mượn, nhận thông báo nhắc hạn trả sách.</div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span>LibAssist · HCI Project · User Persona · 8/2026</span>
+    <span>Nguyễn Minh Hoàng — 22 tuổi — SV Năm cuối CNTT · Tổng hợp từ 8 phản hồi khảo sát thực tế</span>
+  </footer>
+
+</div><!-- end #persona-canvas -->
+
+<!-- ═══════════════════════════════════════════
+     html2canvas + Export logic
+════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+async function exportPNG() {
+  const btn = document.getElementById('export-btn');
+  btn.textContent = '⏳ Đang xuất ảnh...';
+  btn.disabled = true;
+
+  try {
+    const canvas = await html2canvas(document.getElementById('persona-canvas'), {
+      scale: 2,              // 2× resolution for crisp PNG
+      useCORS: true,
+      backgroundColor: '#D1D5DB',
+      width: 1280,
+      windowWidth: 1280,
+      logging: false
+    });
+
+    const link = document.createElement('a');
+    link.download = 'personaver2.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(e) {
+    alert('Xuất ảnh thất bại: ' + e.message);
+    console.error(e);
+  } finally {
+    btn.textContent = '⬇ Xuất personaver2.png';
+    btn.disabled = false;
+  }
+}
+</script>
+
+</body>
+</html>
