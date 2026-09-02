@@ -3,9 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import { useAccessibilityStore } from '@/state/useAccessibilityStore'
 import { cn } from '@/lib/utils'
 
-// Kiosk chrome shared by every /kiosk/* screen. Mirrors the KioskHeader frame in Figma
-// (5:716) plus the accessibility toggle required by Product/Service 5, which the
-// prototype did not yet include.
+// Kiosk chrome shared by every /kiosk/* screen. Follows the KioskHeader frame in Figma
+// (5:716), with two deliberate departures from it:
+//
+//   - the accessibility toggle is added, because Product/Service 5 requires it and the
+//     prototype did not include one;
+//   - the frame's VI/EN switch is dropped. It was drawn but never wired to anything, and
+//     i18n is nowhere in the value proposition — a control that does nothing when pressed
+//     is worse than an absent one, especially on a kiosk where a stranger tries it once
+//     and concludes the machine is broken.
 
 interface KioskHeaderProps {
   /** Short label for where the user currently is, shown next to the live dot. */
@@ -61,8 +67,6 @@ export function KioskHeader({ statusLabel }: KioskHeaderProps) {
 
       {/* Actions */}
       <div className="flex items-center gap-3">
-        <LanguageSwitch />
-
         <button
           type="button"
           onClick={toggleA11y}
@@ -91,31 +95,5 @@ export function KioskHeader({ statusLabel }: KioskHeaderProps) {
         </button>
       </div>
     </header>
-  )
-}
-
-function LanguageSwitch() {
-  // Visual-only for now — i18n is not in scope of the value proposition.
-  return (
-    <div
-      className="flex items-center rounded-[8px] bg-secondary p-1"
-      role="group"
-      aria-label="Ngôn ngữ"
-    >
-      {(['VI', 'EN'] as const).map((lang, i) => (
-        <button
-          key={lang}
-          type="button"
-          aria-pressed={i === 0}
-          className={cn(
-            'min-h-10 rounded-[6px] px-4 font-semibold transition-colors',
-            i === 0 ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground',
-          )}
-          style={{ fontSize: 'var(--text-meta)' }}
-        >
-          {lang}
-        </button>
-      ))}
-    </div>
   )
 }
