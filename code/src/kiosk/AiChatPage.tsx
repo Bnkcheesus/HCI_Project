@@ -1,7 +1,7 @@
 // Implements Gain Creator 1 / Product-Service 1 — AI-suggested reading list by
 // subject/keyword, conversational alternative to the plain search box.
 // Figma frame: kiosk-ai-chat (5:779).
-import { ArrowLeft, BookOpen, MapPin, SendHorizontal } from 'lucide-react'
+import { ArrowLeft, BookOpen, MapPin, SendHorizontal, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChatBubble, ThinkingBubble } from '@/components/kiosk/ChatBubble'
@@ -39,7 +39,11 @@ export function AiChatPage() {
   const messages = useChatStore((s) => s.messages)
   const isThinking = useChatStore((s) => s.isThinking)
   const ask = useChatStore((s) => s.ask)
+  const resetChat = useChatStore((s) => s.reset)
   const selectBook = useBorrowSessionStore((s) => s.selectBook)
+
+  // Where the caret goes once "Xoá hội thoại" removes itself from the screen.
+  const composerRef = useRef<HTMLInputElement>(null)
 
   // Transcripts arrive already accented, so they go straight into the field — pushing
   // them through the Telex engine would read a trailing "s" as a tone mark.
@@ -99,6 +103,24 @@ export function AiChatPage() {
     setDraft('')
   }
 
+  /**
+   * Wipe the transcript — a kiosk is a shared machine, and the next reader should not walk
+   * up to the previous one's questions still on screen.
+   *
+   * Only the conversation goes. A half-typed question in the composer is not part of it,
+   * and taking that away as well would punish someone who tapped this while mid-sentence.
+   *
+   * The button is disabled while the assistant is answering, which is not cosmetic: `ask`
+   * appends the reply to whatever `messages` holds when the request lands, so clearing
+   * mid-flight would drop an answer into an empty transcript with no question above it.
+   */
+  function clearChat() {
+    resetChat()
+    // The button is about to unmount with the transcript. Without this, focus falls to
+    // <body> and a keyboard or screen-reader user loses their place entirely.
+    composerRef.current?.focus()
+  }
+
   function openBook(bookId: string) {
     selectBook(bookId)
     navigate(`/kiosk/books/${bookId}`, { state: { from: '/kiosk/ai-chat' } })
@@ -111,6 +133,24 @@ export function AiChatPage() {
       <main className="mx-auto grid w-full max-w-[1440px] min-h-0 flex-1 grid-cols-[minmax(0,1fr)_380px] gap-8 overflow-hidden px-10 pt-5">
         {/* Conversation column */}
         <div className="flex min-h-0 flex-col">
+          {/* Only once there is something to clear: in the empty state the button would
+              have nothing to act on, and the row it sits in would cost the centred promo
+              below its vertical room for no reason. */}
+          {messages.length > 0 && (
+            <div className="flex shrink-0 justify-end pb-3">
+              <button
+                type="button"
+                onClick={clearChat}
+                disabled={isThinking}
+                className="inline-flex min-h-[var(--touch-min)] items-center gap-2 rounded-[6px] border border-[var(--rule)] bg-card px-5 font-heading font-semibold text-foreground shadow-[var(--btn-shadow)] transition-colors hover:border-[var(--destructive)] hover:text-[var(--destructive)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[var(--rule)] disabled:hover:text-foreground"
+                style={{ fontSize: 'var(--text-meta)' }}
+              >
+                <Trash2 className="size-5" aria-hidden />
+                Xoá hội thoại
+              </button>
+            </div>
+          )}
+
           <div
             ref={transcriptRef}
             // role="log" + polite: the persona has low vision, so a new answer must be
@@ -130,6 +170,7 @@ export function AiChatPage() {
 
           <div className="shrink-0 pt-4">
             <ChatComposer
+              inputRef={composerRef}
               value={fieldValue}
               onChange={setDraft}
               onSubmit={() => send(fieldValue)}

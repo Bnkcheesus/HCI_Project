@@ -1,5 +1,5 @@
 import { Mic, MicOff } from 'lucide-react'
-import type { FormEvent, KeyboardEvent } from 'react'
+import type { FormEvent, KeyboardEvent, RefObject } from 'react'
 import { applyTelexKey } from '@/lib/telex'
 import { cn } from '@/lib/utils'
 
@@ -28,6 +28,12 @@ interface ChatComposerProps {
   voiceSupported?: boolean
   voiceListening?: boolean
   onVoiceToggle?: () => void
+  /**
+   * Handle on the field, so the page can put the caret back after an action that removes
+   * the control the reader was standing on — clearing the transcript takes its own button
+   * off the screen, and focus would otherwise fall to `<body>`.
+   */
+  inputRef?: RefObject<HTMLInputElement | null>
 }
 
 export function ChatComposer({
@@ -38,6 +44,7 @@ export function ChatComposer({
   voiceSupported = false,
   voiceListening = false,
   onVoiceToggle,
+  inputRef,
 }: ChatComposerProps) {
   const showVoice = voiceSupported && onVoiceToggle !== undefined
   const canSend = value.trim().length > 0 && !disabled
@@ -70,6 +77,7 @@ export function ChatComposer({
       >
         <input
           type="text"
+          ref={inputRef}
           data-inner-focus
           value={value}
           // eslint-disable-next-line jsx-a11y/no-autofocus -- kiosk: asking is the only
