@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/khoi/Documents/hcmus/HCI/Project/HCI_Project show HEAD:valueproposition/value-proposition.html)",
+      "Bash(chromium-cli --help)",
+      "Bash(npx --version)",
+      "Bash(node -e \"try{require.resolve\\('playwright'\\)}catch\\(e\\){console.log\\('no playwright: '+e.message\\)}\")"
+    ]
+  }
+}
