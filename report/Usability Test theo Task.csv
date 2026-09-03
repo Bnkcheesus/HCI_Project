@@ -10,9 +10,9 @@ Lần 2,Thời gian,16,30,17,20,45,17,29,21
 Lần 1,Thời gian,55,35,22,18,37,40,60,25
 ,Số lỗi,3,2,1,0,2,2,3,1
 ,Trạng thái,Lỗi,Thành công,Thành công,Thành công,Thành công,Thành công,Lỗi,Thành công
-Lần 2,Thời gian,60,20,33,22,44,47,67,
-,Số lỗi,4,0,2,0,3,3,3,
-,Trạng thái,Lỗi,Thành công,Thành công,Thành công,Lỗi,Lỗi,Lỗi,Lỗi
+Lần 2,Thời gian,60,20,33,22,44,47,67,35
+,Số lỗi,4,0,2,0,3,3,3,2
+,Trạng thái,Lỗi,Thành công,Thành công,Thành công,Lỗi,Lỗi,Lỗi,Thành công
 ,,,,,,,,,
 ,Task 3,U1,U2,U3,U4,U5,U6,U7,U8
 ,Thời gian,20,21,16,17,14,17,18,16
