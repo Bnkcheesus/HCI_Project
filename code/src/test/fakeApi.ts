@@ -179,6 +179,54 @@ function conflict(failure: unknown) {
   return { status: 409, body: { error: 'checkout-failed', failure } }
 }
 
+/**
+ * Giving a book back — mirrors `server/services/returnBook.ts`, including which loan it
+ * picks when a card holds the same title twice: the oldest open one.
+ */
+function giveBack(body: { cardCode: string; bookId: string }) {
+  const { cardCode, bookId } = body
+
+  if (!cardCode || !bookId) return { status: 400, body: { error: 'invalid-request' } }
+
+  const student = students.find((s) => s.cardCode === cardCode)
+  if (!student) return returnConflict({ reason: 'unknown-card' })
+
+  if (!books.some((b) => b.id === bookId)) return returnConflict({ reason: 'unknown-book' })
+
+  const loan = loans
+    .filter((l) => l.studentId === cardCode && l.bookId === bookId && l.returnedAt === null)
+    .sort((a, b) => a.borrowedAt.localeCompare(b.borrowedAt) || a.id.localeCompare(b.id))[0]
+  if (!loan) return returnConflict({ reason: 'no-open-loan' })
+
+  const returnedAt = isoDate(new Date())
+  loan.returnedAt = returnedAt
+
+  // Capped at copies_total, the same guard the server's availability UPDATE carries — a
+  // return must never invent stock the library does not own.
+  const record = copies[bookId]
+  if (record && record.copiesAvailable < record.copiesTotal) {
+    record.copiesAvailable += 1
+    record.status = 'available'
+  }
+
+  return {
+    status: 200,
+    body: {
+      loan: {
+        loanId: loan.id,
+        slipId: loan.slipId,
+        bookId,
+        returnedAt,
+        wasLate: returnedAt > loan.dueAt,
+      },
+    },
+  }
+}
+
+function returnConflict(failure: unknown) {
+  return { status: 409, body: { error: 'return-failed', failure } }
+}
+
 /* ------------------------------------------------------------------------ routing */
 
 interface Handled {
@@ -280,6 +328,8 @@ function route(method: string, path: string, params: URLSearchParams, body: unkn
 
   if (method === 'POST') {
     if (path === '/api/loans') return checkout(body as { cardCode: string; bookIds: string[] })
+
+    if (path === '/api/returns') return giveBack(body as { cardCode: string; bookId: string })
 
     if (path === '/api/librarian') {
       const reply = askLibrarian((body as { question: string }).question, {

@@ -239,6 +239,97 @@ describe('AI chat — the conversation survives a detour', () => {
   })
 })
 
+describe('AI chat — clearing the conversation', () => {
+  const clearButton = () => screen.getByRole('button', { name: 'Xoá hội thoại' })
+
+  /**
+   * A kiosk is shared. The next reader should not find the last one's questions waiting.
+   *
+   * Asserted on the *answer*, not the question: `ASK_HOURS` is also one of the starter
+   * chips, so it reappears in the empty state the moment the clear succeeds. Matching on
+   * it would fail on a working screen and pass on a broken one.
+   */
+  it('empties the transcript and returns to the starter state', async () => {
+    const user = userEvent.setup()
+    await renderChat()
+
+    await user.click(screen.getByRole('button', { name: ASK_HOURS }))
+    await findAnswer(ANSWER_HOURS)
+
+    await user.click(clearButton())
+
+    expect(screen.getByRole('log')).not.toHaveTextContent(ANSWER_HOURS)
+    expect(screen.getByText('Trò chuyện với chatbot để tìm sách')).toBeInTheDocument()
+  })
+
+  /** The panel is derived from the transcript, so it has to go with it. */
+  it('takes the suggested books and the shelf pins away too', async () => {
+    const user = userEvent.setup()
+    await renderChat()
+
+    await user.click(screen.getByRole('button', { name: ASK_LOCATION }))
+    await findAnswer(ANSWER_LOCATION)
+    expect(await sidePanel().findByRole('button', { name: /Giải tích 1/ })).toBeInTheDocument()
+
+    await user.click(clearButton())
+
+    expect(screen.getByText(/Chưa có gợi ý nào/)).toBeInTheDocument()
+    expect(screen.getByText(/Kệ sách sẽ được đánh dấu ở đây/)).toBeInTheDocument()
+  })
+
+  /** Nothing to clear yet — an enabled control that does nothing is worse than no control. */
+  it('is absent until there is something to clear', async () => {
+    await renderChat()
+    expect(screen.queryByRole('button', { name: 'Xoá hội thoại' })).not.toBeInTheDocument()
+  })
+
+  /**
+   * Clearing mid-answer would leave the reply to land in an empty transcript — an answer
+   * with no question above it, because `ask` appends to whatever `messages` holds when the
+   * request resolves. The button is disabled for exactly that window.
+   */
+  it('cannot be pressed while the assistant is still answering', async () => {
+    const user = userEvent.setup()
+    await renderChat()
+
+    await user.click(screen.getByRole('button', { name: ASK_HOURS }))
+    expect(clearButton()).toBeDisabled()
+
+    await findAnswer(ANSWER_HOURS)
+    expect(clearButton()).toBeEnabled()
+  })
+
+  /**
+   * The button removes itself along with the transcript. Without moving the caret, focus
+   * falls to <body> and a keyboard or screen-reader user loses their place on the screen.
+   */
+  it('puts the caret back in the question box', async () => {
+    const user = userEvent.setup()
+    await renderChat()
+
+    await user.click(screen.getByRole('button', { name: ASK_HOURS }))
+    await findAnswer(ANSWER_HOURS)
+
+    await user.click(clearButton())
+
+    expect(composer()).toHaveFocus()
+  })
+
+  /** A question being typed is not part of the conversation, so it stays. */
+  it('leaves a half-typed question alone', async () => {
+    const user = userEvent.setup()
+    await renderChat()
+
+    await user.click(screen.getByRole('button', { name: ASK_HOURS }))
+    await findAnswer(ANSWER_HOURS)
+
+    await user.type(composer(), 'vat ly')
+    await user.click(clearButton())
+
+    expect(composer()).toHaveValue('vat ly')
+  })
+})
+
 describe('AI chat — voice input', () => {
   let teardown: () => void
   beforeEach(() => {

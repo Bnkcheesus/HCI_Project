@@ -18,7 +18,7 @@ cd code && npm run build && npm run test && npm run test:server
 ```
 All pass (`test:server` needs a database — see `docs/database.md`). The app is **not a scaffold** — it is a working implementation with real interaction logic, a real database behind a REST API, and 319+ tests across the two suites. Treat it as a codebase to extend and fix, not a template to redo.
 
-**All 14 screens are built** — 10 kiosk (`/kiosk/*`) and 4 mobile (`/mobile/*`) — and every one has been through rounds of real UI polish against browser screenshots. `PlaceholderScreen` is gone; nothing is stubbed.
+**All 14 product screens are built** — 10 kiosk (`/kiosk/*`) and 4 mobile (`/mobile/*`) — and every one has been through rounds of real UI polish against browser screenshots. `PlaceholderScreen` is gone; nothing is stubbed. There is also one internal tool at `/admin` that is deliberately *not* a product screen — see the inventory below.
 
 The two surfaces are joined by a QR handoff, and it works end to end: `LocationQr` on any kiosk book page encodes `/mobile/location?book=<id>`, and `src/lib/qrHandoff.ts` resolves that URL — or a hand-typed ISBN, or a slip number — into the route to open. Breaking either side breaks a promise the other side is making on screen, so change them together.
 
@@ -68,6 +68,19 @@ Figma color channels are 0–1 floats (`{r,g,b,a}`) — convert to hex/rgba befo
 | `/mobile/qr` | Phone-QR | 41:598 | built — simulated scan (`ScannerViewport`) + manual code entry; no camera, by decision |
 | `/mobile/location` | Phone-Location | 41:630 | built — real `ShelfRouteMap`, not the frame's static 3D drawing |
 | `/mobile/phieu-muon` | Phone-PhieuMuon | 49:122 | built — `LoanSlipsPage`; the route path stays Vietnamese, the component does not |
+| `/admin` | **none — and it should not have one** | — | built — `AdminReturnPage`, an internal demo tool. See below |
+
+**`/admin` is not a product screen and does not trace back to the value proposition.** It
+exists because borrowing alone can only push the copy count downwards, so after a few demo
+runs the stock is spent and a card is stuck at the five-book limit with `npm run db:seed`
+as the only escape. It closes the loop — borrow, stock drops, return, stock comes back — so
+Gain Creator 4 can be shown rather than asserted. Returning a book is not one of the
+persona's jobs, has no frame, and in a real library happens at a desk or a drop box.
+
+Keep it plain: no `KioskShell`, no `MobileFrame`, no new shared component. Dressing an
+internal tool in the product's design system is how the next person comes to believe it is
+part of the product. It has no authentication. Do not add screens here that belong in
+`/kiosk` or `/mobile`.
 
 Skip these Figma nodes — backups/duplicates, not separate screens: `kiosk-search-backup` (16:230), `kiosk-search-results-backup` (19:2), `kiosk-borrow-complete-backup` (37:2), the duplicate `kiosk-book-scan-step2` at 39:183, the extra `Phone-PhieuMuon` variants at 53:50 / 53:85.
 
